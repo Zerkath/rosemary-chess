@@ -2,7 +2,6 @@ import java.util.Scanner;
 public class program {
     public static void main(String[] args) {
         Scanner scn = new Scanner(System.in);
-            game.printPieceLegalMove(Integer.parseInt(moves[0]) , Integer.parseInt(moves[1]));
             Game game = new Game();
 
         game.parseFen("rnbqkbnr/pppppppp/2P5/1P6/8/8/PP2PPPP/RNBQKBNR w KQkq - 0 1");
