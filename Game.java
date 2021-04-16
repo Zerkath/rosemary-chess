@@ -39,6 +39,23 @@ public class Game {
         }
     }
 
+    public void printBoard() {
+
+        System.out.println("  0 1 2 3 4 5 6 7");
+        for(int i = 0; i < board.length; i++) {
+            System.out.print(i + " ");
+            for(int j = 0; j < board[i].length; j++) {
+                Piece piece = board[i][j];
+                if(piece != null) {
+                    System.out.print(piece.getFenSymbol() + " ");
+                } else {
+                    System.out.print("  ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
     /**
      * used to add rows of FEN data to the board state
      * @param row a row of FEN
@@ -66,6 +83,7 @@ public class Game {
 
         switch(Character.toLowerCase(ch)) {
             case 'p': return new Pawn(row, col, isWhite);
+            case 'b': return new Bishop(row, col, isWhite);
             default: return null;
         }
     }
