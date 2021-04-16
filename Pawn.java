@@ -3,6 +3,12 @@ public class Pawn extends Piece {
 
     public Pawn(int row, int col, boolean isWhite) {
         super(row, col, isWhite);
+
+        if(this.isWhite) {
+            this.fenSymbol = 'P';
+        } else {
+            this.fenSymbol = 'p';
+        }
     }
 
     public ArrayList<int[]> getPossibleMoves() {
