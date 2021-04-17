@@ -87,6 +87,7 @@ public class Game {
             case 'n': return new Knight(row, col, isWhite);
             case 'r': return new Rook(row, col, isWhite);
             case 'q': return new Queen(row, col, isWhite);
+            case 'k': return new King(row, col, isWhite);
             default: return null;
         }
     }
