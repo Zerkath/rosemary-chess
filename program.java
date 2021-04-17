@@ -4,7 +4,7 @@ public class program {
         Scanner scn = new Scanner(System.in);
             Game game = new Game();
 
-        game.parseFen("rnbqkbnr/pppppppp/2P5/1P6/3B4/8/PP2PPPP/RNBQKBNR w KQkq - 0 1");
+        game.parseFen("rnbqkbnr/pppppppp/2P5/1P6/3BN3/8/PP2PPPP/RNBQKBNR w KQkq - 0 1");
 
         game.printBoard();
 
