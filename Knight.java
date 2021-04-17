@@ -65,19 +65,4 @@ public class Knight extends Piece{
         return moves;
     }
 
-    /**
-     * First part of the if checks whether destination square is on board
-     * Second part returns true if destination square is empty or it's piece is of opposing color
-     * @param row destination row
-     * @param col destination column
-     * @return
-     */
-    private boolean isMovePossible(int row, int col) {
-        if(isDestinationSquareOnBoard(row, col) && isDestinationPieceValid(row, col)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 }
