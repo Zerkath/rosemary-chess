@@ -84,6 +84,7 @@ public class Game {
         switch(Character.toLowerCase(ch)) {
             case 'p': return new Pawn(row, col, isWhite);
             case 'b': return new Bishop(row, col, isWhite);
+            case 'n': return new Knight(row, col, isWhite);
             default: return null;
         }
     }

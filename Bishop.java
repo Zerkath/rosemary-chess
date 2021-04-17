@@ -14,7 +14,7 @@ public class Bishop extends Piece {
 
         ArrayList<int[]> moves = new ArrayList<>();
 
-        int counter = 1;
+        int counter = 1; // The counter of traveled squares on a diagonal
         //checks possible moves for down and right diagonal
         while(true) {
             //Checks if destination isn't out of bounds
