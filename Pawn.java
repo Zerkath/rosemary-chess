@@ -11,6 +11,8 @@ public class Pawn extends Piece {
         }
     }
 
+    //White Starting square row is 6, and black is 1 
+    
     public ArrayList<int[]> getPossibleMoves() {
         ArrayList<int[]> moves = new ArrayList<>();
         if(this.isWhite) { //if white the first index of the array goes down, left is towards 0 and right is towards 7
@@ -31,6 +33,14 @@ public class Pawn extends Piece {
                 moves.add(new int[]{nextRow, col+1});
             }
 
+            if(row == 3) { //en passant behavior
+                if(col > 0 && game.board[row][col-1] != null && !game.board[row][col-1].isWhite && (game.board[row][col-1] instanceof Pawn)) {
+                    System.out.println("to the left is a pawn"); //TODO check if last move from opponent was 2 squares
+                }
+                if(col < 7 && game.board[row][col+1] != null && !game.board[row][col+1].isWhite && (game.board[row][col+1] instanceof Pawn)) {
+                    System.out.println("to the right is a pawn");
+                }
+            }
             //TODO google en passant
 
         } else {
