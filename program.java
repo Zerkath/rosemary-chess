@@ -1,10 +1,10 @@
 import java.util.Scanner;
-public class program {
+public class Program {
     public static void main(String[] args) {
         Scanner scn = new Scanner(System.in);
             Game game = new Game();
 
-        game.parseFen("rnbqkbnr/p1pppppp/1pP5/pPp5/3BNr2/3qK3/PP2PPPP/RNBQKBNR w KQkq - 0 1");
+        game.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         game.printBoard();
 
         while(true) {
