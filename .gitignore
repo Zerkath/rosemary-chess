@@ -1,4 +1,6 @@
 out\
+target
+
 *.jar
 *.class
 *.exe
