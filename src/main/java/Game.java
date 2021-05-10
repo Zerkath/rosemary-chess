@@ -1,9 +1,16 @@
 import java.util.ArrayList;
+
+/**
+ * Contains data pertaining to the current game
+ * board state
+ * castling rights
+ * player turns
+ */
 public class Game {
     Piece[][] board = new Piece[8][8];
     enum CastlingRights {
         QUEENSIDE,
-        KIGNSIDE,
+        KINGSIDE,
         BOTH,
         NONE
     }
@@ -43,36 +50,36 @@ public class Game {
     }
 
     public void setCastling(char [] castling) {
+        if(castling.length == 1 && castling[0] == '-') {
+            whiteCastling = CastlingRights.NONE;
+            blackCastling = CastlingRights.NONE;
+            return;
+        }
+
         for (char c : castling) {
             boolean black = Character.isLowerCase(c);
             boolean queen = Character.toLowerCase(c) == 'q';
-            if(black) {
-                if(blackCastling == CastlingRights.NONE) {
-                    blackCastling = queen ? CastlingRights.QUEENSIDE : CastlingRights.KIGNSIDE;
-                } else if(blackCastling == CastlingRights.BOTH) {
-                    break;
-                } else {
-                    if(blackCastling == CastlingRights.QUEENSIDE) {
-                        if(!queen) blackCastling = CastlingRights.BOTH;
-                    } else {
-                        if(queen) blackCastling = CastlingRights.BOTH;
-                    }
-                }
+            CastlingRights curr = black ? blackCastling : whiteCastling;
+            if(curr == CastlingRights.NONE) {
+                curr = queen ? CastlingRights.QUEENSIDE : CastlingRights.KINGSIDE;
+            } else if(curr == CastlingRights.BOTH) {
+                break;
             } else {
-                if(whiteCastling == CastlingRights.NONE) {
-                    whiteCastling = queen ? CastlingRights.QUEENSIDE : CastlingRights.KIGNSIDE;
-                } else if(whiteCastling == CastlingRights.BOTH) {
-                    break;
+                if (curr == CastlingRights.QUEENSIDE) {
+                    if (!queen) curr = CastlingRights.BOTH;
                 } else {
-                    if(whiteCastling == CastlingRights.QUEENSIDE) {
-                        if(!queen) whiteCastling = CastlingRights.BOTH;
-                    } else {
-                        if(queen) whiteCastling = CastlingRights.BOTH;
-                    }
+                    if (queen) curr = CastlingRights.BOTH;
                 }
+            }
+
+            if(black) {
+                blackCastling = curr;
+            } else {
+                whiteCastling = curr;
             }
         }
     }
+
 
     public void printPieceLegalMove(int row, int col) {
         if(this.board[row][col] == null) {
