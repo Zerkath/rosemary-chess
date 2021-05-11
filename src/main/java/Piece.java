@@ -23,11 +23,7 @@ public abstract class Piece {
      * @return
      */
     boolean isDestinationSquareOnBoard(int row, int col) {
-        if(row >= 0 && row <= 7 && col >= 0 && col <= 7) {
-            return true;
-        } else {
-            return false;
-        }
+        return row >= 0 && row <= 7 && col >= 0 && col <= 7;
     }
 
     /**
@@ -39,11 +35,7 @@ public abstract class Piece {
     boolean isDestinationPieceValid(int row, int col) {
         if(game.board[row][col] == null) {
             return true;
-        } else if (game.board[row][col].isWhite != this.isWhite) {
-            return true;
-        } else {
-            return false;
-        }
+        } else return game.board[row][col].isWhite != this.isWhite;
     }
 
     /**
@@ -54,13 +46,8 @@ public abstract class Piece {
      * @return
      */
     boolean isMovePossible(int row, int col) {
-        if(isDestinationSquareOnBoard(row, col) && isDestinationPieceValid(row, col)) {
-            return true;
-        } else {
-            return false;
-        }
+        return isDestinationSquareOnBoard(row, col) && isDestinationPieceValid(row, col);
     }
-
 
     public void gameBegins(Game game) {
         this.game = game;
