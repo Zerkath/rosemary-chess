@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * Contains data pertaining to the current game
@@ -15,8 +17,17 @@ public class Game {
         NONE
     }
 
+    enum PlayerTurn {
+        WHITE,
+        BLACK,
+    }
+
     CastlingRights whiteCastling = CastlingRights.NONE;
     CastlingRights blackCastling = CastlingRights.NONE;
+
+    PlayerTurn turn;
+
+    Stack<LinkedList<int[]>> moves = new Stack<>();
 
     public void parseFen(String fen) {
 
@@ -31,10 +42,15 @@ public class Game {
         */
         String [] split = fen.split(" ");
 
-        if(split.length != 6) return; //check if fen is somewhat valid
+        if(split.length != 6) return; //check if fen is somewhat valid TODO errors
         String [] rows = split[0].split("/");
         if(rows.length != 8) return; //another validity check
 
+        if(split[1].equals("w")) {
+            turn = PlayerTurn.WHITE;
+        } else if (split[1].equals("b")) {
+            turn = PlayerTurn.BLACK;
+        }
         setCastling(split[2].toCharArray()); //set castling rights
 
         
@@ -45,6 +61,41 @@ public class Game {
         for (Piece[] row : board) {
             for (Piece piece : row) {
                 if(piece != null) piece.gameBegins(this);
+            }
+        }
+        getPossibleMovesForTurn();
+    }
+    public Game() {
+
+    }
+
+    public Game(Game game) {
+        this.board = game.board;
+        this.turn = game.turn;
+        this.whiteCastling = game.whiteCastling;
+        this.blackCastling = game.blackCastling;
+        this.moves = game.moves;
+    }
+
+    private void getPossibleMovesForTurn() {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                Piece t = board[i][j];
+                if(t != null) {
+                    Piece p = null;
+                    if(turn == PlayerTurn.WHITE && t.isWhite) {
+                        p = t;
+                    } else if (turn == PlayerTurn.BLACK && !t.isWhite) {
+                        p = t;
+                    }
+                    if(p != null) {
+                        LinkedList<int[]> m = new LinkedList<>(t.getPossibleMoves());
+                        if(m.size() > 0) {
+                            m.addFirst(new int[]{i, j});
+                            moves.add(m);
+                        }
+                    }
+                }
             }
         }
     }
@@ -80,7 +131,6 @@ public class Game {
         }
     }
 
-
     public void printPieceLegalMove(int row, int col) {
         if(this.board[row][col] == null) {
             System.out.println("No Piece");
@@ -95,8 +145,67 @@ public class Game {
         }
     }
 
-    public void printBoard() {
+    public Game movePiece(int [] startingSquare, int [] destinationSquare) {
+        Game newGame = new Game(this);
+        Piece selected = newGame.board[startingSquare[0]][startingSquare[1]];
+        if(newGame.board[destinationSquare[0]][destinationSquare[1]] != null) {
+            System.out.println(selected);
+            System.out.println(newGame.board[destinationSquare[0]][destinationSquare[1]]);
+        }
+        newGame.board[startingSquare[0]][startingSquare[1]] = null;
+        newGame.board[destinationSquare[0]][destinationSquare[1]] = selected;
+        return newGame;
+    }
 
+    public String toFenString() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < board.length; i++) {
+            int empty = 0;
+            for (int j = 0; j < board.length; j++) {
+                if(board[i][j] == null) {
+                    empty++;
+                } else if(board[i][j] != null) {
+                    if (empty != 0) {
+                        result.append(empty);
+                        empty = 0;
+                    }
+                    result.append(board[i][j].fenSymbol);
+                }
+            }
+            if(empty != 0) {
+                result.append(empty);
+                empty = 0;
+            }
+            if(i != 7) result.append("/");
+        }
+        String turnChar = turn == PlayerTurn.BLACK ? " b" : " w";
+        result.append(turnChar);
+        String WhiteCastlingString = "";
+        switch (whiteCastling) {
+            case KINGSIDE: WhiteCastlingString = "K"; break;
+            case QUEENSIDE: WhiteCastlingString = "Q"; break;
+            case BOTH: WhiteCastlingString = "KQ"; break;
+        }
+
+        String BlackCastlingString = "";
+        switch (blackCastling) {
+            case KINGSIDE: BlackCastlingString = "k"; break;
+            case QUEENSIDE: BlackCastlingString = "q"; break;
+            case BOTH: BlackCastlingString = "kq"; break;
+        }
+
+        if(WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
+            result.append(" -");
+        } else {
+            result.append(" ");
+            result.append(WhiteCastlingString);
+            result.append(BlackCastlingString);
+        }
+        result.append(" - 0 1"); //todo add turns
+        return result.toString();
+    }
+
+    public void printBoard() {
         System.out.println("  0 1 2 3 4 5 6 7");
         for(int i = 0; i < board.length; i++) {
             System.out.print(i + " ");
@@ -111,6 +220,7 @@ public class Game {
             System.out.println();
         }
         System.out.println();
+
     }
 
     /**
@@ -147,5 +257,64 @@ public class Game {
             case 'k': return new King(row, col, isWhite);
             default: return null;
         }
+    }
+
+    /**
+     *
+     * @return results array        <br />
+     * w = white<br /> b = black    <br />
+     * 0 w piece count      <br />
+     * 1 b piece count      <br />
+     * 2 total pieces       <br />
+     * 3 w pawns            <br />
+     * 4 b pawns            <br />
+     * 5 w bishops          <br />
+     * 6 b bishops          <br />
+     * 7 w rooks            <br />
+     * 8 b rooks            <br />
+     * 9 w knights          <br />
+     * 10 b knights         <br />
+     * 11 w queens          <br />
+     * 12 b queens          <br />
+     * 13 w king            <br />
+     * 14 b king            <br />
+     */
+    public int[] countPieces() {
+
+        int [] results = new int[15];
+        for (Piece [] row: this.board) {
+            for (Piece piece: row) {
+                if(piece != null) {
+                    if(piece.isWhite) {
+                        results[0]++;
+                    } else {
+                        results[1]++;
+                    }
+                    int offSet = piece.isWhite ? 0 : 1;
+                    switch(Character.toLowerCase(piece.getFenSymbol())) {
+                        case 'p':
+                            results[3 + offSet]++;
+                            break;
+                        case 'b':
+                            results[5 + offSet]++;
+                            break;
+                        case 'r':
+                            results[7 + offSet]++;
+                            break;
+                        case 'n':
+                            results[9 + offSet]++;
+                            break;
+                        case 'q':
+                            results[11 + offSet]++;
+                            break;
+                        case 'k':
+                            results[13 + offSet]++;
+                            break;
+                    }
+                }
+            }
+        }
+        results[2] = results[0] + results[1];
+        return results;
     }
 }
