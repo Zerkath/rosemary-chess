@@ -37,7 +37,6 @@ public class Rook extends Piece{
                 moves.add(new int[]{destRow, col});
 
                 if(game.board[destRow][col] != null) {
-                    System.out.println(game.board[destRow][col].getFenSymbol());
                     break;
                 }
             } else {
