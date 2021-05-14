@@ -5,9 +5,9 @@ public class Program {
     public static void main(String[] args) {
         Scanner scn = new Scanner(System.in);
         Game game = new Game();
-        Evaluation eval = new Evaluation(2);
+        Evaluation eval = new Evaluation(4);
 
-        game.parseFen("q3k3/2P3P1/6q1/3P1P2/1P1q4/3B1N2/P2B2N1/1R2K2R w K - 0 1");
+        game.parseFen("q3k3/2P3P1/6q1/3P1P2/1P1q4/3B1N2/P2B2N1/1R2K2R b K - 0 3");
         System.out.println(game.toFenString());
         game.printBoard();
         eval.updateTask(game);
