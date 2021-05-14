@@ -86,10 +86,11 @@ public class Evaluation {
                     int [] startingSquare = pieceMoves.pop();
                     while(!pieceMoves.isEmpty()) {
                         int [] destinationSquare = pieceMoves.pop();
-                        Game possible = workerTask.movePiece(startingSquare, destinationSquare);
-                        System.out.println(possible.board[5][5]);
+                        Game possible = new Game();
+                        possible.parseFen(workerTask.toFenString());
+                        possible.movePiece(startingSquare, destinationSquare);
                         int workerMaterial = calculateMaterial(possible);
-                        System.out.println(Arrays.toString(startingSquare) + Arrays.toString(destinationSquare) + workerMaterial);
+                        System.out.println(Arrays.toString(startingSquare) + Arrays.toString(destinationSquare) + workerMaterial + " " + possible.turnNumber);
                     }
                 }
             }

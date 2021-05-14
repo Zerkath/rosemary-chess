@@ -27,6 +27,8 @@ public class Game {
 
     PlayerTurn turn;
 
+    int turnNumber = 1;
+
     Stack<LinkedList<int[]>> moves = new Stack<>();
 
     public void parseFen(String fen) {
@@ -52,7 +54,7 @@ public class Game {
             turn = PlayerTurn.BLACK;
         }
         setCastling(split[2].toCharArray()); //set castling rights
-
+        turnNumber = Integer.parseInt(split[5]);
         
         // Add pieces to the board
         for (int i = 0; i < rows.length; i++) {
@@ -145,16 +147,17 @@ public class Game {
         }
     }
 
-    public Game movePiece(int [] startingSquare, int [] destinationSquare) {
-        Game newGame = new Game(this);
-        Piece selected = newGame.board[startingSquare[0]][startingSquare[1]];
-        if(newGame.board[destinationSquare[0]][destinationSquare[1]] != null) {
-            System.out.println(selected);
-            System.out.println(newGame.board[destinationSquare[0]][destinationSquare[1]]);
+    public void movePiece(int [] startingSquare, int [] destinationSquare) {
+        Piece selected = this.board[startingSquare[0]][startingSquare[1]];
+        this.board[startingSquare[0]][startingSquare[1]] = null;
+        this.board[destinationSquare[0]][destinationSquare[1]] = selected;
+
+        if(this.turn == PlayerTurn.BLACK) {
+            turnNumber++;
+            this.turn = PlayerTurn.WHITE;
+        } else {
+            this.turn = PlayerTurn.BLACK;
         }
-        newGame.board[startingSquare[0]][startingSquare[1]] = null;
-        newGame.board[destinationSquare[0]][destinationSquare[1]] = selected;
-        return newGame;
     }
 
     public String toFenString() {
@@ -201,7 +204,9 @@ public class Game {
             result.append(WhiteCastlingString);
             result.append(BlackCastlingString);
         }
-        result.append(" - 0 1"); //todo add turns
+        result.append(" -"); //todo possible en passant moves
+        result.append(" 0 "); //todo half-move clock (how many turns since last capture or pawn move 50 move rule)
+        result.append(turnNumber);
         return result.toString();
     }
 
