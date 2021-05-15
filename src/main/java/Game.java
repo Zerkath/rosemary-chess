@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -67,8 +68,8 @@ public class Game {
         }
         getPossibleMovesForTurn();
     }
-    public Game() {
 
+    public Game() {
     }
 
     public Game(Game game) {
@@ -77,9 +78,10 @@ public class Game {
         this.whiteCastling = game.whiteCastling;
         this.blackCastling = game.blackCastling;
         this.moves = game.moves;
+        this.turnNumber = game.turnNumber;
     }
 
-    private void getPossibleMovesForTurn() {
+    public void getPossibleMovesForTurn() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 Piece t = board[i][j];
@@ -149,8 +151,10 @@ public class Game {
 
     public void movePiece(int [] startingSquare, int [] destinationSquare) {
         Piece selected = this.board[startingSquare[0]][startingSquare[1]];
-        this.board[startingSquare[0]][startingSquare[1]] = null;
+        if(selected == null) return; //todo sometimes selected is null shouldn't happen
+        selected.updatePosition(destinationSquare[0], destinationSquare[1]);
         this.board[destinationSquare[0]][destinationSquare[1]] = selected;
+        this.board[startingSquare[0]][startingSquare[1]] = null;
 
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;

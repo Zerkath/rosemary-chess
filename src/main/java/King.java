@@ -15,6 +15,7 @@ public class King extends Piece {
 
         ArrayList<int[]> moves = new ArrayList<>();
 
+
         //KING MOVES UP
         if(isMovePossible(row - 1, col)) {
             moves.add(new int[]{row - 1, col});

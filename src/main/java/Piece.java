@@ -49,6 +49,11 @@ public abstract class Piece {
         return isDestinationSquareOnBoard(row, col) && isDestinationPieceValid(row, col);
     }
 
+    public void updatePosition(int row, int col) {
+        this.row = row;
+        this.col = col;
+    }
+
     public void gameBegins(Game game) {
         this.game = game;
     }
