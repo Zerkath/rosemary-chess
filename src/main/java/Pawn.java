@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
+
 public class Pawn extends Piece {
 
     public Pawn(int row, int col, boolean isWhite) {
@@ -15,8 +16,8 @@ public class Pawn extends Piece {
 
     //White Starting square row is 6, and black is 1 
     
-    public ArrayList<int[]> getPossibleMoves() {
-        ArrayList<int[]> moves = new ArrayList<>();
+    public LinkedList<int[]> getPossibleMoves() {
+        LinkedList<int[]> moves = new LinkedList<>();
         int nextRow = row;
         int doubleJump = row;
         int enPassantRow;
