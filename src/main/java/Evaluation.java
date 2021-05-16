@@ -20,15 +20,14 @@ public class Evaluation {
 
     int material = 0; //equal
 
-    int depth = 5; //todo make assignable
+    int depth = 1;
 
     boolean depthHasMoreWork = true;
     ThreadGroup tg = new ThreadGroup("Evaluation_Threads");
 
-
-
-    public Evaluation(int threadCount) {
+    public Evaluation(int threadCount, int depth) {
         this.threadCount = threadCount;
+        this.depth = depth;
     }
 
     public Evaluation(int threadCount, Game task) {
@@ -38,7 +37,7 @@ public class Evaluation {
 
     public void startEvaluation() {
         for (int i = 0; i < threadCount; i++) {
-            new Worker(tg, task, i).start();
+            new Worker(tg, i).start();
         }
     }
 
@@ -46,11 +45,11 @@ public class Evaluation {
         material = calculateMaterial(task);
         this.fen = task.toFenString();
         this.task = task;
+        this.task.getPossibleMovesForTurn();
     }
 
     public synchronized LinkedList<int[]> getNextBranch() {
-
-        if (task.moves.size() > 0) {
+        if (!task.moves.isEmpty()) {
             return task.moves.pop();
         } else {
             depthHasMoreWork = false;
@@ -83,17 +82,13 @@ public class Evaluation {
 
     class Worker extends Thread {
 
-        private Game workerTask;
-
-        public Worker(ThreadGroup tg, Game task, int id) {
+        public Worker(ThreadGroup tg, int id) {
             super(tg, "worker-"+id);
-            this.workerTask = task;
         }
 
         public void run() {
             while(depthHasMoreWork) {
                 LinkedList<int[]> pieceMoves = getNextBranch();
-                StringBuilder str = new StringBuilder();
                 if(!pieceMoves.isEmpty()) {
 
                     int [] selectedSquare = pieceMoves.pop();
@@ -101,9 +96,9 @@ public class Evaluation {
                     while(!pieceMoves.isEmpty()) {
                         int [] destination = pieceMoves.pop();
 
-                        workerTask = new Game();
-                        workerTask.parseFen(fen);
-                        workerTask.movePiece(selectedSquare, destination);
+                        Game task = new Game();
+                        task.parseFen(fen);
+                        task.movePiece(selectedSquare, destination);
 
                         LinkedList<int[][]> list = new LinkedList<>();
 
@@ -117,6 +112,8 @@ public class Evaluation {
                 }
             }
         }
+
+
 
         private char convertToRowChar(int i) {
             switch (i) {
@@ -157,34 +154,34 @@ public class Evaluation {
 
         private void recursion(int depth, LinkedList<int[][]> movesToPosition) {
 
-            if(depth <= 0) { //print variation
-                Game local = new Game();
-                StringBuilder str = new StringBuilder();
-                local.parseFen(fen);
-                for (int [][] move: movesToPosition) {
-                    str.append(parseCommand(move));
-                    str.append(", ");
-                    local.movePiece(move[0], move[1]);
-                }
-                System.out.println(str);
-                return;
-            }
+
 
             Game local = new Game();
             local.parseFen(fen);
-
             for (int [][] move: movesToPosition) {
                 local.movePiece(move[0], move[1]);
             }
             local.getPossibleMovesForTurn();
 
+            if(depth <= 0 || local.moves.isEmpty()) { //print variation
+                StringBuilder str = new StringBuilder();
+                Game print = new Game();
+                print.parseFen(fen);
+                for (int [][] move: movesToPosition) {
+                    str.append(parseCommand(move));
+                    str.append(", ");
+                    print.movePiece(move[0], move[1]);
+                }
+                System.out.println(str);
+                return;
+            }
+
             int r_depth = depth-1;
 
-            while(!local.moves.empty()) {
+            while(!local.moves.isEmpty()) {
 
                 LinkedList<int []> subMoves = local.moves.pop();
                 int [] selectedSquare = subMoves.pop();
-                System.out.println(local.getSquare(selectedSquare));
 
                 while(!subMoves.isEmpty()) {
 
@@ -201,4 +198,5 @@ public class Evaluation {
             }
         }
     }
+
 }
