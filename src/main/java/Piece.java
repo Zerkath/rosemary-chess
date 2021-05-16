@@ -38,12 +38,20 @@ public abstract class Piece {
         } else return game.board[row][col].isWhite != this.isWhite;
     }
 
+    boolean isDestinationEmpty(int row, int col) {
+        return game.board[row][col] == null;
+    }
+
+    boolean isDestOpposing(int row, int col) {
+        if(isDestinationEmpty(row, col)) return false;
+        return game.board[row][col].isWhite != this.isWhite;
+    }
     /**
      * First part of the if checks whether destination square is on board
      * Second part returns true if destination square is empty or it's piece is of opposing color
      * @param row destination row
      * @param col destination column
-     * @return
+     * @return true if move is coords are on the board and the square is empty or the opposing color
      */
     boolean isMovePossible(int row, int col) {
         return isDestinationSquareOnBoard(row, col) && isDestinationPieceValid(row, col);

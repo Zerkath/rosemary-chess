@@ -20,7 +20,7 @@ public class Evaluation {
 
     int material = 0; //equal
 
-    int depth = 4; //todo make assignable
+    int depth = 5; //todo make assignable
 
     boolean depthHasMoreWork = true;
     ThreadGroup tg = new ThreadGroup("Evaluation_Threads");
@@ -50,7 +50,7 @@ public class Evaluation {
 
     public synchronized LinkedList<int[]> getNextBranch() {
 
-        if (task.moves.size() > 1) {
+        if (task.moves.size() > 0) {
             return task.moves.pop();
         } else {
             depthHasMoreWork = false;
@@ -93,19 +93,25 @@ public class Evaluation {
         public void run() {
             while(depthHasMoreWork) {
                 LinkedList<int[]> pieceMoves = getNextBranch();
-                if(pieceMoves.size() > 1) {
+                StringBuilder str = new StringBuilder();
+                if(!pieceMoves.isEmpty()) {
+
                     int [] selectedSquare = pieceMoves.pop();
+
                     while(!pieceMoves.isEmpty()) {
                         int [] destination = pieceMoves.pop();
+
                         workerTask = new Game();
-                        workerTask.parseFen(task.toFenString());
+                        workerTask.parseFen(fen);
                         workerTask.movePiece(selectedSquare, destination);
+
                         LinkedList<int[][]> list = new LinkedList<>();
+
                         int [][] move = new int[2][];
                         move[0] = selectedSquare;
                         move[1] = destination;
                         list.add(move);
-//                        int materialAfterMove = calculateMaterial(workerTask);
+
                         recursion(depth, list);
                     }
                 }
@@ -150,7 +156,8 @@ public class Evaluation {
         }
 
         private void recursion(int depth, LinkedList<int[][]> movesToPosition) {
-            if(depth <= 0) {
+
+            if(depth <= 0) { //print variation
                 Game local = new Game();
                 StringBuilder str = new StringBuilder();
                 local.parseFen(fen);
@@ -162,23 +169,33 @@ public class Evaluation {
                 System.out.println(str);
                 return;
             }
+
             Game local = new Game();
             local.parseFen(fen);
+
             for (int [][] move: movesToPosition) {
                 local.movePiece(move[0], move[1]);
             }
             local.getPossibleMovesForTurn();
+
             int r_depth = depth-1;
+
             while(!local.moves.empty()) {
+
                 LinkedList<int []> subMoves = local.moves.pop();
                 int [] selectedSquare = subMoves.pop();
+                System.out.println(local.getSquare(selectedSquare));
+
                 while(!subMoves.isEmpty()) {
+
                     int [] destination = subMoves.pop();
                     int [][] move = new int[2][];
+
                     LinkedList<int[][]> newMoves = new LinkedList<>(movesToPosition);
                     move[0] = selectedSquare;
                     move[1] = destination;
                     newMoves.add(move);
+
                     recursion(r_depth, newMoves);
                 }
             }
