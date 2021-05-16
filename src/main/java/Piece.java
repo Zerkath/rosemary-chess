@@ -40,12 +40,16 @@ public abstract class Piece {
     }
 
     boolean isDestinationEmpty(int row, int col) {
-        return game.board[row][col] == null;
+        if(isDestinationSquareOnBoard(row, col)) {
+            return game.board[row][col] == null;
+        } else return false;
     }
 
     boolean isDestOpposing(int row, int col) {
-        if(isDestinationEmpty(row, col)) return false;
-        return game.board[row][col].isWhite != this.isWhite;
+        if(isDestinationSquareOnBoard(row, col)) {
+            if(isDestinationEmpty(row, col)) return false;
+            return game.board[row][col].isWhite != this.isWhite;
+        } else return false;
     }
     /**
      * First part of the if checks whether destination square is on board
