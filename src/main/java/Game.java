@@ -30,7 +30,7 @@ public class Game {
 
     int turnNumber = 1;
 
-    Stack<LinkedList<int[]>> moves = new Stack<>();
+    LinkedList<LinkedList<int[]>> moves = new LinkedList<>();
 
     public void parseFen(String fen) {
 
@@ -66,7 +66,6 @@ public class Game {
                 if(piece != null) piece.gameBegins(this);
             }
         }
-        getPossibleMovesForTurn();
     }
 
     public Game() {
@@ -105,6 +104,10 @@ public class Game {
      */
     public Piece getSquare(int [] coords) {
         return this.board[coords[0]][coords[1]];
+    }
+
+    public void removePiece(int [] coords) {
+        this.board[coords[0]][coords[1]] = null;
     }
 
     public void setCastling(char [] castling) {
@@ -153,19 +156,17 @@ public class Game {
     }
 
     public void movePiece(int [] startingSquare, int [] destinationSquare) {
-        int sRow = startingSquare[0];
-        int sCol = startingSquare[1];
 
         int dRow = destinationSquare[0];
         int dCol = destinationSquare[1];
-        Piece selected = this.board[sRow][sCol];
+        Piece selected = getSquare(startingSquare);
         if(selected == null) {
-            System.out.println(this);
+            System.out.println("SAATANA :)" + Arrays.toString(startingSquare));
             return; //todo sometimes selected is null shouldn't happen
         }
         selected.updatePosition(dRow, dCol);
         this.board[dRow][dCol] = selected;
-        this.board[sRow][sCol] = null;
+        removePiece(startingSquare);
 
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;
@@ -173,56 +174,6 @@ public class Game {
         } else {
             this.turn = PlayerTurn.BLACK;
         }
-    }
-
-    public String toFenString() {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < board.length; i++) {
-            int empty = 0;
-            for (int j = 0; j < board.length; j++) {
-                if(board[i][j] == null) {
-                    empty++;
-                } else if(board[i][j] != null) {
-                    if (empty != 0) {
-                        result.append(empty);
-                        empty = 0;
-                    }
-                    result.append(board[i][j].fenSymbol);
-                }
-            }
-            if(empty != 0) {
-                result.append(empty);
-                empty = 0;
-            }
-            if(i != 7) result.append("/");
-        }
-        String turnChar = turn == PlayerTurn.BLACK ? " b" : " w";
-        result.append(turnChar);
-        String WhiteCastlingString = "";
-        switch (whiteCastling) {
-            case KINGSIDE: WhiteCastlingString = "K"; break;
-            case QUEENSIDE: WhiteCastlingString = "Q"; break;
-            case BOTH: WhiteCastlingString = "KQ"; break;
-        }
-
-        String BlackCastlingString = "";
-        switch (blackCastling) {
-            case KINGSIDE: BlackCastlingString = "k"; break;
-            case QUEENSIDE: BlackCastlingString = "q"; break;
-            case BOTH: BlackCastlingString = "kq"; break;
-        }
-
-        if(WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
-            result.append(" -");
-        } else {
-            result.append(" ");
-            result.append(WhiteCastlingString);
-            result.append(BlackCastlingString);
-        }
-        result.append(" -"); //todo possible en passant moves
-        result.append(" 0 "); //todo half-move clock (how many turns since last capture or pawn move 50 move rule)
-        result.append(turnNumber);
-        return result.toString();
     }
 
     public void printBoard() {
@@ -264,6 +215,58 @@ public class Game {
         }
     }
 
+    public String toFenString() {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < board.length; i++) {
+            int empty = 0;
+            for (int j = 0; j < board.length; j++) {
+                if(board[i][j] == null) {
+                    empty++;
+                } else if(board[i][j] != null) {
+                    if (empty != 0) {
+                        result.append(empty);
+                        empty = 0;
+                    }
+                    result.append(board[i][j].fenSymbol);
+                }
+            }
+            if(empty != 0) {
+                result.append(empty);
+                empty = 0;
+            }
+            if(i != 7) result.append("/");
+        }
+
+        String turnChar = turn == PlayerTurn.BLACK ? " b" : " w";
+
+        result.append(turnChar);
+        String WhiteCastlingString = "";
+        switch (whiteCastling) {
+            case KINGSIDE: WhiteCastlingString = "K"; break;
+            case QUEENSIDE: WhiteCastlingString = "Q"; break;
+            case BOTH: WhiteCastlingString = "KQ"; break;
+        }
+
+        String BlackCastlingString = "";
+        switch (blackCastling) {
+            case KINGSIDE: BlackCastlingString = "k"; break;
+            case QUEENSIDE: BlackCastlingString = "q"; break;
+            case BOTH: BlackCastlingString = "kq"; break;
+        }
+
+        if(WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
+            result.append(" -");
+        } else {
+            result.append(" ");
+            result.append(WhiteCastlingString);
+            result.append(BlackCastlingString);
+        }
+        result.append(" -"); //todo possible en passant moves
+        result.append(" 0 "); //todo half-move clock (how many turns since last capture or pawn move 50 move rule)
+        result.append(turnNumber);
+        return result.toString();
+    }
 
     public Piece characterToPiece(char ch, int row, int col) {
         boolean isWhite = Character.isUpperCase(ch);
