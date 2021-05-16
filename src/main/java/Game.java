@@ -84,16 +84,10 @@ public class Game {
     public void getPossibleMovesForTurn() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                Piece t = board[i][j];
-                if(t != null) {
-                    Piece p = null;
-                    if(turn == PlayerTurn.WHITE && t.isWhite) {
-                        p = t;
-                    } else if (turn == PlayerTurn.BLACK && !t.isWhite) {
-                        p = t;
-                    }
-                    if(p != null) {
-                        LinkedList<int[]> m = new LinkedList<>(t.getPossibleMoves());
+                Piece piece = board[i][j];
+                if(piece != null) {
+                    if(turn == PlayerTurn.WHITE && piece.isWhite || turn == PlayerTurn.BLACK && !piece.isWhite) {
+                        LinkedList<int[]> m = new LinkedList<>(piece.getPossibleMoves());
                         if(m.size() > 0) {
                             m.addFirst(new int[]{i, j});
                             moves.add(m);
@@ -102,6 +96,15 @@ public class Game {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the piece in a square
+     * @param coords should contain indexes 0 and 1
+     * @return Piece or null
+     */
+    public Piece getSquare(int [] coords) {
+        return this.board[coords[0]][coords[1]];
     }
 
     public void setCastling(char [] castling) {
@@ -150,11 +153,19 @@ public class Game {
     }
 
     public void movePiece(int [] startingSquare, int [] destinationSquare) {
-        Piece selected = this.board[startingSquare[0]][startingSquare[1]];
-        if(selected == null) return; //todo sometimes selected is null shouldn't happen
-        selected.updatePosition(destinationSquare[0], destinationSquare[1]);
-        this.board[destinationSquare[0]][destinationSquare[1]] = selected;
-        this.board[startingSquare[0]][startingSquare[1]] = null;
+        int sRow = startingSquare[0];
+        int sCol = startingSquare[1];
+
+        int dRow = destinationSquare[0];
+        int dCol = destinationSquare[1];
+        Piece selected = this.board[sRow][sCol];
+        if(selected == null) {
+            System.out.println(this);
+            return; //todo sometimes selected is null shouldn't happen
+        }
+        selected.updatePosition(dRow, dCol);
+        this.board[dRow][dCol] = selected;
+        this.board[sRow][sCol] = null;
 
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;
