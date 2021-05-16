@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class King extends Piece {
     public King(int row, int col, boolean isWhite) {
@@ -11,9 +11,9 @@ public class King extends Piece {
     }
 
     @Override
-    public ArrayList<int[]> getPossibleMoves() {
+    public LinkedList<int[]> getPossibleMoves() {
 
-        ArrayList<int[]> moves = new ArrayList<>();
+        LinkedList<int[]> moves = new LinkedList<>();
 
 
         //KING MOVES UP
