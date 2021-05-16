@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Queen extends Piece{
     public Queen(int row, int col, boolean isWhite) {
@@ -10,9 +10,9 @@ public class Queen extends Piece{
         }
     }
 
-    public ArrayList<int[]> getPossibleMoves() {
+    public LinkedList<int[]> getPossibleMoves() {
 
-        ArrayList<int[]> moves = new ArrayList<>();
+        LinkedList<int[]> moves = new LinkedList<>();
         int destRow, destCol;
 
         //QUEEN MOVES UPWARDS

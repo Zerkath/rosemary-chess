@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Knight extends Piece{
 
@@ -11,9 +11,9 @@ public class Knight extends Piece{
         }
     }
 
-    public ArrayList<int[]> getPossibleMoves() {
+    public LinkedList<int[]> getPossibleMoves() {
 
-        ArrayList<int[]> moves = new ArrayList<>();
+        LinkedList<int[]> moves = new LinkedList<>();
         int destRow, destCol;
 
 
