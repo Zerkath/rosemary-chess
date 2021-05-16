@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
+
 public abstract class Piece {
     boolean isWhite;
     // boolean pinned;
@@ -13,7 +14,7 @@ public abstract class Piece {
         this.isWhite = isWhite;
     }
 
-    public abstract ArrayList<int[]> getPossibleMoves();
+    public abstract LinkedList<int[]> getPossibleMoves();
 
     /**
      * Checks if destination square is within bounds of the game board array

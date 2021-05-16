@@ -144,7 +144,7 @@ public class Game {
             return;
         }
         System.out.print(this.board[row][col].getClass() + "\n");
-        ArrayList<int[]> moves = this.board[row][col].getPossibleMoves();
+        LinkedList<int[]> moves = this.board[row][col].getPossibleMoves();
         int c = 1;
         for (int[] move : moves) {
             System.out.println("Move " + c + "\t" + move[0] + " " + move[1]);
