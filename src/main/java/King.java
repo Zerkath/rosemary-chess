@@ -56,7 +56,46 @@ public class King extends Piece {
             moves.add(new int[]{row - 1, col - 1});
         }
 
-
+        //castling
+        if(col == 4) { //only check if the king is in the original position
+            Piece [] backRow = game.board[row];
+            boolean qSide = backRow[0].fenSymbol == 'R' && backRow[1] == null && backRow[2] == null && backRow[3] == null;
+            boolean kSide = backRow[7].fenSymbol == 'R' && backRow[6] == null && backRow[5] == null;
+            if(isWhite && row == 7 && game.turn == Game.PlayerTurn.WHITE) {
+                switch (game.whiteCastling) {
+                    case BOTH: {
+                        if(qSide) moves.add(new int[]{row, 2 }); //queen side
+                        if(kSide) moves.add(new int[]{row, 6 }); //king side
+                        break;
+                    }
+                    case KINGSIDE: {
+                        if(kSide) moves.add(new int[]{row, 6});
+                        break;
+                    }
+                    case QUEENSIDE: {
+                        if(qSide) moves.add(new int[]{row, 2});
+                        break;
+                    }
+                }
+            }
+            if(!isWhite && row == 0 && game.turn == Game.PlayerTurn.BLACK) {
+                switch (game.blackCastling) {
+                    case BOTH: {
+                        if(qSide) moves.add(new int[]{row, 2 }); //queen side
+                        if(kSide) moves.add(new int[]{row, 6 }); //king side
+                        break;
+                    }
+                    case KINGSIDE: {
+                        if(kSide) moves.add(new int[]{row, 6});
+                        break;
+                    }
+                    case QUEENSIDE: {
+                        if(qSide) moves.add(new int[]{row, 2});
+                        break;
+                    }
+                }
+            }
+        }
         return moves;
     }
 }
