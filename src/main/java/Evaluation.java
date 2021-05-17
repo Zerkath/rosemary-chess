@@ -98,7 +98,10 @@ public class Evaluation {
 
                         Game task = new Game();
                         task.parseFen(fen);
-                        task.movePiece(selectedSquare, destination);
+                        boolean kingCapture = task.movePiece(selectedSquare, destination);
+                        if (kingCapture) {
+                            System.out.println("****" + parseCommand(new int[][]{selectedSquare, destination}));
+                        }
 
                         LinkedList<int[][]> list = new LinkedList<>();
 
@@ -115,7 +118,7 @@ public class Evaluation {
 
 
 
-        private char convertToRowChar(int i) {
+        private char convertColumnToChar(int i) {
             switch (i) {
                 case 0: return 'a';
                 case 1: return 'b';
@@ -129,7 +132,7 @@ public class Evaluation {
             return '0';
         }
 
-        private char convertColumnToChar(int i) {
+        private char convertToRowChar(int i) {
             switch (i) {
                 case 0: return '8';
                 case 1: return '7';
@@ -146,24 +149,24 @@ public class Evaluation {
         private String parseCommand(int [][] move) {
             int [] start = move[0];
             int [] end = move[1];
-            return String.valueOf(convertToRowChar(start[1])) +
-                    convertColumnToChar(start[0]) +
-                    convertToRowChar(end[1]) +
-                    convertColumnToChar(end[0]);
+            return String.valueOf(convertColumnToChar(start[1])) + convertToRowChar(start[0]) + convertColumnToChar(end[1]) + convertToRowChar(end[0]);
         }
 
         private void recursion(int depth, LinkedList<int[][]> movesToPosition) {
 
-
-
             Game local = new Game();
             local.parseFen(fen);
+            boolean kingCapture = false;
             for (int [][] move: movesToPosition) {
-                local.movePiece(move[0], move[1]);
+                kingCapture = local.movePiece(move[0], move[1]);
+                if (kingCapture && move[1][0] != 0) {
+                    kingCapture = false;
+                    //System.out.println("****" + parseCommand(new int[][]{move[0], move[1]}));
+                }
             }
             local.getPossibleMovesForTurn();
 
-            if(depth <= 0 || local.moves.isEmpty()) { //print variation
+            if(depth <= 0 || local.moves.isEmpty() || kingCapture) { //print variation
                 StringBuilder str = new StringBuilder();
                 Game print = new Game();
                 print.parseFen(fen);
@@ -172,7 +175,7 @@ public class Evaluation {
                     str.append(", ");
                     print.movePiece(move[0], move[1]);
                 }
-                System.out.println(str);
+                System.out.println(str + " eval " + calculateMaterial(print));
                 return;
             }
 

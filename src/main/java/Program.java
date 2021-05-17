@@ -5,7 +5,7 @@ public class Program {
         Game game = new Game();
         Evaluation eval = new Evaluation(16, 10);
 
-        game.parseFen("PPPPP1k1/P1PPP3/P1PPP3/P1PPP3/P2PP3/PN1PP3/P2PP3/P2P4 w - - 0 1");
+        game.parseFen("4b3/8/8/8/8/8/8/7B w - - 0 1");
         System.out.println(game.toFenString());
         game.printBoard();
         eval.assignNewTask(game);

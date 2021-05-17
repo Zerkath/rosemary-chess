@@ -23,6 +23,7 @@ public class Game {
         BLACK,
     }
 
+    int[][][] threats = new int[8][8][2];
     CastlingRights whiteCastling = CastlingRights.NONE;
     CastlingRights blackCastling = CastlingRights.NONE;
 
@@ -155,14 +156,21 @@ public class Game {
         }
     }
 
-    public void movePiece(int [] startingSquare, int [] destinationSquare) {
+    /**
+     * Moves piece from starting square to destination square, leaving starting square null
+     * @param startingSquare array where 0 is starting row and 1 is starting column
+     * @param destinationSquare array where 0 is destination row and 1 is destination column
+     * @return true if destination square is King
+     */
+    public boolean movePiece(int [] startingSquare, int [] destinationSquare) {
 
         int dRow = destinationSquare[0];
         int dCol = destinationSquare[1];
         Piece selected = getSquare(startingSquare);
-        if(selected == null) {
-            System.out.println("SAATANA :)" + Arrays.toString(startingSquare));
-            return; //todo sometimes selected is null shouldn't happen
+
+        Piece destination = this.board[dRow][dCol];
+        if(destination instanceof King) { //If move leads on top of king
+            return true;
         }
         selected.updatePosition(dRow, dCol);
         this.board[dRow][dCol] = selected;
@@ -174,6 +182,8 @@ public class Game {
         } else {
             this.turn = PlayerTurn.BLACK;
         }
+
+        return false;
     }
 
     public void printBoard() {
