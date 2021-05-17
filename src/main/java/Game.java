@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Stack;
 
 /**
  * Contains data pertaining to the current game
@@ -10,6 +7,7 @@ import java.util.Stack;
  * player turns
  */
 public class Game {
+    Utils utils = new Utils();
     Piece[][] board = new Piece[8][8];
     enum CastlingRights {
         QUEENSIDE,
@@ -23,13 +21,18 @@ public class Game {
         BLACK,
     }
 
-    int[][][] threats = new int[8][8][2];
+//    int[][][] threats = new int[8][8][2];
     CastlingRights whiteCastling = CastlingRights.NONE;
     CastlingRights blackCastling = CastlingRights.NONE;
 
     PlayerTurn turn;
 
     int turnNumber = 1;
+    int halfMove = 0;
+
+    //null if no enPassant this turn
+    //coordinate of possible en passant
+    int [] enPassant;
 
     LinkedList<LinkedList<int[]>> moves = new LinkedList<>();
 
@@ -42,7 +45,7 @@ public class Game {
         2 = castling rights
         3 = en passant move
         4 = half-move clock (how many turns since last capture or pawn move 50 move rule)
-        5 = fullmove number starts at 1 incremented after blacks move or at the start of white move
+        5 = full-move number starts at 1 incremented after blacks move or at the start of white move
         */
         String [] split = fen.split(" ");
 
@@ -57,6 +60,8 @@ public class Game {
         }
         setCastling(split[2].toCharArray()); //set castling rights
         turnNumber = Integer.parseInt(split[5]);
+
+        enPassant = utils.parseCoordinate(split[3]);
         
         // Add pieces to the board
         for (int i = 0; i < rows.length; i++) {
@@ -64,7 +69,7 @@ public class Game {
         }
         for (Piece[] row : board) {
             for (Piece piece : row) {
-                if(piece != null) piece.gameBegins(this);
+                if(piece != null) piece.setGameState(this);
             }
         }
     }
@@ -79,6 +84,7 @@ public class Game {
         this.blackCastling = game.blackCastling;
         this.moves = game.moves;
         this.turnNumber = game.turnNumber;
+        this.halfMove = game.halfMove;
     }
 
     public void getPossibleMovesForTurn() {
@@ -164,13 +170,47 @@ public class Game {
      */
     public boolean movePiece(int [] startingSquare, int [] destinationSquare) {
 
+        enPassant = null;
         int dRow = destinationSquare[0];
         int dCol = destinationSquare[1];
         Piece selected = getSquare(startingSquare);
+        if(selected instanceof Pawn) {
+            halfMove = 0;
+        }
+
+        //todo reset half move on piece capture increment on non capture
 
         Piece destination = this.board[dRow][dCol];
-        if(destination instanceof King) { //If move leads on top of king
-            return true;
+        if(destination instanceof King) {
+            return true; //todo end game
+        }
+        if(selected instanceof Pawn && startingSquare[0] - dRow == 2 || startingSquare[0] - dRow == -2) { //en passant
+            boolean white = selected.isWhite;
+            Piece right = null;
+            Piece left = null;
+            if(dCol == 0) right = board[dRow][dCol+1];
+            if(dCol == 7) left  = board[dRow][dCol-1];
+            if(dCol > 0 && dCol < 7) {
+                right = board[dRow][dCol+1];
+                left  = board[dRow][dCol-1];
+            }
+            if(right instanceof Pawn) {
+                if(white && !right.isWhite) {
+                    enPassant = new int[]{dRow-1, dCol};
+                }
+                if(!white && right.isWhite) {
+                    enPassant = new int[]{dRow+1, dCol};
+                }
+            }
+
+            if(left instanceof Pawn) {
+                if(white && !left.isWhite) {
+                    enPassant = new int[]{dRow-1, dCol};
+                }
+                if(!white && left.isWhite) {
+                    enPassant = new int[]{dRow+1, dCol};
+                }
+            }
         }
         selected.updatePosition(dRow, dCol);
         this.board[dRow][dCol] = selected;
@@ -243,7 +283,6 @@ public class Game {
             }
             if(empty != 0) {
                 result.append(empty);
-                empty = 0;
             }
             if(i != 7) result.append("/");
         }
@@ -272,7 +311,12 @@ public class Game {
             result.append(WhiteCastlingString);
             result.append(BlackCastlingString);
         }
-        result.append(" -"); //todo possible en passant moves
+        if(enPassant != null) {
+            result.append(utils.parseCoordinate(enPassant));
+        } else {
+            result.append(" -");
+        }
+
         result.append(" 0 "); //todo half-move clock (how many turns since last capture or pawn move 50 move rule)
         result.append(turnNumber);
         return result.toString();
