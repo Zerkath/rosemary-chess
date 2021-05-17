@@ -1,17 +1,17 @@
 public class Utils {
-    public char convertColumnToChar(int i) {
-        return Character.forDigit(i + 'a', 10);
+    public char toColumnCharacter(int i) {
+        return (char)(i + 'a');
     }
 
-    public int convertCharToColumn(char c) {
+    public int toColumnNumber(char c) {
         return c - 'a';
     }
 
-    public char convertToRowChar(int i) {
-        return Character.forDigit(i+1, 10);
+    public char toRowNumberChar(int i) {
+        return Character.forDigit(8-i, 10);
     }
 
-    public int convertCharToRow(char c) {
+    public int toRowNumber(char c) {
         return 8 - Integer.parseInt(String.valueOf(c));
     }
 
@@ -19,11 +19,11 @@ public class Utils {
     public int[] parseCoordinate(String str) {
         if(str.equals("-")) return null;
         char[] c = str.toCharArray();
-        return new int[]{convertCharToRow(c[1]), convertCharToColumn(c[0])};
+        return new int[]{toRowNumber(c[1]), toColumnNumber(c[0])};
     }
 
     public String parseCoordinate(int[] coords) {
-        return String.valueOf(convertColumnToChar(coords[1])) + convertToRowChar(coords[0]);
+        return String.valueOf(toColumnCharacter(coords[1])) + toRowNumberChar(coords[0]);
     }
 
     public String parseCommand(int[][] move) {
