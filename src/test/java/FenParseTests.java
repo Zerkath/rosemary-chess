@@ -98,6 +98,7 @@ public class FenParseTests {
         Assertions.assertNotNull(game.enPassant);
         Assertions.assertEquals(2, game.enPassant[0]); //row
         Assertions.assertEquals(1, game.enPassant[1]); //col
+        Assertions.assertEquals(fenString, game.toFenString());
     }
     @Test
     void enPassantTwo() {
@@ -106,5 +107,6 @@ public class FenParseTests {
         Assertions.assertNotNull(game.enPassant);
         Assertions.assertEquals(5, game.enPassant[0]); //row
         Assertions.assertEquals(2, game.enPassant[1]); //col
+        Assertions.assertEquals(fenString, game.toFenString());
     }
 }
