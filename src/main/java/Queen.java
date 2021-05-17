@@ -82,6 +82,7 @@ public class Queen extends Piece {
         LinkedList<int[]> moves = new LinkedList<>();
         int destRow, destCol;
 
+        //todo cleanup
         //Rook moves to left
         for(int i = 1; col - i >= 0; i++) { //Runs as long as destination is within board limits
             destCol = col - i;

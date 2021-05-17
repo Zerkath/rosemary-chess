@@ -90,4 +90,21 @@ public class FenParseTests {
         game.parseFen(fenString);
         Assertions.assertEquals(fenString, game.toFenString());
     }
+
+    @Test
+    void enPassant() {
+        String fenString = "7k/2pppppp/p7/Pp6/8/8/1PPPPPPP/7K w - b6 0 3";
+        game.parseFen(fenString);
+        Assertions.assertNotNull(game.enPassant);
+        Assertions.assertEquals(2, game.enPassant[0]); //row
+        Assertions.assertEquals(1, game.enPassant[1]); //col
+    }
+    @Test
+    void enPassantTwo() {
+        String fenString = "7k/p1pppppp/8/P7/1pP5/8/1P1PPPPP/7K b - c3 0 3";
+        game.parseFen(fenString);
+        Assertions.assertNotNull(game.enPassant);
+        Assertions.assertEquals(5, game.enPassant[0]); //row
+        Assertions.assertEquals(2, game.enPassant[1]); //col
+    }
 }

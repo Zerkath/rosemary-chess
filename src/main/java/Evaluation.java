@@ -22,6 +22,8 @@ public class Evaluation {
 
     int depth = 1;
 
+    Utils utils = new Utils();
+
     boolean depthHasMoreWork = true;
     ThreadGroup tg = new ThreadGroup("Evaluation_Threads");
 
@@ -100,7 +102,7 @@ public class Evaluation {
                         task.parseFen(fen);
                         boolean kingCapture = task.movePiece(selectedSquare, destination);
                         if (kingCapture) {
-                            System.out.println("****" + parseCommand(new int[][]{selectedSquare, destination}));
+                            System.out.println("****" + utils.parseCommand(new int[][]{selectedSquare, destination}));
                         }
 
                         LinkedList<int[][]> list = new LinkedList<>();
@@ -114,42 +116,6 @@ public class Evaluation {
                     }
                 }
             }
-        }
-
-
-
-        private char convertColumnToChar(int i) {
-            switch (i) {
-                case 0: return 'a';
-                case 1: return 'b';
-                case 2: return 'c';
-                case 3: return 'd';
-                case 4: return 'e';
-                case 5: return 'f';
-                case 6: return 'g';
-                case 7: return 'h';
-            }
-            return '0';
-        }
-
-        private char convertToRowChar(int i) {
-            switch (i) {
-                case 0: return '8';
-                case 1: return '7';
-                case 2: return '6';
-                case 3: return '5';
-                case 4: return '4';
-                case 5: return '3';
-                case 6: return '2';
-                case 7: return '1';
-            }
-            return '0';
-        }
-
-        private String parseCommand(int [][] move) {
-            int [] start = move[0];
-            int [] end = move[1];
-            return String.valueOf(convertColumnToChar(start[1])) + convertToRowChar(start[0]) + convertColumnToChar(end[1]) + convertToRowChar(end[0]);
         }
 
         private void recursion(int depth, LinkedList<int[][]> movesToPosition) {
@@ -171,7 +137,7 @@ public class Evaluation {
                 Game print = new Game();
                 print.parseFen(fen);
                 for (int [][] move: movesToPosition) {
-                    str.append(parseCommand(move));
+                    str.append(utils.parseCommand(move));
                     str.append(", ");
                     print.movePiece(move[0], move[1]);
                 }
