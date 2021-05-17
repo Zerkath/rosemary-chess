@@ -136,11 +136,11 @@ public class Game {
         int dRow = destinationSquare[0];
         int dCol = destinationSquare[1];
         Piece selected = getSquare(startingSquare);
-        if(selected instanceof Pawn) {
+        if(selected instanceof Pawn && board[dRow][dCol] != null) {
             halfMove = 0;
+        } else if(turn == PlayerTurn.BLACK) {
+            halfMove++;
         }
-
-        //todo reset half move on piece capture increment on non capture
 
         Piece destination = this.board[dRow][dCol];
         if(destination instanceof King) {
@@ -318,7 +318,7 @@ public class Game {
             result.append("-");
         }
 
-        result.append(" 0 "); //todo half-move clock (how many turns since last capture or pawn move 50 move rule)
+        result.append(" ").append(halfMove).append(" ");
         result.append(turnNumber);
         return result.toString();
     }
