@@ -57,7 +57,7 @@ public class King extends Piece {
         }
 
         //castling
-        if(col == 4) { //only check if the king is in the original position
+        if(col == 4) { //only check if the king is in the original position and hasn't moved
             Piece [] backRow = game.board[row];
             boolean qSide = backRow[0].fenSymbol == 'R' && backRow[1] == null && backRow[2] == null && backRow[3] == null;
             boolean kSide = backRow[7].fenSymbol == 'R' && backRow[6] == null && backRow[5] == null;
