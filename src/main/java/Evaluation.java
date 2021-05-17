@@ -12,16 +12,11 @@ public class Evaluation {
     final int eKing = 10000;
 
 
-    int threadCount = 1;
-
+    int threadCount;
     Game task;
-
     String fen;
-
     int material = 0; //equal
-
     int depth = 1;
-
     Utils utils = new Utils();
 
     boolean depthHasMoreWork = true;
@@ -59,6 +54,14 @@ public class Evaluation {
         }
     }
 
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    public void changeThreadCount(int threads) {
+        this.threadCount = threads;
+    }
+
     public int calculateMaterial(Game curr) {
         int result = 0;
         int [] arr = curr.countPieces();
@@ -77,9 +80,9 @@ public class Evaluation {
         return result;
     }
 
-    public int[] endEvaluation() {
+    public int[][] endEvaluation() {
         tg.interrupt();
-        return new int[2];
+        return new int[][]{{6, 3}, {4, 3}}; //todo just a placeholder get best move (this is just d2 to d4)
     }
 
     class Worker extends Thread {
@@ -101,9 +104,9 @@ public class Evaluation {
                         Game task = new Game();
                         task.parseFen(fen);
                         boolean kingCapture = task.movePiece(selectedSquare, destination);
-                        if (kingCapture) {
-                            System.out.println("****" + utils.parseCommand(new int[][]{selectedSquare, destination}));
-                        }
+//                        if (kingCapture) {
+//                            System.out.println("****" + utils.parseCommand(new int[][]{selectedSquare, destination}));
+//                        }
 
                         LinkedList<int[][]> list = new LinkedList<>();
 
@@ -127,12 +130,11 @@ public class Evaluation {
                 kingCapture = local.movePiece(move[0], move[1]);
                 if (kingCapture && move[1][0] != 0) {
                     kingCapture = false;
-                    //System.out.println("****" + parseCommand(new int[][]{move[0], move[1]}));
                 }
             }
             local.getPossibleMovesForTurn();
 
-            if(depth <= 0 || local.moves.isEmpty() || kingCapture) { //print variation
+            if(depth <= 0 || local.moves.isEmpty() || kingCapture) {
                 StringBuilder str = new StringBuilder();
                 Game print = new Game();
                 print.parseFen(fen);
@@ -141,18 +143,18 @@ public class Evaluation {
                     str.append(", ");
                     print.movePiece(move[0], move[1]);
                 }
-                System.out.println(str + " eval " + calculateMaterial(print));
+//                System.out.println(str + " eval " + calculateMaterial(print));
                 return;
             }
 
             int r_depth = depth-1;
 
-            while(!local.moves.isEmpty()) {
+            while(!local.moves.isEmpty() && !this.isInterrupted()) {
 
                 LinkedList<int []> subMoves = local.moves.pop();
                 int [] selectedSquare = subMoves.pop();
 
-                while(!subMoves.isEmpty()) {
+                while(!subMoves.isEmpty() && !this.isInterrupted()) {
 
                     int [] destination = subMoves.pop();
                     int [][] move = new int[2][];
