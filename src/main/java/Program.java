@@ -1,14 +1,62 @@
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+
 public class Program {
     public static void main(String[] args) {
-//        Scanner scn = new Scanner(System.in);
-        Game game = new Game();
-        Evaluation eval = new Evaluation(16, 0);
+        (new Program()).process();
 
-        game.parseFen("8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1");
-        System.out.println(game.toFenString());
-        game.printBoard();
-        eval.assignNewTask(game);
-        eval.startEvaluation();
+    }
+    public void process() {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+        InputHandler handler = new InputHandler(queue);
+        handler.start();
+
+        while(handler.isAlive()) {
+
+            try {
+                while (in.ready()) {
+                    in.read();
+                }
+            } catch (Exception ignored) {}
+
+            String input = null;
+            try {
+                input = in.readLine();
+            } catch (Exception ignored) {}
+            if(input != null) queue.offer(input);
+        }
+
+    }
+}
+
+class InputHandler extends Thread {
+
+    BlockingQueue<String> queue;
+    UCI_Controller uci = new UCI_Controller();
+    boolean active = true;
+    public InputHandler(BlockingQueue<String> queue) {
+        this.queue = queue;
+        this.setDaemon(true);
+    }
+
+    public void run() {
+
+        while(active) {
+            try {
+                Thread.sleep(1);
+            } catch (Exception ignored) {}
+
+
+            String input = null;
+            try {
+                input = queue.poll(5000, TimeUnit.MILLISECONDS);
+
+                if(input != null) {
+                    uci.handleMessage(input);
+                }
+            } catch (Exception ignored) {}
+        }
     }
 }
