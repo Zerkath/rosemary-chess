@@ -6,9 +6,12 @@ public class UCI_Controller {
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     public Evaluation eval = new Evaluation(threadCount, maxDepth);
     private final Utils utils = new Utils();
+    private String name = "Rosemary 1";
+    private String authors = "Rosemary devs";
 
     public UCI_Controller() {
         game.parseFen(defaultBoard);
+        System.out.print(name + " by " + authors + "\n");
     }
 
     public void setToDefault() {
@@ -24,6 +27,15 @@ public class UCI_Controller {
         if(split[0].equals("position")) {
             if(split[1].equals("fen")) {
                 setFen(split[2]);
+                return;
+            }
+
+            if(split[1].equals("startpos")) {
+                setFen(defaultBoard);
+                for (int i = 3; i < split.length; i++) {
+                    int[][] arr = utils.parseCommand(split[i]);
+                    game.movePiece(arr[0], arr[1]);
+                }
                 return;
             }
         }
@@ -58,15 +70,14 @@ public class UCI_Controller {
 
     public void setToUCI() {
         uci_mode = true;
-        System.out.println("id name Rosemary 1");
-        System.out.println("id author Rosemary Devs");
-        System.out.println();
-        System.out.println("option name Threads type spin default 1 min 1 max 250");
-        System.out.println("uciok");
+        System.out.print("id name Rosemary 1\n");
+        System.out.print("id author Rosemary Devs\n\n");
+        System.out.print("option name Threads type spin default 1 min 1 max 250\n");
+        System.out.print("uciok\n");
     }
 
     public void readyResponse() {
-        System.out.println("readyok");
+        System.out.print("readyok\n");
     }
 
     public void startEval() {
@@ -81,6 +92,7 @@ public class UCI_Controller {
 
     public void endEval() {
         int[][] bestMove = eval.endEvaluation();
-        System.out.println("bestmove " + utils.parseCommand(bestMove));
+        System.out.print("bestmove " + utils.parseCommand(bestMove));
+        System.out.print('\n');
     }
 }

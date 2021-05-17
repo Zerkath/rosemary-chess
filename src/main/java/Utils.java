@@ -29,4 +29,8 @@ public class Utils {
     public String parseCommand(int[][] move) {
         return parseCoordinate(move[0]) + parseCoordinate(move[1]);
     }
+
+    public int[][] parseCommand(String command) {
+        return new int[][]{parseCoordinate(command.substring(0, 2)), parseCoordinate(command.substring(2, 4))};
+    }
 }
