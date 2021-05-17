@@ -56,6 +56,7 @@ public class King extends Piece {
             moves.add(new int[]{row - 1, col - 1});
         }
 
+
         return moves;
     }
 }
