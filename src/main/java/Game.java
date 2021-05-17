@@ -36,44 +36,6 @@ public class Game {
 
     LinkedList<LinkedList<int[]>> moves = new LinkedList<>();
 
-    public void parseFen(String fen) {
-
-        /*
-        split data indexes
-        0 = fen board data
-        1 = white or black turn
-        2 = castling rights
-        3 = en passant move
-        4 = half-move clock (how many turns since last capture or pawn move 50 move rule)
-        5 = full-move number starts at 1 incremented after blacks move or at the start of white move
-        */
-        String [] split = fen.split(" ");
-
-        if(split.length != 6) return; //check if fen is somewhat valid TODO errors
-        String [] rows = split[0].split("/");
-        if(rows.length != 8) return; //another validity check
-
-        if(split[1].equals("w")) {
-            turn = PlayerTurn.WHITE;
-        } else if (split[1].equals("b")) {
-            turn = PlayerTurn.BLACK;
-        }
-        setCastling(split[2].toCharArray()); //set castling rights
-        turnNumber = Integer.parseInt(split[5]);
-
-        enPassant = utils.parseCoordinate(split[3]);
-        
-        // Add pieces to the board
-        for (int i = 0; i < rows.length; i++) {
-            addRow(rows[i], i);
-        }
-        for (Piece[] row : board) {
-            for (Piece piece : row) {
-                if(piece != null) piece.setGameState(this);
-            }
-        }
-    }
-
     public Game() {
     }
 
@@ -265,6 +227,44 @@ public class Game {
         }
     }
 
+    public void parseFen(String fen) {
+
+        /*
+        split data indexes
+        0 = fen board data
+        1 = white or black turn
+        2 = castling rights
+        3 = en passant move
+        4 = half-move clock (how many turns since last capture or pawn move 50 move rule)
+        5 = full-move number starts at 1 incremented after blacks move or at the start of white move
+        */
+        String [] split = fen.split(" ");
+
+        if(split.length != 6) return; //check if fen is somewhat valid TODO errors
+        String [] rows = split[0].split("/");
+        if(rows.length != 8) return; //another validity check
+
+        if(split[1].equals("w")) {
+            turn = PlayerTurn.WHITE;
+        } else if (split[1].equals("b")) {
+            turn = PlayerTurn.BLACK;
+        }
+        setCastling(split[2].toCharArray()); //set castling rights
+        turnNumber = Integer.parseInt(split[5]);
+
+        enPassant = utils.parseCoordinate(split[3]);
+
+        // Add pieces to the board
+        for (int i = 0; i < rows.length; i++) {
+            addRow(rows[i], i);
+        }
+        for (Piece[] row : board) {
+            for (Piece piece : row) {
+                if(piece != null) piece.setGameState(this);
+            }
+        }
+    }
+
     public String toFenString() {
         StringBuilder result = new StringBuilder();
 
@@ -305,16 +305,17 @@ public class Game {
         }
 
         if(WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
-            result.append(" -");
+            result.append(" - ");
         } else {
             result.append(" ");
             result.append(WhiteCastlingString);
             result.append(BlackCastlingString);
+            result.append(" ");
         }
         if(enPassant != null) {
             result.append(utils.parseCoordinate(enPassant));
         } else {
-            result.append(" -");
+            result.append("-");
         }
 
         result.append(" 0 "); //todo half-move clock (how many turns since last capture or pawn move 50 move rule)
