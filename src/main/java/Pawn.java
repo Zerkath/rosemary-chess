@@ -28,7 +28,6 @@ public class Pawn extends Piece {
             enPassantRow = 3;
             if(nextRow == 0) {
                 promotable = true;
-                return moves;
             }
         } else {
             nextRow += 1;
@@ -36,7 +35,6 @@ public class Pawn extends Piece {
             enPassantRow = 4;
             if(nextRow == 7) {
                 promotable = true;
-                return moves;
             }
         }
 
