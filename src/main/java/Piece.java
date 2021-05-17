@@ -21,7 +21,7 @@ public abstract class Piece {
      * Since it's 8x8, it checks both row and col values if it's between indexes 0 and 7
      * @param row destination row
      * @param col destination column
-     * @return
+     * @return list of moves int [] where index 0 is row and index 1 is column
      */
     boolean isDestinationSquareOnBoard(int row, int col) {
         return row >= 0 && row <= 7 && col >= 0 && col <= 7;
@@ -31,7 +31,7 @@ public abstract class Piece {
      * Checks if destination square is empty or the piece is of opposing color
      * @param row destination row
      * @param col destination column
-     * @return
+     * @return true if the square is empty or if the square is opposing color
      */
     boolean isDestinationPieceValid(int row, int col) {
         if(game.board[row][col] == null) {
@@ -67,7 +67,7 @@ public abstract class Piece {
         this.col = col;
     }
 
-    public void gameBegins(Game game) {
+    public void setGameState(Game game) {
         this.game = game;
     }
 
