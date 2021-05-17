@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -131,14 +132,13 @@ public class Game {
      * @return true if destination square is King
      */
     public boolean movePiece(int [] startingSquare, int [] destinationSquare) {
-
         enPassant = null;
         int dRow = destinationSquare[0];
         int dCol = destinationSquare[1];
         Piece selected = getSquare(startingSquare);
-        if(selected instanceof Pawn && board[dRow][dCol] != null) {
+        if(selected instanceof Pawn || getSquare(destinationSquare) != null) {
             halfMove = 0;
-        } else if(turn == PlayerTurn.BLACK) {
+        } else {
             halfMove++;
         }
 
@@ -146,7 +146,9 @@ public class Game {
         if(destination instanceof King) {
             return true; //todo end game
         }
-        if(selected instanceof Pawn && startingSquare[0] - dRow == 2 || startingSquare[0] - dRow == -2) { //en passant
+
+        //En passant
+        if(selected instanceof Pawn && startingSquare[0] - dRow == 2 || startingSquare[0] - dRow == -2) {
             boolean white = selected.isWhite;
             Piece right = null;
             Piece left = null;
@@ -174,8 +176,35 @@ public class Game {
                 }
             }
         }
-        selected.updatePosition(dRow, dCol);
-        this.board[dRow][dCol] = selected;
+
+        //Castling
+        if(selected instanceof King && (dCol == 2 || dCol == 6)) {
+
+            if(selected.isWhite) {
+                this.whiteCastling = CastlingRights.NONE;
+            } else {
+                this.blackCastling = CastlingRights.NONE;
+            }
+
+            if(dCol == 2) {
+                Piece rook = board[dRow][0];
+                rook.updatePosition(dRow, 3);
+                board[dRow][3] = rook;
+                board[dRow][0] = null;
+                selected.updatePosition(dRow, dCol);
+                board[dRow][dCol] = selected;
+            } else {
+                Piece rook = board[dRow][7];
+                rook.updatePosition(dRow, 4);
+                board[dRow][dCol] = selected;
+                selected.updatePosition(dRow, dCol);
+                board[dRow][5] = rook;
+                board[dRow][7] = null;
+            }
+        } else {
+            selected.updatePosition(dRow, dCol);
+            this.board[dRow][dCol] = selected;
+        }
         removePiece(startingSquare);
 
         if(this.turn == PlayerTurn.BLACK) {
