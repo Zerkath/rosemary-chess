@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -179,7 +178,6 @@ public class Game {
 
         //Castling
         if(selected instanceof King && (dCol == 2 || dCol == 6)) {
-
             if(selected.isWhite) {
                 this.whiteCastling = CastlingRights.NONE;
             } else {
@@ -205,8 +203,16 @@ public class Game {
             selected.updatePosition(dRow, dCol);
             this.board[dRow][dCol] = selected;
         }
-        removePiece(startingSquare);
 
+        if(selected instanceof King) {
+            if(selected.isWhite) {
+                this.whiteCastling = CastlingRights.NONE;
+            } else {
+                this.blackCastling = CastlingRights.NONE;
+            }
+        }
+
+        removePiece(startingSquare);
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;
             this.turn = PlayerTurn.WHITE;
