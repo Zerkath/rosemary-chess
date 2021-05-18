@@ -53,6 +53,10 @@ public class UCI_Controller {
         }
         if(split[0].equals("setoption")) {
             if(split[2].equals("Threads")) {
+                eval.threadCount = Integer.parseInt(split[4]);
+                return;
+            }
+            if(split[2].equals("Depth")) {
                 eval.setDepth(Integer.parseInt(split[4]));
                 return;
             }
