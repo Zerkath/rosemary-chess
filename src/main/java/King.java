@@ -59,8 +59,17 @@ public class King extends Piece {
         //castling
         if(col == 4) { //only check if the king is in the original position and hasn't moved
             Piece [] backRow = game.board[row];
-            boolean qSide = backRow[0].fenSymbol == 'R' && backRow[1] == null && backRow[2] == null && backRow[3] == null;
-            boolean kSide = backRow[7].fenSymbol == 'R' && backRow[6] == null && backRow[5] == null;
+
+            boolean qSide = backRow[0] instanceof Rook &&
+                    ((this.isWhite && backRow[0].isWhite) || (!this.isWhite && !backRow[0].isWhite)) &&
+                    backRow[1] == null &&
+                    backRow[2] == null &&
+                    backRow[3] == null;
+
+            boolean kSide = backRow[7] instanceof Rook && ((this.isWhite && backRow[7].isWhite) || (!this.isWhite && !backRow[7].isWhite)) &&
+                    backRow[6] == null &&
+                    backRow[5] == null;
+
             if(isWhite && row == 7 && game.turn == Game.PlayerTurn.WHITE) {
                 switch (game.whiteCastling) {
                     case BOTH: {

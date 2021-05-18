@@ -39,15 +39,30 @@ public class Game {
     public Game() {
     }
 
-    public Game(Game game) {
-        this.board = game.board;
-        this.turn = game.turn;
-        this.whiteCastling = game.whiteCastling;
-        this.blackCastling = game.blackCastling;
-        this.moves = game.moves;
-        this.turnNumber = game.turnNumber;
-        this.halfMove = game.halfMove;
-    }
+//    public Piece[][] copyBoard(Game game) {
+//        Piece [][] result = new Piece[8][8];
+//
+//        for (int i = 0; i < game.board.length; i++) {
+//            for (int j = 0; j < game.board.length; j++) {
+//                if(game.board[i][j] != null) {
+//                    result[i][j] = game.board[i][j];
+//                    result[i][j].setGameState(game);
+//                }
+//            }
+//        }
+//        return result;
+//    }
+//
+//    public Game(Game game) {
+//        this.board = game.board;
+//        this.turn = game.turn;
+//        this.whiteCastling = game.whiteCastling;
+//        this.blackCastling = game.blackCastling;
+//        this.moves = game.moves;
+//        this.turnNumber = game.turnNumber;
+//        this.halfMove = game.halfMove;
+//        this.board = copyBoard(game);
+//    }
 
     public void getPossibleMovesForTurn() {
         for (int i = 0; i < board.length; i++) {
@@ -184,21 +199,20 @@ public class Game {
                 this.blackCastling = CastlingRights.NONE;
             }
 
+            Piece rook;
             if(dCol == 2) {
-                Piece rook = board[dRow][0];
+                rook = board[dRow][0];
                 rook.updatePosition(dRow, 3);
                 board[dRow][3] = rook;
                 board[dRow][0] = null;
-                selected.updatePosition(dRow, dCol);
-                board[dRow][dCol] = selected;
             } else {
-                Piece rook = board[dRow][7];
-                rook.updatePosition(dRow, 4);
-                board[dRow][dCol] = selected;
-                selected.updatePosition(dRow, dCol);
+                rook = board[dRow][7];
+                rook.updatePosition(dRow, 5);
                 board[dRow][5] = rook;
                 board[dRow][7] = null;
             }
+            board[dRow][dCol] = selected;
+            selected.updatePosition(dRow, dCol);
         } else {
             selected.updatePosition(dRow, dCol);
             this.board[dRow][dCol] = selected;
