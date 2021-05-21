@@ -45,7 +45,7 @@ public class Pawn extends Piece {
         //forward
         if(isDestinationEmpty(nextRow, col)) {
             moves.add(new int[]{nextRow, col});
-            if(this.row == 6 && isDestinationEmpty(doubleJump, col)) { //if at starting square and nothing in front
+            if((isWhite && row == 6) || (!isWhite && row == 1) && isDestinationEmpty(doubleJump, col)) { //if at starting square and nothing in front
                 moves.add(new int[]{doubleJump, col}); //can jump 2 squares
             }
         }

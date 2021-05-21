@@ -8,18 +8,18 @@ public class MoveGenerationTests {
     void whiteStartMoves() {
         game.parseFen(d_fen);
         game.getPossibleMovesForTurn();
-        Assertions.assertEquals(10, game.moves.size()); //currently lists the pieces that have moves
         game.printBoard();
+        Assertions.assertEquals(20, game.moves.size());
     }
 
     @Test
     void blackStartMoves() {
         game.parseFen(d_fen);
         int [][] move = utils.parseCommand("d2d4");
-        game.movePiece(move[0], move[1]);
+        game.movePiece(move);
         game.getPossibleMovesForTurn();
-        Assertions.assertEquals(10, game.moves.size());
         game.printBoard();
+        Assertions.assertEquals(20, game.moves.size());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class MoveGenerationTests {
         move = utils.parseCommand("e7e5");
         game.movePiece(move[0], move[1]);
         game.getPossibleMovesForTurn();
-        Assertions.assertEquals(13, game.moves.size());
         game.printBoard();
+        Assertions.assertEquals(29, game.moves.size());
     }
 }

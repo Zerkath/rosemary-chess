@@ -34,46 +34,27 @@ public class Game {
     //coordinate of possible en passant
     int [] enPassant;
 
-    LinkedList<LinkedList<int[]>> moves = new LinkedList<>();
+    //list of moves for the turn first index is start coordinate, second is the destination
+    LinkedList<LinkedList<int[][]>> moves = new LinkedList<>();
+    LinkedList<LinkedList<int[][]>> nextMoves = new LinkedList<>();
+    String debugString = "";
 
     public Game() {
     }
 
-//    public Piece[][] copyBoard(Game game) {
-//        Piece [][] result = new Piece[8][8];
-//
-//        for (int i = 0; i < game.board.length; i++) {
-//            for (int j = 0; j < game.board.length; j++) {
-//                if(game.board[i][j] != null) {
-//                    result[i][j] = game.board[i][j];
-//                    result[i][j].setGameState(game);
-//                }
-//            }
-//        }
-//        return result;
-//    }
-//
-//    public Game(Game game) {
-//        this.board = game.board;
-//        this.turn = game.turn;
-//        this.whiteCastling = game.whiteCastling;
-//        this.blackCastling = game.blackCastling;
-//        this.moves = game.moves;
-//        this.turnNumber = game.turnNumber;
-//        this.halfMove = game.halfMove;
-//        this.board = copyBoard(game);
-//    }
-
     public void getPossibleMovesForTurn() {
+        moves.clear();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 Piece piece = board[i][j];
                 if(piece != null) {
                     if(turn == PlayerTurn.WHITE && piece.isWhite || turn == PlayerTurn.BLACK && !piece.isWhite) {
                         LinkedList<int[]> m = new LinkedList<>(piece.getPossibleMoves());
-                        if(m.size() > 0) {
-                            m.addFirst(new int[]{i, j});
-                            moves.add(m);
+                        int [] startCoord = new int[]{i, j};
+                        for (int [] move: m) {
+                            LinkedList<int[][]> startMove = new LinkedList<>();
+                            startMove.add(new int[][]{startCoord, move});
+                            moves.add(startMove);
                         }
                     }
                 }
@@ -146,6 +127,7 @@ public class Game {
      * @return true if destination square is King
      */
     public boolean movePiece(int [] startingSquare, int [] destinationSquare) {
+        debugString = getVisualBoardString(); //todo delete when not needed
         enPassant = null;
         int dRow = destinationSquare[0];
         int dCol = destinationSquare[1];
@@ -237,23 +219,35 @@ public class Game {
         return false;
     }
 
+    public boolean movePiece(int[][] move) {
+        return movePiece(move[0], move[1]);
+    }
+
     public void printBoard() {
-        System.out.println("  0 1 2 3 4 5 6 7");
+        System.out.println(getVisualBoardString());
+    }
+
+    public String getVisualBoardString() {
+        StringBuilder str = new StringBuilder();
+        str.append("  0 1 2 3 4 5 6 7\n");
         for(int i = 0; i < board.length; i++) {
-            System.out.print(i + " ");
+            str.append(i).append(" ");
             for(int j = 0; j < board[i].length; j++) {
                 Piece piece = board[i][j];
                 if(piece != null) {
-                    System.out.print(piece.getFenSymbol() + " ");
+                    str.append(piece.getFenSymbol());
                 } else {
-                    System.out.print("  ");
+                    str.append(" ");
                 }
+                str.append(" ");
             }
-            System.out.println();
+            str.append("\n");
         }
-        System.out.println();
+        str.append("\n");
 
+        return str.toString();
     }
+
 
     /**
      * used to add rows of FEN data to the board state
