@@ -1,13 +1,13 @@
 public class UCI_Controller {
     public Game game = new Game();
     public boolean uci_mode;
-    public int threadCount = 1;
-    public int maxDepth = 2;
+    public int threadCount = 2; //defaults
+    public int depth = 5;
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    public Evaluation eval = new Evaluation(threadCount, maxDepth);
+    public Evaluation eval = new Evaluation(threadCount, 5);
     private final Utils utils = new Utils();
-    private String name = "Rosemary 1";
-    private String authors = "Rosemary devs";
+    private final String name = "Rosemary 1";
+    private final String authors = "Rosemary devs";
 
     public UCI_Controller() {
         game.parseFen(defaultBoard);
@@ -53,11 +53,11 @@ public class UCI_Controller {
         }
         if(split[0].equals("setoption")) {
             if(split[2].equals("Threads")) {
-                eval.threadCount = Integer.parseInt(split[4]);
+                this.threadCount = Integer.parseInt(split[4]);
                 return;
             }
             if(split[2].equals("Depth")) {
-                eval.setDepth(Integer.parseInt(split[4]));
+                this.depth = Integer.parseInt(split[4]);
                 return;
             }
         }
@@ -76,7 +76,8 @@ public class UCI_Controller {
         uci_mode = true;
         System.out.print("id name Rosemary 1\n");
         System.out.print("id author Rosemary Devs\n\n");
-        System.out.print("option name Threads type spin default 1 min 1 max 250\n");
+        System.out.print("option name Threads type spin default 2 min 1 max 250\n");
+        System.out.print("option name Depth type spin default 5 min 1 max 99\n");
         System.out.print("uciok\n");
     }
 
@@ -85,12 +86,12 @@ public class UCI_Controller {
     }
 
     public void startEval() {
-        startEval(maxDepth);
+        startEval(this.depth);
     }
 
     public void startEval(int depth) {
-        maxDepth = depth;
         eval.assignNewTask(game);
+        eval.setDepth(depth);
         eval.startEvaluation();
     }
 

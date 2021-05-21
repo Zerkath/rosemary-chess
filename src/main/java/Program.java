@@ -44,11 +44,6 @@ class InputHandler extends Thread {
     public void run() {
 
         while(active) {
-            try {
-                Thread.sleep(1);
-            } catch (Exception ignored) {}
-
-
             String input = null;
             try {
                 input = queue.poll(5000, TimeUnit.MILLISECONDS);

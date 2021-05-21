@@ -13,13 +13,15 @@ public class Evaluation {
 
 
     int threadCount;
+    int depthCount = 0;
+    int nodesSearched = 0;
+    boolean itemsBeingAdded = false;
     Game task;
     String fen;
     int material = 0; //equal
     int depth = 1;
     Utils utils = new Utils();
 
-    boolean depthHasMoreWork = true;
     ThreadGroup tg = new ThreadGroup("Evaluation_Threads");
 
     public Evaluation(int threadCount, int depth) {
@@ -33,6 +35,10 @@ public class Evaluation {
     }
 
     public void startEvaluation() {
+        depthCount = 1;
+        task.getPossibleMovesForTurn();
+        nodesSearched = task.moves.size();
+        System.out.println("info depth " + depthCount + " nodes " + nodesSearched);
         for (int i = 0; i < threadCount; i++) {
             new Worker(tg, i).start();
         }
@@ -45,13 +51,32 @@ public class Evaluation {
         this.task.getPossibleMovesForTurn();
     }
 
-    public synchronized LinkedList<int[]> getNextBranch() {
-        if (!task.moves.isEmpty()) {
+    public synchronized LinkedList<int[][]> getNextMoveSequence() {
+        if (task.moves.size() > 0) {
             return task.moves.pop();
         } else {
-            depthHasMoreWork = false;
-            return new LinkedList<>();
+            try {
+                while(itemsBeingAdded) {
+                    wait(750);
+                }
+            } catch (InterruptedException ignored) {}
+
+            task.moves.addAll(task.nextMoves); //change to opponent responses //todo increase depth every other empty list (maybe print the total moves)
+            if(depthCount >= depth) {
+                tg.interrupt();
+            }
+            task.nextMoves.clear(); //clear old items so we can append to list
+            depthCount++;
+            nodesSearched += task.moves.size();
+            System.out.println("info depth " + depthCount + " nodes " + nodesSearched);
+            return null;
         }
+    }
+
+    public synchronized void addToNextMoves(LinkedList<int[][]> moveSequence) {
+        itemsBeingAdded = true;
+        task.nextMoves.add(moveSequence);
+        itemsBeingAdded = false;
     }
 
     public void setDepth(int depth) {
@@ -92,82 +117,27 @@ public class Evaluation {
         }
 
         public void run() {
-            while(depthHasMoreWork) {
-                LinkedList<int[]> pieceMoves = getNextBranch();
-                if(!pieceMoves.isEmpty()) {
-
-                    int [] selectedSquare = pieceMoves.pop();
-
-                    while(!pieceMoves.isEmpty()) {
-                        int [] destination = pieceMoves.pop();
-
-                        Game task = new Game();
-                        task.parseFen(fen);
-                        boolean kingCapture = task.movePiece(selectedSquare, destination);
-//                        if (kingCapture) {
-//                            System.out.println("****" + utils.parseCommand(new int[][]{selectedSquare, destination}));
-//                        }
-
-                        LinkedList<int[][]> list = new LinkedList<>();
-
-                        int [][] move = new int[2][];
-                        move[0] = selectedSquare;
-                        move[1] = destination;
-                        list.add(move);
-
-                        recursion(depth, list);
+            while(!this.isInterrupted() && depthCount < depth) {
+                LinkedList<int[][]> movesToPos = getNextMoveSequence();
+                if(movesToPos != null) {
+                    LinkedList<int[][]> movesToPosCopy = new LinkedList<>();
+                    Game game = new Game();
+                    game.parseFen(fen);
+                    while(movesToPos.size() > 0) {
+                        int[][] move = movesToPos.pop();
+                        movesToPosCopy.add(move);
+                        game.movePiece(move); //advance to current position
+                    }
+                    game.getPossibleMovesForTurn(); //get new moves from position
+                    LinkedList<LinkedList<int[][]>> newMoves = game.moves;
+                    while(newMoves.size() > 0) {
+                        int[][] move = newMoves.pop().pop(); //get the next move
+                        LinkedList<int[][]> nextMoveSequence = new LinkedList<>(movesToPosCopy); //create new list
+                        nextMoveSequence.add(move); //add new move to the end
+                        addToNextMoves(nextMoveSequence); //add this to the next moves list
                     }
                 }
             }
         }
-
-        private void recursion(int depth, LinkedList<int[][]> movesToPosition) {
-
-            Game local = new Game();
-            local.parseFen(fen);
-            boolean kingCapture = false;
-            for (int [][] move: movesToPosition) {
-                kingCapture = local.movePiece(move[0], move[1]);
-                if (kingCapture && move[1][0] != 0) {
-                    kingCapture = false;
-                }
-            }
-            local.getPossibleMovesForTurn();
-
-            if(depth <= 0 || local.moves.isEmpty() || kingCapture) {
-                StringBuilder str = new StringBuilder();
-                Game print = new Game();
-                print.parseFen(fen);
-                for (int [][] move: movesToPosition) {
-                    str.append(utils.parseCommand(move));
-                    str.append(", ");
-                    print.movePiece(move[0], move[1]);
-                }
-//                System.out.println(str + " eval " + calculateMaterial(print));
-                return;
-            }
-
-            int r_depth = depth-1;
-
-            while(!local.moves.isEmpty() && !this.isInterrupted()) {
-
-                LinkedList<int []> subMoves = local.moves.pop();
-                int [] selectedSquare = subMoves.pop();
-
-                while(!subMoves.isEmpty() && !this.isInterrupted()) {
-
-                    int [] destination = subMoves.pop();
-                    int [][] move = new int[2][];
-
-                    LinkedList<int[][]> newMoves = new LinkedList<>(movesToPosition);
-                    move[0] = selectedSquare;
-                    move[1] = destination;
-                    newMoves.add(move);
-
-                    recursion(r_depth, newMoves);
-                }
-            }
-        }
     }
-
 }
