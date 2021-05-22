@@ -350,4 +350,35 @@ public class MoveGenerator {
         }
         return moves;
     }
+
+    public Moves getAllMoves(BoardState boardState) {
+
+        Moves moves = new Moves();
+        char [][] board = boardState.board;
+        PlayerTurn turn = boardState.turn;
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                char dest = board[i][j];
+                if((isWhite(dest) && turn == PlayerTurn.WHITE) || (!isWhite(dest) && turn == PlayerTurn.BLACK)) {
+                    moves.addAll(getPieceMoves(new Coordinate(j, i), boardState));
+                }
+            }
+        }
+        return moves;
+    }
+
+    public Moves getPieceMoves(Coordinate coord, BoardState boardState) {
+        char c = Character.toLowerCase(boardState.board[coord.row][coord.column]);
+
+        switch(c) {
+            case 'p': return pawnMoves(coord, boardState);
+            case 'b': return bishopMoves(coord, boardState);
+            case 'n': return knightMoves(coord, boardState);
+            case 'r': return rookMoves(coord, boardState);
+            case 'q': return queenMoves(coord, boardState);
+            case 'k': return kingMoves(coord, boardState);
+            default: return null;
+        }
+    }
 }
