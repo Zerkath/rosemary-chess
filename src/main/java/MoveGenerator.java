@@ -1,20 +1,26 @@
-import java.util.LinkedList;
-
 public class MoveGenerator {
 
-    public boolean isWhite(char c) {
+    static public boolean isWhite(char c) {
         return !Character.isLowerCase(c);
     }
 
-    public boolean isOpposingColor(char a, char b) {
+    static public boolean isEmpty(char c) {
+        return c == '-';
+    }
+
+    static public boolean isOpposingColor(char a, char b) {
         return (isWhite(a) && !isWhite(b)) || (!isWhite(a) && isWhite(b));
     }
 
-    public boolean isCoordinateInBounds(Coordinate coord) {
+    static private boolean pawnCapturePossible(Coordinate coordinate, char orig, char[][] board) {
+        return !isEmpty(getCoordinate(coordinate, board)) && opposingColourAndInbounds(coordinate, orig, board);
+    }
+
+    static public boolean isCoordinateInBounds(Coordinate coord) {
         return (coord.column >= 0 && coord.row >= 0 && coord.column < 8 && coord.row < 8);
     }
 
-    public boolean opposingColourAndInbounds(Coordinate coord, char orig, char[][] board) {
+    static public boolean opposingColourAndInbounds(Coordinate coord, char orig, char[][] board) {
         if(isCoordinateInBounds(coord)) {
             char dest = getCoordinate(coord, board);
             return isOpposingColor(orig, dest);
@@ -22,14 +28,14 @@ public class MoveGenerator {
         } else return false;
     }
 
-    public boolean locationIsEmpty(Coordinate coord, char [][] board) {
+    static public boolean locationIsEmpty(Coordinate coord, char [][] board) {
         return getCoordinate(coord, board) == '-';
     }
 
     /**
      * Checks also if the coord is in bounds
      */
-    public boolean isOpposingColourOrEmpty(Coordinate coord, char orig, char[][] board) {
+    static public boolean isOpposingColourOrEmpty(Coordinate coord, char orig, char[][] board) {
         if(isCoordinateInBounds(coord)) {
             char dest = getCoordinate(coord, board);
             return isOpposingColor(orig, dest) || locationIsEmpty(coord, board);
@@ -37,11 +43,11 @@ public class MoveGenerator {
         } else return false;
     }
 
-    public char getCoordinate(Coordinate coord, char [][] board) {
+    static public char getCoordinate(Coordinate coord, char [][] board) {
         return board[coord.row][coord.column];
     }
 
-    public Moves bishopMoves(Coordinate origin, BoardState boardState) {
+    static public Moves bishopMoves(Coordinate origin, BoardState boardState) {
 
         char [][] board = boardState.board;
 
@@ -108,7 +114,7 @@ public class MoveGenerator {
         return moves;
     }
 
-    public Moves rookMoves(Coordinate origin, BoardState boardState) {
+    static public Moves rookMoves(Coordinate origin, BoardState boardState) {
 
         char [][] board = boardState.board;
 
@@ -181,7 +187,7 @@ public class MoveGenerator {
         return moves;
     }
 
-    public Moves queenMoves(Coordinate origin, BoardState boardState) {
+    static public Moves queenMoves(Coordinate origin, BoardState boardState) {
 
         Moves moves = new Moves();
 
@@ -191,7 +197,7 @@ public class MoveGenerator {
         return moves;
     }
 
-    public Moves pawnMoves(Coordinate origin, BoardState boardState) {
+    static public Moves pawnMoves(Coordinate origin, BoardState boardState) {
 
         char [][] board = boardState.board;
 
@@ -234,11 +240,11 @@ public class MoveGenerator {
         }
 
         //captures
-        if(!leftEdge && opposingColourAndInbounds(new Coordinate(col-1, nextRow), orig, board)) {
+        if(!leftEdge && pawnCapturePossible(new Coordinate(col-1, nextRow), orig, board)) {
             moves.add(new Move(origin, new Coordinate(col-1, nextRow)));
         }
 
-        if(!rightEdge && opposingColourAndInbounds(new Coordinate(col+1, nextRow), orig, board)) {
+        if(!rightEdge && pawnCapturePossible(new Coordinate(col+1, nextRow), orig, board)) {
             moves.add(new Move(origin, new Coordinate(col+1, nextRow)));
         }
 
@@ -254,7 +260,7 @@ public class MoveGenerator {
         return moves;
     }
 
-    public Moves knightMoves(Coordinate origin, BoardState boardState) {
+    static public Moves knightMoves(Coordinate origin, BoardState boardState) {
 
         char [][] board = boardState.board;
 
@@ -283,7 +289,7 @@ public class MoveGenerator {
         return moves;
     }
 
-    public Moves kingMoves(Coordinate origin, BoardState boardState) {
+    static public Moves kingMoves(Coordinate origin, BoardState boardState) {
 
         char [][] board = boardState.board;
         PlayerTurn turn = boardState.turn;
@@ -351,7 +357,7 @@ public class MoveGenerator {
         return moves;
     }
 
-    public Moves getAllMoves(BoardState boardState) {
+    static public Moves getAllMoves(BoardState boardState) {
 
         Moves moves = new Moves();
         char [][] board = boardState.board;
@@ -360,15 +366,25 @@ public class MoveGenerator {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
                 char dest = board[i][j];
-                if((isWhite(dest) && turn == PlayerTurn.WHITE) || (!isWhite(dest) && turn == PlayerTurn.BLACK)) {
+                if(dest != '-' && (isWhite(dest) && turn == PlayerTurn.WHITE) || (!isWhite(dest) && turn == PlayerTurn.BLACK)) {
                     moves.addAll(getPieceMoves(new Coordinate(j, i), boardState));
                 }
             }
         }
         return moves;
     }
+    static public MoveSequenceList getAllMovesList(BoardState boardState) {
+        Moves moves = getAllMoves(boardState);
+        MoveSequenceList moveSequence = new MoveSequenceList();
+        for (Move move: moves) {
+            Moves tempList = new Moves();
+            tempList.add(move);
+            moveSequence.add(tempList);
+        }
+        return moveSequence;
+    }
 
-    public Moves getPieceMoves(Coordinate coord, BoardState boardState) {
+    static public Moves getPieceMoves(Coordinate coord, BoardState boardState) {
         char c = Character.toLowerCase(boardState.board[coord.row][coord.column]);
 
         switch(c) {

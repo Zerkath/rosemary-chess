@@ -16,11 +16,14 @@ public class Evaluation {
     int depthCount = 0;
     int nodesSearched = 0;
     boolean itemsBeingAdded = false;
-    Game task;
+
+    MoveSequenceList moves = new MoveSequenceList();
+    MoveSequenceList nextMoves = new MoveSequenceList();
+
+    BoardState task;
     String fen;
     int material = 0; //equal
     int depth = 1;
-    Utils utils = new Utils();
 
     ThreadGroup tg = new ThreadGroup("Evaluation_Threads");
 
@@ -29,31 +32,38 @@ public class Evaluation {
         this.depth = depth;
     }
 
-    public Evaluation(int threadCount, Game task) {
+    public Evaluation(int threadCount, int depth, BoardState task) {
         this.threadCount = threadCount;
+        this.depth = depth;
         this.task = task;
     }
 
     public void startEvaluation() {
+        tg.interrupt();
+        moves.clear();
+        nextMoves.clear();
         depthCount = 1;
-        task.getPossibleMovesForTurn();
-        nodesSearched = task.moves.size();
+        moves.addAll(MoveGenerator.getAllMovesList(task));
+        nodesSearched = moves.size();
         System.out.println("info depth " + depthCount + " nodes " + nodesSearched);
         for (int i = 0; i < threadCount; i++) {
             new Worker(tg, i).start();
         }
     }
 
-    public void assignNewTask(Game task) {
+    public void assignNewTask(BoardState task) {
+        tg.interrupt();
+        moves.clear();
+        nextMoves.clear();
         material = calculateMaterial(task);
-        this.fen = task.toFenString();
+        this.fen = Utils.toFenString(task);
         this.task = task;
-        this.task.getPossibleMovesForTurn();
+        moves.addAll(MoveGenerator.getAllMovesList(task));
     }
 
-    public synchronized LinkedList<int[][]> getNextMoveSequence() {
-        if (task.moves.size() > 0) {
-            return task.moves.pop();
+    public synchronized Moves getNextMoveSequence() {
+        if (moves.size() > 0) {
+            return moves.pop();
         } else {
             try {
                 while(itemsBeingAdded) {
@@ -61,21 +71,21 @@ public class Evaluation {
                 }
             } catch (InterruptedException ignored) {}
 
-            task.moves.addAll(task.nextMoves); //change to opponent responses //todo increase depth every other empty list (maybe print the total moves)
+            moves.addAll(nextMoves); //change to opponent responses //todo increase depth every other empty list (maybe print the total moves)
             if(depthCount >= depth) {
                 tg.interrupt();
             }
-            task.nextMoves.clear(); //clear old items so we can append to list
+            nextMoves.clear(); //clear old items so we can append to list
             depthCount++;
-            nodesSearched += task.moves.size();
+            nodesSearched += moves.size();
             System.out.println("info depth " + depthCount + " nodes " + nodesSearched);
             return null;
         }
     }
 
-    public synchronized void addToNextMoves(LinkedList<int[][]> moveSequence) {
+    public synchronized void addToNextMoves(Moves moves) {
         itemsBeingAdded = true;
-        task.nextMoves.add(moveSequence);
+        nextMoves.add(moves);
         itemsBeingAdded = false;
     }
 
@@ -87,7 +97,7 @@ public class Evaluation {
         this.threadCount = threads;
     }
 
-    public int calculateMaterial(Game curr) {
+    public int calculateMaterial(BoardState curr) {
         int result = 0;
         int [] arr = curr.countPieces();
         result += arr[3] * ePawn;
@@ -105,9 +115,9 @@ public class Evaluation {
         return result;
     }
 
-    public int[][] endEvaluation() {
+    public Move endEvaluation() {
         tg.interrupt();
-        return new int[][]{{6, 3}, {4, 3}}; //todo just a placeholder get best move (this is just d2 to d4)
+        return new Move(new Coordinate(3, 6), new Coordinate(3, 4)); //todo just a placeholder get best move (this is just d2 to d4)
     }
 
     class Worker extends Thread {
@@ -118,21 +128,21 @@ public class Evaluation {
 
         public void run() {
             while(!this.isInterrupted() && depthCount < depth) {
-                LinkedList<int[][]> movesToPos = getNextMoveSequence();
-                if(movesToPos != null) {
-                    LinkedList<int[][]> movesToPosCopy = new LinkedList<>();
-                    Game game = new Game();
-                    game.parseFen(fen);
-                    while(movesToPos.size() > 0) {
-                        int[][] move = movesToPos.pop();
-                        movesToPosCopy.add(move);
+                Moves moves = getNextMoveSequence();
+                BoardState game = new BoardState(Utils.parseFen(fen));
+                if(moves != null) {
+                    Moves copy = new Moves();
+
+                    while(moves.size() > 0) {
+                        Move move = moves.pop();
+                        copy.add(move);
                         game.movePiece(move); //advance to current position
                     }
-                    game.getPossibleMovesForTurn(); //get new moves from position
-                    LinkedList<LinkedList<int[][]>> newMoves = game.moves;
+                    Moves newMoves = MoveGenerator.getAllMoves(game);
                     while(newMoves.size() > 0) {
-                        int[][] move = newMoves.pop().pop(); //get the next move
-                        LinkedList<int[][]> nextMoveSequence = new LinkedList<>(movesToPosCopy); //create new list
+                        Move move = newMoves.pop(); //get the next move
+                        Moves nextMoveSequence = new Moves(); //create new list
+                        nextMoveSequence.addAll(copy);
                         nextMoveSequence.add(move); //add new move to the end
                         addToNextMoves(nextMoveSequence); //add this to the next moves list
                     }
