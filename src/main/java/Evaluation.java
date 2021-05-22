@@ -43,7 +43,7 @@ public class Evaluation {
         moves = new MoveSequenceList();
         nextMoves = new MoveSequenceList();
         depthCount = 1;
-        moves.addAll(MoveGenerator.getAllMovesList(task));
+//        moves.addAll(MoveGenerator.getAllMoves(task));
         nodesSearched = moves.size();
         System.out.println("info depth " + depthCount + " nodes " + nodesSearched);
         for (int i = 0; i < threadCount; i++) {
@@ -58,7 +58,7 @@ public class Evaluation {
         material = calculateMaterial(task);
         this.fen = Utils.toFenString(task);
         this.task = task;
-        moves.addAll(MoveGenerator.getAllMovesList(task));
+//        moves.addAll(MoveGenerator.getAllMovesList(task));
     }
 
     public synchronized Moves getNextMoveSequence() {
