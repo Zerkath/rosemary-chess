@@ -2,12 +2,12 @@ import java.util.LinkedList;
 
 class Coordinate {
     public Coordinate(int column, int row) {
-        this.column = column;
-        this.row = row;
+        this.column = (byte)column;
+        this.row = (byte)row;
     }
     public Coordinate() {}
-    public int column;
-    public int row;
+    public byte column;
+    public byte row;
 }
 class Move {
     public Move(Coordinate origin, Coordinate destination) {
@@ -20,8 +20,9 @@ class Move {
     public Coordinate destination;
 }
 
-class Moves extends LinkedList<Move>{
-}
+class Moves extends LinkedList<Move>{}
+
+class MoveSequenceList extends LinkedList<Moves> {}
 
 enum PlayerTurn {
     WHITE,
