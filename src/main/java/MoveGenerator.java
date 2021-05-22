@@ -1,12 +1,10 @@
-import java.util.LinkedList;
-
 public class MoveGenerator {
 
     public boolean isWhite(char c) {
         return !Character.isLowerCase(c);
     }
 
-    public boolean opposingColours(char a, char b) {
+    public boolean isOpposingColor(char a, char b) {
         return ((isWhite(a) && !isWhite(b)) || !isWhite(a) && isWhite(b));
     }
 
@@ -16,25 +14,25 @@ public class MoveGenerator {
 
     public boolean opposingColourAndInbounds(Coordinate coord, char orig, char[][] board) {
         if(isCoordinateInBounds(coord)) {
-            char dest = getCoord(coord, board);
-            return opposingColours(orig, dest);
+            char dest = getCoordinate(coord, board);
+            return isOpposingColor(orig, dest);
 
         } else return false;
     }
 
     public boolean locationIsEmpty(Coordinate coord, char [][] board) {
-        return getCoord(coord, board) == '-';
+        return getCoordinate(coord, board) == '-';
     }
 
     public boolean isOpposingColourOrEmpty(Coordinate coord, char orig, char[][] board) {
         if(isCoordinateInBounds(coord)) {
-            char dest = getCoord(coord, board);
-            return opposingColours(orig, dest) || locationIsEmpty(coord, board);
+            char dest = getCoordinate(coord, board);
+            return isOpposingColor(orig, dest) || locationIsEmpty(coord, board);
 
         } else return false;
     }
 
-    public char getCoord(Coordinate coord, char [][] board) {
+    public char getCoordinate(Coordinate coord, char [][] board) {
         return board[coord.row][coord.column];
     }
 
@@ -43,7 +41,7 @@ public class MoveGenerator {
         char [][] board = boardState.board;
 
         Moves moves = new Moves();
-        char orig = getCoord(origin, board);
+        char orig = getCoordinate(origin, board);
         int row = origin.row;
         int col = origin.column;
 
@@ -110,7 +108,7 @@ public class MoveGenerator {
         char [][] board = boardState.board;
 
         Moves moves = new Moves();
-        char orig = getCoord(origin, board);
+        char orig = getCoordinate(origin, board);
         int row = origin.row;
         int col = origin.column;
 
@@ -178,13 +176,75 @@ public class MoveGenerator {
         return moves;
     }
 
-    public LinkedList<Move> queenMoves(Coordinate origin, BoardState boardState) {
+    public Moves queenMoves(Coordinate origin, BoardState boardState) {
 
-        LinkedList<Move> moves = new LinkedList<>();
+        Moves moves = new Moves();
 
         moves.addAll(rookMoves(origin, boardState));
         moves.addAll(bishopMoves(origin, boardState));
 
+        return moves;
+    }
+
+    public Moves pawnMoves(Coordinate origin, BoardState boardState) {
+
+        char [][] board = boardState.board;
+
+        Moves moves = new Moves();
+        char orig = getCoordinate(origin, board);
+        int row = origin.row;
+        int col = origin.column;
+
+        int nextRow = row;
+        int doubleJump = row;
+        int enPassantRow;
+
+        if(isWhite(orig)) {
+            nextRow -= 1;
+            doubleJump -=2;
+            enPassantRow = 3;
+            if(nextRow == 0) {
+
+            }
+        } else {
+            nextRow += 1;
+            doubleJump +=2;
+            enPassantRow = 4;
+            if(nextRow == 7) {
+            }
+        }
+
+        boolean leftEdge = col == 0;
+        boolean rightEdge = col == 7;
+
+        //forward
+        if(locationIsEmpty(new Coordinate(col, nextRow), board)) {
+            moves.add(new Move(origin, new Coordinate(col, nextRow)));
+
+            if((isWhite(orig) && row == 6) || (!isWhite(orig) && row == 1) && locationIsEmpty(new Coordinate(col, doubleJump), board)) {
+                //if at starting square and nothing in front
+                moves.add(new Move(origin, new Coordinate(col, doubleJump)));
+            }
+        }
+
+        //captures
+        if(!leftEdge && opposingColourAndInbounds(new Coordinate(col-1, nextRow), orig, board)) {
+            moves.add(new Move(origin, new Coordinate(col-1, nextRow)));
+        }
+
+        if(!rightEdge && opposingColourAndInbounds(new Coordinate(col+1, nextRow), orig, board)) {
+            moves.add(new Move(origin, new Coordinate(col+1, nextRow)));
+        }
+
+
+        if(row == enPassantRow) { //en passant behavior
+            if(!leftEdge && opposingColourAndInbounds(new Coordinate(col-1, row), orig, board) && Character.toLowerCase(board[row][col-1]) == 'p') {
+//                    System.out.println("to the left is a pawn"); //TODO check if last move from opponent was 2 squares
+            }
+            if(!rightEdge && opposingColourAndInbounds(new Coordinate(col+1, row), orig, board) && Character.toLowerCase(board[row][col+1]) == 'p') {
+//                    System.out.println("to the right is a pawn");
+            }
+        }
         return moves;
     }
 }
