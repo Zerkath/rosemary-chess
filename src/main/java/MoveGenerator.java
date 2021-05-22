@@ -280,7 +280,74 @@ public class MoveGenerator {
             if(isOpposingColourOrEmpty(destination, orig, board)) moves.add(new Move(origin, destination));
         }
 
+        return moves;
+    }
 
+    public Moves kingMoves(Coordinate origin, BoardState boardState) {
+
+        char [][] board = boardState.board;
+        PlayerTurn turn = boardState.turn;
+        CastlingRights whiteCastling = boardState.whiteCastling;
+        CastlingRights blackCastling = boardState.blackCastling;
+
+        Moves moves = new Moves();
+
+        char orig = getCoordinate(origin, board);
+        int row = origin.row;
+        int col = origin.column;
+
+        for (int i = row-1; i <= row+1; i++) {
+            for (int j = col-1; j <= col+1; j++) {
+                if(i != row || j != col) {
+                    Coordinate destination = new Coordinate(j, i);
+                    if(isOpposingColourOrEmpty(destination, orig, board)) moves.add(new Move(origin, destination));
+                }
+            }
+        }
+
+        //castling
+        if(col == 4) { //only check if the king is in the original position and hasn't moved
+            char [] backRow = board[row];
+
+            boolean qSide = Character.toLowerCase(backRow[0]) == 'r' &&
+                    !isOpposingColor(orig, backRow[0]) &&
+                    backRow[1] == '-' &&
+                    backRow[2] == '-' &&
+                    backRow[3] == '-';
+
+            boolean kSide = Character.toLowerCase(backRow[7]) == 'r' &&
+                    !isOpposingColor(orig, backRow[7]) &&
+                    backRow[6] == '-' &&
+                    backRow[5] == '-';
+
+            CastlingRights current = null;
+
+            if(isWhite(orig) && row == 7 && turn == PlayerTurn.WHITE) {
+                current = whiteCastling;
+            }
+
+            if(!isWhite(orig) && row == 0 && turn == PlayerTurn.BLACK) {
+                current = blackCastling;
+            }
+
+            if(current != null) {
+                switch (current) {
+                    case BOTH: {
+                        if(qSide) moves.add(new Move(origin, new Coordinate(2, row)));
+                        if(kSide) moves.add(new Move(origin, new Coordinate(6, row))); //king side
+                        break;
+                    }
+                    case KINGSIDE: {
+                        if(kSide) moves.add(new Move(origin, new Coordinate(6, row)));
+                        break;
+                    }
+                    case QUEENSIDE: {
+                        if(qSide) moves.add(new Move(origin, new Coordinate(2, row)));
+                        break;
+                    }
+                }
+            }
+        }
         return moves;
     }
 }
