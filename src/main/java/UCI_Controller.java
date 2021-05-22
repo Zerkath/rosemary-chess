@@ -1,21 +1,20 @@
 public class UCI_Controller {
-    public Game game = new Game();
+    public BoardState boardState;
     public boolean uci_mode;
     public int threadCount = 2; //defaults
     public int depth = 5;
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     public Evaluation eval = new Evaluation(threadCount, 5);
-    private final Utils utils = new Utils();
     private final String name = "Rosemary 1";
     private final String authors = "Rosemary devs";
 
     public UCI_Controller() {
-        game.parseFen(defaultBoard);
+        boardState = new BoardState(Utils.parseFen(defaultBoard));
         System.out.print(name + " by " + authors + "\n");
     }
 
     public void setToDefault() {
-        game.parseFen(defaultBoard);
+        boardState = new BoardState(Utils.parseFen(defaultBoard));
     }
 
     public void handleMessage(String message) {
@@ -33,8 +32,7 @@ public class UCI_Controller {
             if(split[1].equals("startpos")) {
                 setFen(defaultBoard);
                 for (int i = 3; i < split.length; i++) {
-                    int[][] arr = utils.parseCommand(split[i]);
-                    game.movePiece(arr[0], arr[1]);
+                    boardState.movePiece(Utils.parseCommand(split[i]));
                 }
                 return;
             }
@@ -69,7 +67,10 @@ public class UCI_Controller {
 
 
     public void setFen(String fen) {
-        game.parseFen(fen);
+        boardState = new BoardState(Utils.parseFen(fen));
+    }
+    public String getFen() {
+        return Utils.toFenString(boardState);
     }
 
     public void setToUCI() {
@@ -90,14 +91,14 @@ public class UCI_Controller {
     }
 
     public void startEval(int depth) {
-        eval.assignNewTask(game);
+//        eval.assignNewTask(game);
         eval.setDepth(depth);
         eval.startEvaluation();
     }
 
     public void endEval() {
-        int[][] bestMove = eval.endEvaluation();
-        System.out.print("bestmove " + utils.parseCommand(bestMove));
+        Move bestMove = eval.endEvaluation();
+        System.out.print("bestmove " + Utils.parseCommand(bestMove));
         System.out.print('\n');
     }
 }
