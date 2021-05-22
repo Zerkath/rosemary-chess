@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 public class MoveGenerator {
 
     public boolean isWhite(char c) {
@@ -5,7 +7,7 @@ public class MoveGenerator {
     }
 
     public boolean isOpposingColor(char a, char b) {
-        return ((isWhite(a) && !isWhite(b)) || !isWhite(a) && isWhite(b));
+        return (isWhite(a) && !isWhite(b)) || (!isWhite(a) && isWhite(b));
     }
 
     public boolean isCoordinateInBounds(Coordinate coord) {
@@ -24,6 +26,9 @@ public class MoveGenerator {
         return getCoordinate(coord, board) == '-';
     }
 
+    /**
+     * Checks also if the coord is in bounds
+     */
     public boolean isOpposingColourOrEmpty(Coordinate coord, char orig, char[][] board) {
         if(isCoordinateInBounds(coord)) {
             char dest = getCoordinate(coord, board);
@@ -204,13 +209,14 @@ public class MoveGenerator {
             doubleJump -=2;
             enPassantRow = 3;
             if(nextRow == 0) {
-
+                //promotion todo
             }
         } else {
             nextRow += 1;
             doubleJump +=2;
             enPassantRow = 4;
             if(nextRow == 7) {
+                //promotion todo
             }
         }
 
@@ -245,6 +251,36 @@ public class MoveGenerator {
 //                    System.out.println("to the right is a pawn");
             }
         }
+        return moves;
+    }
+
+    public Moves knightMoves(Coordinate origin, BoardState boardState) {
+
+        char [][] board = boardState.board;
+
+        Moves moves = new Moves();
+
+        char orig = getCoordinate(origin, board);
+        int row = origin.row;
+        int col = origin.column;
+
+        int [] columns = new int []{col-2, col+2};
+        int [] rows = new int []{row-2, row+2};
+        for (int d_column: columns) {
+            Coordinate destination = new Coordinate(d_column, row + 1);
+            if(isOpposingColourOrEmpty(destination, orig, board)) moves.add(new Move(origin, destination));
+            destination = new Coordinate(d_column, row - 1);
+            if(isOpposingColourOrEmpty(destination, orig, board)) moves.add(new Move(origin, destination));
+        }
+
+        for (int d_row: rows) {
+            Coordinate destination = new Coordinate(col + 1, d_row);
+            if(isOpposingColourOrEmpty(destination, orig, board)) moves.add(new Move(origin, destination));
+            destination = new Coordinate(col - 1, d_row);
+            if(isOpposingColourOrEmpty(destination, orig, board)) moves.add(new Move(origin, destination));
+        }
+
+
         return moves;
     }
 }
