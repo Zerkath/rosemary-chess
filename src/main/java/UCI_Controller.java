@@ -26,7 +26,7 @@ public class UCI_Controller {
         }
         if(split[0].equals("position")) {
             if(split[1].equals("fen")) {
-                setFen(split[2]);
+                setFen(message.substring(13));
                 return;
             }
 
