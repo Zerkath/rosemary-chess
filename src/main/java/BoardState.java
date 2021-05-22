@@ -101,7 +101,7 @@ public class BoardState {
     public void movePiece(Move move) {
 
         previous = new BoardState(this);
-        enPassant = null;
+
         int dRow = move.destination.row;
         int dCol = move.destination.column;
         char selected = MoveGenerator.getCoordinate(move.origin, board);
@@ -111,8 +111,9 @@ public class BoardState {
             halfMove++;
         }
 
-        //En passant
-        if(Character.toLowerCase(selected) == 'p' && move.origin.row - dRow == 2 || move.origin.row - dRow == -2) {
+        enPassant = null;
+        //add En passant
+        if(Character.toLowerCase(selected) == 'p' && (move.origin.row == 6 && move.destination.row == 4) || (move.origin.row == 1 && move.destination.row == 3)) {
             boolean white = MoveGenerator.isWhite(selected);
             char right = '-';
             char left = '-';
@@ -122,21 +123,22 @@ public class BoardState {
                 right = board[dRow][dCol+1];
                 left  = board[dRow][dCol-1];
             }
+
             if(Character.toLowerCase(right) == 'p') {
                 if(white && !MoveGenerator.isWhite(right)) {
-                    enPassant = new Coordinate(dCol, dRow-1);
+                    enPassant = new Coordinate(dCol, dRow+1);
                 }
                 if(!white && MoveGenerator.isWhite(right)) {
-                    enPassant = new Coordinate(dCol, dRow+1);
+                    enPassant = new Coordinate(dCol, dRow-1);
                 }
             }
 
             if(Character.toLowerCase(left) == 'p') {
                 if(white && !MoveGenerator.isWhite(left)) {
-                    enPassant = new Coordinate(dCol, dRow-1);
-                }
-                if(!white && !MoveGenerator.isWhite(right)) {
                     enPassant = new Coordinate(dCol, dRow+1);
+                }
+                if(!white && MoveGenerator.isWhite(left)) {
+                    enPassant = new Coordinate(dCol, dRow-1);
                 }
             }
         }
