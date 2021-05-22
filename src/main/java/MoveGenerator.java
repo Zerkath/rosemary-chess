@@ -172,7 +172,7 @@ public class MoveGenerator {
 
         //Rook moves downwards
         for(int i = 1; row + i <= 7; i++) {
-            Coordinate destination = new Coordinate(col, row + 1);
+            Coordinate destination = new Coordinate(col, row + i);
 
             if(isOpposingColourOrEmpty(destination, orig, board)) {
                 moves.add(new Move(origin, destination));
@@ -252,12 +252,16 @@ public class MoveGenerator {
         }
 
 
-        if(row == enPassantRow) { //en passant behavior
+        if(boardState.enPassant != null && row == enPassantRow) { //en passant behavior //todo fix currently doesnt work
             if(!leftEdge && opposingColourAndInbounds(new Coordinate(col-1, row), orig, board) && Character.toLowerCase(board[row][col-1]) == 'p') {
-//                    System.out.println("to the left is a pawn"); //TODO check if last move from opponent was 2 squares
+                if(boardState.enPassant.column - 1 == col) {
+                    moves.add(new Move(origin, new Coordinate(col+1, nextRow)));
+                }
             }
             if(!rightEdge && opposingColourAndInbounds(new Coordinate(col+1, row), orig, board) && Character.toLowerCase(board[row][col+1]) == 'p') {
-//                    System.out.println("to the right is a pawn");
+                if(boardState.enPassant.column + 1 == col) {
+                    moves.add(new Move(origin, new Coordinate(col-1, nextRow)));
+                }
             }
         }
         return moves;
@@ -376,15 +380,28 @@ public class MoveGenerator {
         }
         return moves;
     }
-    static public MoveSequenceList getAllMovesList(BoardState boardState) {
-        Moves moves = getAllMoves(boardState);
-        MoveSequenceList moveSequence = new MoveSequenceList();
-        for (Move move: moves) {
-            Moves tempList = new Moves();
-            tempList.add(move);
-            moveSequence.add(tempList);
+
+    static public Moves getLegalMoves(BoardState boardState) {
+        Moves moves = new Moves();
+        PlayerTurn turn = boardState.turn;
+        Moves pseudoLegal = getAllMoves(boardState);
+
+        for (Move pLegalMove: pseudoLegal) {
+            boardState.movePiece(pLegalMove);
+            Moves responses = getAllMoves(boardState);
+            boolean legal = true;
+            for (Move response: responses) {
+                char target = getCoordinate(response.destination, boardState.board);
+                if(Character.toLowerCase(target) == 'k') {
+                    legal = false;
+                    break;
+                }
+            }
+            if(legal) moves.add(pLegalMove);
+
+            boardState.unMakeMove();
         }
-        return moveSequence;
+        return moves;
     }
 
     static public Moves getPieceMoves(Coordinate coord, BoardState boardState) {

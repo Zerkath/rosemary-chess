@@ -29,6 +29,12 @@ public class MoveGenerationTests {
     }
 
     BoardState getTestBoard() {
+        //startpos f2f3 h7h6 a2a3
+
+        //rnbqkbnr/ppppppp1/7p/8/8/P4P2/1PPPP1PP/RNBQKBNR b KQkq - 0 2
+        String test = "6pr/8/7p/8/8/7P/8/6PR w - - 0 1";
+
+        Utils.printBoard(Utils.parseFen(d_fen));
         return new BoardState(Utils.parseFen(d_fen));
     }
 
@@ -38,7 +44,7 @@ public class MoveGenerationTests {
         int [] depth = new int[5];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
-            depth[i] = recursion(i+1, getTestBoard());
+            depth[i] = recursion(i+1, getTestBoard(), i+1);
             long end = System.currentTimeMillis();
             System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms");
 
@@ -53,16 +59,19 @@ public class MoveGenerationTests {
 //        Assertions.assertEquals(119060324, depth[5]); //to slow to reach
     }
 
-    private int recursion(int depth, BoardState boardState) {
+    private int recursion(int depth, BoardState boardState, int start) {
+
         if(depth <= 0) {
             return 1;
         }
-        Moves moves = MoveGenerator.getAllMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
         int numPositions = 0;
 
         for (Move move: moves) {
             boardState.movePiece(move);
-            numPositions += recursion(depth-1, boardState);
+            int result = recursion(depth-1, boardState, start);
+            if(depth == start) System.out.println(Utils.parseCommand(move) + ": " + result);
+            numPositions += result;
             boardState.unMakeMove();
         }
         return numPositions;
