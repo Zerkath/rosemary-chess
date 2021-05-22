@@ -105,19 +105,23 @@ public class MoveGenerator {
         return moves;
     }
 
-    //todo refactor below to use new functions
     public Moves rookMoves(Coordinate origin, BoardState boardState) {
-        Moves moves = new Moves();
-        int destRow, destCol;
 
-        //todo cleanup
+        char [][] board = boardState.board;
+
+        Moves moves = new Moves();
+        char orig = getCoord(origin, board);
+        int row = origin.row;
+        int col = origin.column;
+
         //Rook moves to left
         for(int i = 1; col - i >= 0; i++) { //Runs as long as destination is within board limits
-            destCol = col - i;
-            if(isMovePossible(row, destCol)) {
-                moves.add(new int[]{row, destCol});
+            Coordinate destination = new Coordinate(col - i, row);
 
-                if(game.board[row][destCol] != null) { //Checks if move ends in capture to end the loop
+            if(isOpposingColourOrEmpty(destination, orig, board)) {
+                moves.add(new Move(origin, destination));
+
+                if(!locationIsEmpty(destination, board)) { //Checks if move ends in capture to end the loop
                     break;
                 }
             } else {
@@ -128,11 +132,12 @@ public class MoveGenerator {
 
         //Rook moves upwards
         for(int i = 1; row - i >= 0; i++) {
-            destRow = row - i;
-            if(isMovePossible(destRow, col)) {
-                moves.add(new int[]{destRow, col});
+            Coordinate destination = new Coordinate(col, row - i);
 
-                if(game.board[destRow][col] != null) {
+            if(isOpposingColourOrEmpty(destination, orig, board)) {
+                moves.add(new Move(origin, destination));
+
+                if(!locationIsEmpty(destination, board)) { //Checks if move ends in capture to end the loop
                     break;
                 }
             } else {
@@ -142,11 +147,12 @@ public class MoveGenerator {
 
         //Rook moves to right
         for(int i = 1; col + i <= 7; i++) {
-            destCol = col + i;
-            if(isMovePossible(row, destCol)) {
-                moves.add(new int[]{row, destCol});
+            Coordinate destination = new Coordinate(col + i, row);
 
-                if(game.board[row][destCol] != null) {
+            if(isOpposingColourOrEmpty(destination, orig, board)) {
+                moves.add(new Move(origin, destination));
+
+                if(!locationIsEmpty(destination, board)) { //Checks if move ends in capture to end the loop
                     break;
                 }
             } else {
@@ -156,11 +162,12 @@ public class MoveGenerator {
 
         //Rook moves downwards
         for(int i = 1; row + i <= 7; i++) {
-            destRow = row + i;
-            if(isMovePossible(destRow, col)) {
-                moves.add(new int[]{destRow, col});
+            Coordinate destination = new Coordinate(col, row + 1);
 
-                if(game.board[destRow][col] != null) {
+            if(isOpposingColourOrEmpty(destination, orig, board)) {
+                moves.add(new Move(origin, destination));
+
+                if(!locationIsEmpty(destination, board)) { //Checks if move ends in capture to end the loop
                     break;
                 }
             } else {
