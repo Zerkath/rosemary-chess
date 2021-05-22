@@ -22,3 +22,15 @@ class Move {
 
 class Moves extends LinkedList<Move>{
 }
+
+enum PlayerTurn {
+    WHITE,
+    BLACK,
+}
+
+enum CastlingRights {
+    QUEENSIDE,
+    KINGSIDE,
+    BOTH,
+    NONE
+}

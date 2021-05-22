@@ -9,23 +9,6 @@ import java.util.LinkedList;
 public class Game {
     Utils utils = new Utils();
     Piece[][] board = new Piece[8][8];
-    enum CastlingRights {
-        QUEENSIDE,
-        KINGSIDE,
-        BOTH,
-        NONE
-    }
-
-    enum PlayerTurn {
-        WHITE,
-        BLACK,
-    }
-
-//    int[][][] threats = new int[8][8][2];
-    CastlingRights whiteCastling = CastlingRights.NONE;
-    CastlingRights blackCastling = CastlingRights.NONE;
-
-    PlayerTurn turn;
 
     int turnNumber = 1;
     int halfMove = 0;
