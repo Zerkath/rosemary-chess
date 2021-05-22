@@ -22,4 +22,12 @@ public class UCI_Test {
         uci.handleMessage(pgn);
         Assertions.assertEquals("rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPPKPPP/RNBQ1BNR b kq - 1 2", uci.getFen());
     }
+
+    @Test
+    void enPassantWhite() {
+        String pgn = "position startpos moves d2d4 h7h6 d4d5 e7e5";
+        uci.handleMessage(pgn);
+        Assertions.assertEquals("rnbqkbnr/pppp1pp1/7p/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 3", uci.getFen());
+
+    }
 }
