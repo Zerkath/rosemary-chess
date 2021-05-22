@@ -2,6 +2,7 @@ import java.util.LinkedList;
 
 public class BoardState {
     char[][] board = new char[8][8];
+    BoardState previous;
     PlayerTurn turn;
 
 
@@ -18,25 +19,27 @@ public class BoardState {
     }
 
     public BoardState(BoardState state) {
-        this.board = state.board;
+        setBoardState(state);
+    }
+
+    public void setBoardState(BoardState state) {
+
         this.blackCastling = state.blackCastling;
         this.whiteCastling = state.whiteCastling;
         this.halfMove = state.halfMove;
         this.turn = state.turn;
         this.enPassant = state.enPassant;
         this.turnNumber = state.turnNumber;
+        this.previous = state.previous;
+        for (int i = 0; i < state.board.length; i++) {
+            System.arraycopy(state.board[i], 0, this.board[i], 0, state.board.length);
+        }
     }
 
     public BoardState(char[][] board) {
         for (int i = 0; i < board.length; i++) {
             System.arraycopy(board[i], 0, this.board[i], 0, board.length);
         }
-    }
-
-    public LinkedList<Move> pieceToMoves(char ch, Coordinate coord) {
-        LinkedList<Move> result = new LinkedList<>();
-
-        return result;
     }
 
     public void setCastling(char [] castling) {
@@ -91,8 +94,13 @@ public class BoardState {
         }
     }
 
-    public boolean movePiece(Move move) {
+    public void unMakeMove() {
+        setBoardState(previous);
+    }
 
+    public void movePiece(Move move) {
+
+        previous = new BoardState(this);
         enPassant = null;
         int dRow = move.destination.row;
         int dCol = move.destination.column;
@@ -101,11 +109,6 @@ public class BoardState {
             halfMove = 0;
         } else {
             halfMove++;
-        }
-
-        char destination = board[dRow][dCol];
-        if(Character.toLowerCase(destination) == 'k') {
-            return true;
         }
 
         //En passant
@@ -175,7 +178,6 @@ public class BoardState {
             this.turn = PlayerTurn.BLACK;
         }
 
-        return false;
     }
 
     private void removePiece(Coordinate coord) {

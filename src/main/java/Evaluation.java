@@ -40,8 +40,8 @@ public class Evaluation {
 
     public void startEvaluation() {
         tg.interrupt();
-        moves.clear();
-        nextMoves.clear();
+        moves = new MoveSequenceList();
+        nextMoves = new MoveSequenceList();
         depthCount = 1;
         moves.addAll(MoveGenerator.getAllMovesList(task));
         nodesSearched = moves.size();
@@ -53,8 +53,8 @@ public class Evaluation {
 
     public void assignNewTask(BoardState task) {
         tg.interrupt();
-        moves.clear();
-        nextMoves.clear();
+        moves = new MoveSequenceList();
+        nextMoves = new MoveSequenceList();
         material = calculateMaterial(task);
         this.fen = Utils.toFenString(task);
         this.task = task;
@@ -66,9 +66,7 @@ public class Evaluation {
             return moves.pop();
         } else {
             try {
-                while(itemsBeingAdded) {
-                    wait(750);
-                }
+                wait(10);
             } catch (InterruptedException ignored) {}
 
             moves.addAll(nextMoves); //change to opponent responses //todo increase depth every other empty list (maybe print the total moves)
@@ -76,6 +74,7 @@ public class Evaluation {
                 tg.interrupt();
             }
             nextMoves.clear(); //clear old items so we can append to list
+            nextMoves = new MoveSequenceList();
             depthCount++;
             nodesSearched += moves.size();
             System.out.println("info depth " + depthCount + " nodes " + nodesSearched);

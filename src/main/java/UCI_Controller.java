@@ -91,7 +91,7 @@ public class UCI_Controller {
     }
 
     public void startEval(int depth) {
-//        eval.assignNewTask(game);
+        eval.assignNewTask(boardState);
         eval.setDepth(depth);
         eval.startEvaluation();
     }

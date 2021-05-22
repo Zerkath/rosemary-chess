@@ -1,5 +1,6 @@
 class Utils {
 
+    private static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     //todo change functions to return Coordinates
     static public char toColumnCharacter(int i) {
         return (char)(i + 'a');
@@ -110,9 +111,9 @@ class Utils {
 
         BoardState boardState = new BoardState();
 
-        if(split.length != 6) return null; //todo give out errors
+        if(split.length != 6) return new BoardState(parseFen(default_fen)); //todo give out errors
         String [] rows = split[0].split("/");
-        if(rows.length != 8) return null;
+        if(rows.length != 8) return new BoardState(parseFen(default_fen));
 
         if(split[1].equals("w")) {
             boardState.turn = PlayerTurn.WHITE;

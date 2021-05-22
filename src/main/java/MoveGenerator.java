@@ -44,6 +44,7 @@ public class MoveGenerator {
     }
 
     static public char getCoordinate(Coordinate coord, char [][] board) {
+
         return board[coord.row][coord.column];
     }
 
@@ -228,6 +229,8 @@ public class MoveGenerator {
 
         boolean leftEdge = col == 0;
         boolean rightEdge = col == 7;
+
+        if(!isCoordinateInBounds(new Coordinate(col, nextRow))) return moves;
 
         //forward
         if(locationIsEmpty(new Coordinate(col, nextRow), board)) {
