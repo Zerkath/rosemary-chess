@@ -43,14 +43,6 @@ public class MoveGenerator {
         } else return false;
     }
 
-    static public boolean isNextToOpponentPawn(char orig, Coordinate coord, char[][] board) {
-        boolean right = coord.column == 7;
-        boolean left = coord.column == 0;
-        if(left && isOpposingColor(getCoordinate(new Coordinate(coord.column + 1, coord.row), board), orig)) return true;
-        if(right && isOpposingColor(getCoordinate(new Coordinate(coord.column - 1, coord.row), board), orig)) return true;
-        return (isOpposingColor(getCoordinate(new Coordinate(coord.column - 1, coord.row), board), orig) || isOpposingColor(getCoordinate(new Coordinate(coord.column + 1, coord.row), board), orig));
-    }
-
     static public char getCoordinate(Coordinate coord, char [][] board) {
 
         return board[coord.row][coord.column];
@@ -320,6 +312,13 @@ public class MoveGenerator {
                     Coordinate destination = new Coordinate(j, i);
                     if(isOpposingColourOrEmpty(destination, orig, board)) moves.add(new Move(origin, destination));
                 }
+            }
+        }
+
+        if(Character.isLowerCase(orig)) {
+            Utils.printBoard(boardState);
+            for (Move move: moves) {
+                System.out.println(Utils.parseCommand(move));
             }
         }
 
