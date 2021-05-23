@@ -262,15 +262,11 @@ public class MoveGenerator {
 
 
         if(boardState.enPassant != null && row == enPassantRow) {
-            if(!leftEdge && opposingColourAndInbounds(new Coordinate(col-1, row), orig, board) && Character.toLowerCase(board[row][col-1]) == 'p') {
-                if(boardState.enPassant.column - 1 == col) {
-                    moves.add(new Move(origin, new Coordinate(col+1, nextRow)));
-                }
-            }
-            if(!rightEdge && opposingColourAndInbounds(new Coordinate(col+1, row), orig, board) && Character.toLowerCase(board[row][col+1]) == 'p') {
-                if(boardState.enPassant.column + 1 == col) {
-                    moves.add(new Move(origin, new Coordinate(col-1, nextRow)));
-                }
+
+            Coordinate destination = boardState.enPassant;
+            int distance = origin.column - destination.column;
+            if(distance == 1 || distance == -1) {
+                moves.add(new Move(origin, destination));
             }
         }
         return moves;
