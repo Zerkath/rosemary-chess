@@ -99,26 +99,31 @@ public class BoardState {
         }
     }
 
-    private void checkForCastlingRights(Coordinate origin) {
-        if(origin.row == 0 && origin.column == 0) { //black queen side rook
+    private void checkForCastlingRights(Move move) {
+        int oRow = move.origin.row;
+        int oCol = move.origin.column;
+        int dRow = move.destination.row;
+        int dCol = move.destination.column;
+
+        if(oRow == 0 && oCol == 0 || dRow == 0 && dCol == 0) { //black queen side rook
             if(blackCastling == CastlingRights.BOTH) {
                 blackCastling = CastlingRights.KINGSIDE;
             } else if(blackCastling == CastlingRights.QUEENSIDE) {
                 blackCastling = CastlingRights.NONE;
             }
-        } else if(origin.row == 0 && origin.column == 7) { //black king side rook
+        } else if(oRow == 0 && oCol == 7 || dRow == 0 && dCol == 7) { //black king side rook
             if(blackCastling == CastlingRights.BOTH) {
                 blackCastling = CastlingRights.QUEENSIDE;
             } else if(blackCastling == CastlingRights.KINGSIDE) {
                 blackCastling = CastlingRights.NONE;
             }
-        } else if(origin.row == 7 && origin.column == 0) { //white queen side rook
+        } else if(oRow == 7 && oCol == 0 || dRow == 7  && dCol == 0) { //white queen side rook
             if(whiteCastling == CastlingRights.BOTH) {
                 whiteCastling = CastlingRights.KINGSIDE;
             } else if(whiteCastling == CastlingRights.QUEENSIDE) {
                 whiteCastling = CastlingRights.NONE;
             }
-        } else if(origin.row == 7 && origin.column == 7) { //white king side rook
+        } else if(oRow == 7 && oCol == 7 || dRow == 7 && dCol == 7) { //white king side rook
             if(whiteCastling == CastlingRights.BOTH) {
                 whiteCastling = CastlingRights.QUEENSIDE;
             } else if(whiteCastling == CastlingRights.KINGSIDE) {
@@ -137,7 +142,7 @@ public class BoardState {
         char selected = MoveGenerator.getCoordinate(move.origin, board);
         boolean isWhite = MoveGenerator.isWhite(selected);
 
-        checkForCastlingRights(move.origin);
+        checkForCastlingRights(move);
 
         if(Character.toLowerCase(selected) == 'p' || MoveGenerator.getCoordinate(move.destination, board) != '-') {
             halfMove = 0;
