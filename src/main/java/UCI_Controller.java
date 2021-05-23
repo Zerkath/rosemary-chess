@@ -42,6 +42,11 @@ public class UCI_Controller {
             return;
         }
         if(split[0].equals("go")) {
+            if(split[1].equals("perft")) {
+                int depth = Integer.parseInt(split[2]);
+                System.out.println("\nDepth " + depth + " nodes: " + runPerft(depth, depth, true));
+                return;
+            }
             startEval();
             return;
         }
@@ -94,6 +99,23 @@ public class UCI_Controller {
         eval.assignNewTask(boardState);
         eval.setDepth(depth);
         eval.startEvaluation();
+    }
+
+    public int runPerft(int depth, int start, boolean print) {
+        if(depth <= 0) {
+            return 1;
+        }
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        int numPositions = 0;
+
+        for (Move move: moves) {
+            boardState.movePiece(move);
+            int result = runPerft(depth-1, start, print);
+            if(depth == start && print) System.out.println(Utils.parseCommand(move) + ": " + result);
+            numPositions += result;
+            boardState.unMakeMove();
+        }
+        return numPositions;
     }
 
     public void endEval() {
