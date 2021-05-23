@@ -139,22 +139,26 @@ class Utils {
     }
 
     static public String getVisualBoardString(char [][] board) {
+        String divider = "=|-----|-----|-----|-----|-----|-----|-----|-----|=\n";
         StringBuilder str = new StringBuilder();
-        str.append("  0 1 2 3 4 5 6 7\n");
+        str.append("    0     1     2     3     4     5     6     7\n");
         for(int i = 0; i < board.length; i++) {
-            str.append(i).append(" ");
+            str.append(divider).append(i);
             for(int j = 0; j < board[i].length; j++) {
                 char piece = board[i][j];
                 if(piece != '-') {
-                    str.append(piece);
+                    str.append("|  ").append(piece);
                 } else {
-                    str.append(" ");
+                    str.append("|   ");
                 }
-                str.append(" ");
+                if(j != 7) str.append("  ");
+                else str.append("  |");
             }
+            str.append(8-i);
             str.append("\n");
         }
-        str.append("\n");
+        str.append(divider);
+        str.append("    a     b     c     d     e     f     g     h\n");
 
         return str.toString();
     }
