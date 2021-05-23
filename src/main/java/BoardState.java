@@ -178,7 +178,7 @@ public class BoardState {
         }
 
         //Castling
-        if(Character.toLowerCase(selected) == 'k' && (dCol == 2 || dCol == 6)) {
+        if(Character.toLowerCase(selected) == 'k' && (move.origin.row == 0 || move.origin.row == 7) && (dCol == 2 || dCol == 6)) {
             if (MoveGenerator.isWhite(selected)) {
                 whiteCastling = CastlingRights.NONE;
             } else {
