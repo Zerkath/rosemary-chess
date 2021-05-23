@@ -60,4 +60,11 @@ public class UCI_Test {
         uci.handleMessage(pgn);
         Assertions.assertEquals("Bnbqkbnr/p1p1pppp/1p1p4/8/8/6P1/PPPPPP1P/RNBQK1NR b KQk - 0 3", uci.getFen());
     }
+
+    @Test
+    void leftEdgeEnPassant() {
+        String pgn = "position startpos moves c2c4 b7b5 c4b5 a7a5";
+        uci.handleMessage(pgn);
+        Assertions.assertEquals("rnbqkbnr/2pppppp/8/pP6/8/8/PP1PPPPP/RNBQKBNR w KQkq a6 0 3", uci.getFen());
+    }
 }
