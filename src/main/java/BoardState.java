@@ -150,7 +150,10 @@ public class BoardState {
             halfMove++;
         }
 
-        //todo check if en passant is being played
+        if(enPassant != null && enPassant.row == move.destination.row && enPassant.column == move.destination.column) {
+            int offSet = isWhite ? 1 : -1;
+            board[enPassant.row + offSet][enPassant.column] = '-';
+        }
 
         enPassant = null;
         //add En passant
