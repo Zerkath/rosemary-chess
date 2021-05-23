@@ -14,9 +14,7 @@ public class BoardState {
 
     Coordinate enPassant;
 
-    public BoardState() {
-
-    }
+    public BoardState() { }
 
     public BoardState(BoardState state) {
         setBoardState(state);
@@ -33,12 +31,6 @@ public class BoardState {
         this.previous = state.previous;
         for (int i = 0; i < state.board.length; i++) {
             System.arraycopy(state.board[i], 0, this.board[i], 0, state.board.length);
-        }
-    }
-
-    public BoardState(char[][] board) {
-        for (int i = 0; i < board.length; i++) {
-            System.arraycopy(board[i], 0, this.board[i], 0, board.length);
         }
     }
 
@@ -98,6 +90,44 @@ public class BoardState {
         setBoardState(previous);
     }
 
+    private void addEnPassantMove(boolean white, char destination, int dCol, int dRow) {
+        if(white && !MoveGenerator.isWhite(destination)) {
+            enPassant = new Coordinate(dCol, dRow+1);
+        }
+        if(!white && MoveGenerator.isWhite(destination)) {
+            enPassant = new Coordinate(dCol, dRow-1);
+        }
+    }
+
+    private void checkForCastlingRights(Coordinate origin) {
+        if(origin.row == 0 && origin.column == 0) { //black queen side rook
+            if(blackCastling == CastlingRights.BOTH) {
+                blackCastling = CastlingRights.KINGSIDE;
+            } else if(blackCastling == CastlingRights.QUEENSIDE) {
+                blackCastling = CastlingRights.NONE;
+            }
+        } else if(origin.row == 0 && origin.column == 7) { //black king side rook
+            if(blackCastling == CastlingRights.BOTH) {
+                blackCastling = CastlingRights.QUEENSIDE;
+            } else if(blackCastling == CastlingRights.KINGSIDE) {
+                blackCastling = CastlingRights.NONE;
+            }
+        } else if(origin.row == 7 && origin.column == 0) { //white queen side rook
+            if(whiteCastling == CastlingRights.BOTH) {
+                whiteCastling = CastlingRights.KINGSIDE;
+            } else if(whiteCastling == CastlingRights.QUEENSIDE) {
+                whiteCastling = CastlingRights.NONE;
+            }
+        } else if(origin.row == 7 && origin.column == 7) { //white king side rook
+            if(whiteCastling == CastlingRights.BOTH) {
+                whiteCastling = CastlingRights.QUEENSIDE;
+            } else if(whiteCastling == CastlingRights.KINGSIDE) {
+                whiteCastling = CastlingRights.NONE;
+            }
+        }
+    }
+
+
     public void movePiece(Move move) {
 
         previous = new BoardState(this);
@@ -105,11 +135,17 @@ public class BoardState {
         int dRow = move.destination.row;
         int dCol = move.destination.column;
         char selected = MoveGenerator.getCoordinate(move.origin, board);
+        boolean isWhite = MoveGenerator.isWhite(selected);
+
+        checkForCastlingRights(move.origin);
+
         if(Character.toLowerCase(selected) == 'p' || MoveGenerator.getCoordinate(move.destination, board) != '-') {
             halfMove = 0;
         } else {
             halfMove++;
         }
+
+        //todo check if en passant is being played
 
         enPassant = null;
         //add En passant
@@ -125,21 +161,11 @@ public class BoardState {
             }
 
             if(Character.toLowerCase(right) == 'p') {
-                if(white && !MoveGenerator.isWhite(right)) {
-                    enPassant = new Coordinate(dCol, dRow+1);
-                }
-                if(!white && MoveGenerator.isWhite(right)) {
-                    enPassant = new Coordinate(dCol, dRow-1);
-                }
+                addEnPassantMove(white, right, dCol, dRow);
             }
 
             if(Character.toLowerCase(left) == 'p') {
-                if(white && !MoveGenerator.isWhite(left)) {
-                    enPassant = new Coordinate(dCol, dRow+1);
-                }
-                if(!white && MoveGenerator.isWhite(left)) {
-                    enPassant = new Coordinate(dCol, dRow-1);
-                }
+                addEnPassantMove(white, left, dCol, dRow);
             }
         }
 
