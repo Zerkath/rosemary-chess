@@ -53,4 +53,11 @@ public class UCI_Test {
         Assertions.assertEquals("1nbqkbn1/rppppppr/p6p/8/8/P6P/RPPPPPPR/1NBQKBN1 w - - 4 5", uci.getFen());
 
     }
+
+    @Test
+    void blackQueensideRookCaptured() {
+        String pgn = "position startpos moves g2g3 b7b6 f1g2 d7d6 g2a8";//bishop capture
+        uci.handleMessage(pgn);
+        Assertions.assertEquals("Bnbqkbnr/p1p1pppp/1p1p4/8/8/6P1/PPPPPP1P/RNBQK1NR b KQk - 0 3", uci.getFen());
+    }
 }
