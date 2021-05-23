@@ -25,7 +25,15 @@ public class UCI_Controller {
         }
         if(split[0].equals("position")) {
             if(split[1].equals("fen")) {
-                setFen(message.substring(13));
+                int startIndex = message.indexOf('"') + 1;
+                int endIndex = message.indexOf('"', startIndex+1);
+                setFen(message.substring(startIndex, endIndex));
+                if(endIndex+2 < message.length()) {
+                    String [] moves = message.substring(endIndex+2).split(" ");
+                    for (int i = 1; i < moves.length; i++) {
+                        boardState.movePiece(Utils.parseCommand(moves[i]));
+                    }
+                }
                 return;
             }
 
