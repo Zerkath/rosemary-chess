@@ -244,7 +244,7 @@ public class MoveGenerator {
         if(locationIsEmpty(new Coordinate(col, nextRow), board)) {
             moves.add(new Move(origin, new Coordinate(col, nextRow)));
 
-            if((isWhite(orig) && row == 6) || (!isWhite(orig) && row == 1) && locationIsEmpty(new Coordinate(col, doubleJump), board)) {
+            if((isWhite(orig) && row == 6 || (!isWhite(orig) && row == 1)) && locationIsEmpty(new Coordinate(col, doubleJump), board)) {
                 //if at starting square and nothing in front
                 Coordinate destination = new Coordinate(col, doubleJump);
                 moves.add(new Move(origin, destination));
@@ -261,7 +261,7 @@ public class MoveGenerator {
         }
 
 
-        if(boardState.enPassant != null && row == enPassantRow) { //en passant behavior //todo fix currently doesnt work
+        if(boardState.enPassant != null && row == enPassantRow) {
             if(!leftEdge && opposingColourAndInbounds(new Coordinate(col-1, row), orig, board) && Character.toLowerCase(board[row][col-1]) == 'p') {
                 if(boardState.enPassant.column - 1 == col) {
                     moves.add(new Move(origin, new Coordinate(col+1, nextRow)));
