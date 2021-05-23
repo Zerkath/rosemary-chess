@@ -30,4 +30,27 @@ public class UCI_Test {
         Assertions.assertEquals("rnbqkbnr/pppp1pp1/7p/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 3", uci.getFen());
 
     }
+
+    @Test
+    void enPassantBlack() {
+        String pgn = "position startpos moves h2h3 d7d5 g2g3 d5d4 e2e4";
+        uci.handleMessage(pgn);
+        Assertions.assertEquals("rnbqkbnr/ppp1pppp/8/8/3pP3/6PP/PPPP1P2/RNBQKBNR b KQkq e3 0 3", uci.getFen());
+    }
+
+    @Test
+    void castlingRights() {
+        String pgn = "position startpos moves a2a3 a7a6 h2h3 h7h6"; //all pawns in front of rooks moved up by 1
+        uci.handleMessage(pgn);
+        Assertions.assertEquals("rnbqkbnr/1pppppp1/p6p/8/8/P6P/1PPPPPP1/RNBQKBNR w KQkq - 0 3", uci.getFen());
+        uci.handleMessage(pgn + " a1a2"); //white queenside
+        Assertions.assertEquals("rnbqkbnr/1pppppp1/p6p/8/8/P6P/RPPPPPP1/1NBQKBNR b Kkq - 1 3", uci.getFen());
+        uci.handleMessage(pgn + " h1h2"); //white kingside
+        Assertions.assertEquals("rnbqkbnr/1pppppp1/p6p/8/8/P6P/1PPPPPPR/RNBQKBN1 b Qkq - 1 3", uci.getFen());
+        uci.handleMessage(pgn + " a1a2 a8a7"); //white and black queenside
+        Assertions.assertEquals("1nbqkbnr/rpppppp1/p6p/8/8/P6P/RPPPPPP1/1NBQKBNR w Kk - 2 4", uci.getFen());
+        uci.handleMessage(pgn + " a1a2 a8a7 h1h2 h8h7"); //no castling
+        Assertions.assertEquals("1nbqkbn1/rppppppr/p6p/8/8/P6P/RPPPPPPR/1NBQKBN1 w - - 4 5", uci.getFen());
+
+    }
 }
