@@ -315,13 +315,6 @@ public class MoveGenerator {
             }
         }
 
-        if(Character.isLowerCase(orig)) {
-            Utils.printBoard(boardState);
-            for (Move move: moves) {
-                System.out.println(Utils.parseCommand(move));
-            }
-        }
-
         //castling
         if(col == 4) { //only check if the king is in the original position and hasn't moved
             char [] backRow = board[row];
