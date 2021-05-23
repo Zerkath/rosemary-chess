@@ -33,15 +33,13 @@ public class MoveGenerationTests {
 
         //rnbqkbnr/ppppppp1/7p/8/8/P4P2/1PPPP1PP/RNBQKBNR b KQkq - 0 2
         String test = "6pr/8/7p/8/8/7P/8/6PR w - - 0 1";
-
-        Utils.printBoard(Utils.parseFen(d_fen));
         return new BoardState(Utils.parseFen(d_fen));
     }
 
     @Test
     void movesToDepths() {
 
-        int [] depth = new int[5];
+        int [] depth = new int[6];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
             depth[i] = recursion(i+1, getTestBoard(), i+1);
@@ -50,13 +48,12 @@ public class MoveGenerationTests {
 
         }
 
-
         Assertions.assertEquals(20, depth[0]);
         Assertions.assertEquals(400, depth[1]);
         Assertions.assertEquals(8902, depth[2]);
         Assertions.assertEquals(197281, depth[3]);
         Assertions.assertEquals(4865609, depth[4]);
-//        Assertions.assertEquals(119060324, depth[5]); //to slow to reach
+        Assertions.assertEquals(119060324, depth[5]); //too slow to reach
     }
 
     private int recursion(int depth, BoardState boardState, int start) {
