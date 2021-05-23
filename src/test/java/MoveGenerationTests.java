@@ -35,6 +35,13 @@ public class MoveGenerationTests {
         Assertions.assertEquals(23, moves.size());
     }
 
+    @Test
+    void kingUnderAttack() {
+        String position = "rnbq1bnr/pppkpppp/3pQ3/8/8/2P5/PP1PPPPP/RNB1KBNR b KQ - 3 3";
+        Moves moves = MoveGenerator.getLegalMoves(Utils.parseFen(position));
+        Assertions.assertEquals(4, moves.size());
+    }
+
     BoardState getTestBoard() {
         //startpos f2f3 h7h6 a2a3
 
@@ -46,7 +53,7 @@ public class MoveGenerationTests {
     @Test
     void movesToDepths() {
 
-        int [] depth = new int[6];
+        int [] depth = new int[5];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
             depth[i] = recursion(i+1, getTestBoard(), i+1);
@@ -60,7 +67,7 @@ public class MoveGenerationTests {
         Assertions.assertEquals(8902, depth[2]);
         Assertions.assertEquals(197281, depth[3]);
         Assertions.assertEquals(4865609, depth[4]);
-        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
+//        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
     }
 
     private int recursion(int depth, BoardState boardState, int start) {
