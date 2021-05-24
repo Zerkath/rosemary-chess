@@ -9,9 +9,6 @@ public class BoardState {
     CastlingRights whiteCastling = CastlingRights.NONE;
     CastlingRights blackCastling = CastlingRights.NONE;
 
-    boolean [][] whiteAttacks = new boolean[8][];
-    boolean [][] blackAttacks = new boolean[8][];
-
     int turnNumber = 1;
     int halfMove = 0;
 
