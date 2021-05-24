@@ -412,37 +412,96 @@ public class MoveGenerator {
             sixth = 2;
             seventh = 1;
         }
-        return(board[seventh][2] == oK || board[seventh][6] == oK || board[sixth][3] == oK || board[sixth][5] == oK || board[sixth][4] == oK || board[seventh][4] == oK || board[seventh][4] == p);
+        return(board[seventh][2] == oK ||
+                board[seventh][6] == oK ||
+                board[sixth][3] == oK ||
+                board[sixth][5] == oK ||
+                board[sixth][4] == oK ||
+                board[seventh][4] == oK ||
+                board[seventh][3] == p ||
+                board[seventh][4] == p ||
+                board[seventh][5] == p);
     }
 
     static private boolean leftCastlingStoppedByKnight(boolean isWhite, char[][] board) {
 
         int sixth, seventh;
         char oK;
+        char p;
         if(isWhite) {
             oK = 'n';
+            p = 'p';
             sixth = 5;
             seventh = 6;
         } else {
             oK = 'N';
+            p = 'P';
             sixth = 2;
             seventh = 1;
         }
-        return(board[seventh][0] == oK || board[seventh][1] == oK || board[sixth][1] == oK || board[sixth][2] == oK || board[seventh][5] == oK);
+        return(board[seventh][0] == oK ||
+                board[seventh][1] == oK ||
+                board[sixth][1] == oK ||
+                board[sixth][2] == oK ||
+                board[seventh][5] == oK ||
+                board[seventh][1] == p ||
+                board[seventh][2] == p);
     }
+
     static private boolean rightCastlingStoppedByKnight(boolean isWhite, char[][] board) {
         int sixth, seventh;
         char oK;
+        char p;
         if(isWhite) {
             oK = 'n';
+            p = 'p';
             sixth = 5;
             seventh = 6;
         } else {
             oK = 'N';
+            p = 'P';
             sixth = 2;
             seventh = 1;
         }
-        return(board[seventh][3] == oK || board[seventh][7] == oK || board[sixth][6] == oK || board[sixth][7] == oK);
+        return(board[seventh][3] == oK ||
+                board[seventh][7] == oK ||
+                board[sixth][6] == oK ||
+                board[sixth][7] == oK ||
+                board[seventh][6] == p);
+    }
+
+    static private boolean backRankThreat(boolean isWhite, char[][] board) {
+        int backrank;
+        char oppRook;
+        char oppQueen;
+        if(isWhite) {
+            backrank = 7;
+            oppRook = 'r';
+            oppQueen = 'q';
+        } else {
+            backrank = 0;
+            oppRook = 'R';
+            oppQueen = 'Q';
+        }
+        for (int i = 3; i >= 0; i--) {
+            char piece = board[backrank][i];
+            if (piece == oppQueen || piece == oppRook) {
+                return true;
+            }
+            if(piece != '-') {
+                break;
+            }
+        }
+        for (int i = 5; i <= 7; i++) {
+            char piece = board[backrank][i];
+            if (piece == oppQueen || piece == oppRook) {
+                return true;
+            }
+            if(piece != '-') {
+                break;
+            }
+        }
+        return false;
     }
 
     static private boolean leftCastlingStoppedVertically(boolean isWhite, char[][] board) {
