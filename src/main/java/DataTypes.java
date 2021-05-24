@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 class Coordinate {
@@ -28,9 +29,9 @@ class Move {
     char promotion;
 }
 
-class Moves extends LinkedList<Move>{}
+class Moves extends ArrayList<Move> {}
 
-class MoveSequenceList extends LinkedList<Moves> {}
+class MoveSequenceList extends ArrayList<Moves> {}
 
 enum PlayerTurn {
     WHITE,

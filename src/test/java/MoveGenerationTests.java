@@ -18,7 +18,7 @@ public class MoveGenerationTests {
     @Order(2)
     void blackStartMoves() {
         game = new BoardState(Utils.parseFen(d_fen));
-        game.movePiece(Utils.parseCommand("d2d4"));
+        game.makeMove(Utils.parseCommand("d2d4"));
         Moves moves = MoveGenerator.getAllMoves(game);
         Assertions.assertEquals(20, moves.size());
     }
@@ -27,8 +27,8 @@ public class MoveGenerationTests {
     @Order(3)
     void whiteMovesAfter_d2d4_e7e5() {
         game = new BoardState(Utils.parseFen(d_fen));
-        game.movePiece(Utils.parseCommand("d2d4"));
-        game.movePiece(Utils.parseCommand("e7e5"));
+        game.makeMove(Utils.parseCommand("d2d4"));
+        game.makeMove(Utils.parseCommand("e7e5"));
         Moves moves = MoveGenerator.getAllMoves(game);
         Assertions.assertEquals(29, moves.size());
     }
@@ -215,7 +215,7 @@ public class MoveGenerationTests {
         int numPositions = 0;
 
         for (Move move: moves) {
-            boardState.movePiece(move);
+            boardState.makeMove(move);
             int result = recursion(depth-1, boardState, start);
             if(depth == start) System.out.println(Utils.parseCommand(move) + ": " + result);
             numPositions += result;
