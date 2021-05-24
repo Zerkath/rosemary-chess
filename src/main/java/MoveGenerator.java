@@ -504,6 +504,91 @@ public class MoveGenerator {
         return false;
     }
 
+    static private boolean leftCastlingStoppedByRookOrQueen(boolean isWhite, char[][] board) {
+        int backRank;
+        int iteration;
+        char oR;
+        char oQ;
+        int oppBackRank;
+
+        if(isWhite) {
+            oR = 'r';
+            oQ = 'q';
+            backRank = 7;
+            iteration = -1;
+            oppBackRank = 0;
+        } else {
+            oR = 'R';
+            oQ = 'Q';
+            backRank = 0;
+            iteration = 1;
+            oppBackRank = 7;
+        }
+
+        for(int i = backRank; i != oppBackRank; i += iteration) {
+            char piece = board[i][2];
+            if(piece == oR || piece == oQ) {
+                return true;
+            } else if(piece != '-') {
+                break;
+            }
+        }
+
+        for(int i = backRank; i != oppBackRank; i += iteration) {
+            char piece = board[i][3];
+            if(piece == oR || piece == oQ) {
+                return true;
+            } else if(piece != '-') {
+                break;
+            }
+        }
+
+        return false;
+
+    }
+
+    static private boolean rightCastlingStoppedByRookOrQueen(boolean isWhite, char[][] board) {
+        int backRank;
+        int iteration;
+        char oR;
+        char oQ;
+        int oppBackRank;
+
+        if(isWhite) {
+            oR = 'r';
+            oQ = 'q';
+            backRank = 7;
+            iteration = -1;
+            oppBackRank = 0;
+        } else {
+            oR = 'R';
+            oQ = 'Q';
+            backRank = 0;
+            iteration = 1;
+            oppBackRank = 7;
+        }
+
+        for(int i = backRank; i != oppBackRank; i += iteration) {
+            char piece = board[i][5];
+            if(piece == oR || piece == oQ) {
+                return true;
+            } else if(piece != '-') {
+                break;
+            }
+        }
+
+        for(int i = backRank; i != oppBackRank; i += iteration) {
+            char piece = board[i][6];
+            if(piece == oR || piece == oQ) {
+                return true;
+            } else if(piece != '-') {
+                break;
+            }
+        }
+
+        return false;
+
+    }
 
     static public Moves getAllMoves(BoardState boardState) {
 
