@@ -67,4 +67,11 @@ public class UCI_Test {
         uci.handleMessage(pgn);
         Assertions.assertEquals("rnbqkbnr/2pppppp/8/pP6/8/8/PP1PPPPP/RNBQKBNR w KQkq a6 0 3", uci.getFen());
     }
+
+    @Test
+    void castlingRightsKingMoved() {
+        String pgn = "position fen \"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1\" moves f3h3 e8f8 h3h8";
+        uci.handleMessage(pgn);
+        Assertions.assertEquals("r4k1Q/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N5/PPPBBPPP/R3K2R b KQ - 0 2", uci.getFen());
+    }
 }
