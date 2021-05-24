@@ -526,13 +526,13 @@ public class MoveGenerator {
             oQ = 'q';
             backRank = 6;
             iteration = -1;
-            oppBackRank = 0;
+            oppBackRank = -1;
         } else {
             oR = 'R';
             oQ = 'Q';
             backRank = 1;
             iteration = 1;
-            oppBackRank = 7;
+            oppBackRank = 8;
         }
 
         for (int j = startIndex; j <= endIndex; j++) {
