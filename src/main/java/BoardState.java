@@ -164,8 +164,7 @@ public class BoardState {
 
         enPassant = null;
         //add En passant
-        if(Character.toLowerCase(selected) == 'p' && (move.origin.row == 6 && move.destination.row == 4) || (move.origin.row == 1 && move.destination.row == 3)) {
-            boolean white = MoveGenerator.isWhite(selected);
+        if(Character.toLowerCase(selected) == 'p' && ((move.origin.row == 6 && move.destination.row == 4) || (move.origin.row == 1 && move.destination.row == 3))) {
             char right = '-';
             char left = '-';
             if(dCol == 0) right = board[dRow][dCol+1];
@@ -176,11 +175,11 @@ public class BoardState {
             }
 
             if(Character.toLowerCase(right) == 'p') {
-                addEnPassantMove(white, right, dCol, dRow);
+                addEnPassantMove(isWhite, right, dCol, dRow);
             }
 
             if(Character.toLowerCase(left) == 'p') {
-                addEnPassantMove(white, left, dCol, dRow);
+                addEnPassantMove(isWhite, left, dCol, dRow);
             }
         }
 
