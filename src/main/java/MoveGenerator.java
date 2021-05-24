@@ -349,20 +349,28 @@ public class MoveGenerator {
         }
 
         //castling
-        if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) {
-            if(col == 4 && ((isWhite && row == 7) || (!isWhite && row == 0)) && !bothCastlingsStoppedByKnight(isWhite, board)) { //only check if the king is in the original position and hasn't moved
+        if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) { //todo add rook and bishop checks
+            if(col == 4 && ((isWhite && row == 7) || (!isWhite && row == 0)) && !bothCastlingsStoppedByKnight(isWhite, board))  { //only check if the king is in the original position and hasn't moved
                 char [] backRow = board[row];
 
                 boolean qSide = Character.toLowerCase(backRow[0]) == 'r' &&
                         !isOpposingColor(orig, backRow[0]) &&
                         backRow[1] == '-' &&
                         backRow[2] == '-' &&
-                        backRow[3] == '-';
+                        backRow[3] == '-' &&
+                        !backRankThreat(isWhite, board) &&
+                        !leftCastlingStoppedByKnight(isWhite, board) &&
+                        !leftCastlingStoppedByRookOrQueen(isWhite, board);
+                //todo add bishop
 
                 boolean kSide = Character.toLowerCase(backRow[7]) == 'r' &&
                         !isOpposingColor(orig, backRow[7]) &&
                         backRow[6] == '-' &&
-                        backRow[5] == '-';
+                        backRow[5] == '-' &&
+                        !backRankThreat(isWhite, board) &&
+                        !rightCastlingStoppedByKnight(isWhite, board) &&
+                        !rightCastlingStoppedByRookOrQueen(isWhite, board);
+                //todo add bishop
 
                 CastlingRights current = null;
 
