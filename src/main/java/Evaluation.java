@@ -3,12 +3,11 @@ import java.util.LinkedList;
 
 public class Evaluation {
 
-    //eval values TODO optimize
     static final int ePawn = 100;
-    static final int eKnight = 180;
-    static final int eBishop = 220;
-    static final int eRook = 400;
-    static final int eQueen = 780;
+    static final int eKnight = 300;
+    static final int eBishop = 310;
+    static final int eRook = 500;
+    static final int eQueen = 900;
 
     int threadCount;
 
@@ -20,7 +19,30 @@ public class Evaluation {
 
 
     static public int calculateEvaluation(BoardState board) {
-        return calculateMaterial(board);
+        int negation = board.turn == PlayerTurn.BLACK ? -1 : 1;
+        Moves moves = MoveGenerator.getLegalMoves(board);
+        int options = (moves.size() * negation * 2);
+        int centralControl = calculatePiecesInMiddle(board);
+        int materialAdvantage = calculateMaterial(board);
+        return options+materialAdvantage+centralControl;
+    }
+
+    static private int calculatePiecesInMiddle(BoardState board) {
+        char [][] data = board.board;
+        int value = 0;
+        for (int i = 2; i < 6; i++) {
+            for (int j = 2; j < 6; j++) {
+                char piece = data[i][j];
+                if(piece != '-') {
+                    if(Character.isLowerCase(piece)) {
+                        value -= 30;
+                    } else {
+                        value += 30;
+                    }
+                }
+            }
+        }
+        return value;
     }
 
     static public int calculateMaterial(BoardState curr) { //+ if white, -if black
