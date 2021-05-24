@@ -536,7 +536,7 @@ public class MoveGenerator {
         }
 
         for (int j = startIndex; j < endIndex; j++) {
-            for(int i = backRank; i != oppBackRank; i += iteration) {
+            for(int i = backRank; i != oppBackRank+iteration; i += iteration) {
                 char piece = board[i][j];
                 if(piece == oR || piece == oQ) return true;
                 if(piece != '-') break;
@@ -561,24 +561,25 @@ public class MoveGenerator {
     static private boolean isThreatenedDiagonally(boolean isWhite, char[][] board, int startIndex, int endIndex) {
 
         char oB, oQ, k;
-        int horIndex, verIndex, verIteration;
+        int horIndex, verStart, verIteration, verIndex;
 
         if(isWhite) {
             oB = 'b';
             oQ = 'q';
             k = 'K';
             verIteration = -1;
-            verIndex = 7;
+            verStart = 6;
         } else {
             oB = 'B';
             oQ = 'Q';
             k = 'k';
             verIteration = 1;
-            verIndex = 0;
+            verStart = 1;
         }
 
         for(int i = startIndex; i <= endIndex; i++) {
-            horIndex = i;
+            horIndex = i - 1;
+            verIndex = verStart;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
                 char piece = board[verIndex][horIndex];
 
@@ -588,7 +589,8 @@ public class MoveGenerator {
                 horIndex--;
                 verIndex += verIteration;
             }
-            horIndex = i;
+            horIndex = i + 1;
+            verIndex = verStart;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
                 char piece = board[verIndex][horIndex];
 
