@@ -657,4 +657,30 @@ public class MoveGenerator {
             default: return null;
         }
     }
+
+    static public int minimax(BoardState board, int depth) {
+
+        if(depth == 0) {
+            return board.eval;
+        }
+
+        Moves moves = MoveGenerator.getLegalMoves(board);
+
+        BoardState[] boards = new BoardState[moves.size()];
+
+        int index = 0;
+        for(Move newMove : moves) {
+            boards[index] = new BoardState(board);
+            boards[index].movePiece(newMove);
+            index++;
+        }
+
+        if(board.turn == PlayerTurn.WHITE) {
+
+
+        } else {
+
+        }
+
+    }
 }
