@@ -445,7 +445,7 @@ public class MoveGenerator {
         return(board[seventh][3] == oK || board[seventh][7] == oK || board[sixth][6] == oK || board[sixth][7] == oK);
     }
 
-    static private boolean leftCastlingStoppedByRookOrQueen(boolean isWhite, char[][] board) {
+    static private boolean leftCastlingStoppedVertically(boolean isWhite, char[][] board) {
         int backRank;
         int iteration;
         char oR;
@@ -488,11 +488,9 @@ public class MoveGenerator {
 
     }
 
-    static private boolean rightCastlingStoppedByRookOrQueen(boolean isWhite, char[][] board) {
-        int backRank;
-        int iteration;
-        char oR;
-        char oQ;
+    static private boolean rightCastlingStoppedVertically(boolean isWhite, char[][] board) {
+        int backRank, iteration;
+        char oR, oQ;
         int oppBackRank;
 
         if(isWhite) {
@@ -529,6 +527,61 @@ public class MoveGenerator {
 
         return false;
 
+    }
+
+    static private boolean leftCastlingStoppedDiagonally(boolean isWhite, char[][] board) {
+
+        return isThreatenedDiagonally(isWhite, board, 2, 3);
+
+    }
+
+    static private boolean rightCastlingStoppedDiagonally(boolean isWhite, char[][] board) {
+
+        return isThreatenedDiagonally(isWhite, board, 5, 6);
+
+    }
+
+    static private boolean isThreatenedDiagonally(boolean isWhite, char[][] board, int startIndex, int endIndex) {
+
+        char oB, oQ;
+        int horIndex, verIndex, verIteration;
+        int verIndexWhite = 7;
+        int verIndexBlack = 0;
+
+        if(isWhite) {
+            oB = 'b';
+            oQ = 'q';
+            verIteration = -1;
+            verIndex = verIndexWhite;
+        } else {
+            oB = 'B';
+            oQ = 'Q';
+            verIteration = 1;
+            verIndex = verIndexBlack;
+        }
+
+        for(int i = startIndex; i <= endIndex; i++) {
+            horIndex = i;
+            while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
+                char piece = board[verIndex][horIndex];
+
+                if(piece == oB || piece == oQ) return true;
+                if(piece != '-') break;
+
+                horIndex --;
+                verIndex += verIteration;
+            }
+            while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
+                char piece = board[verIndex][horIndex];
+
+                if(piece == oB || piece == oQ) return true;
+                if(piece != '-') break;
+
+                horIndex ++;
+                verIndex += verIteration;
+            }
+        }
+        return false;
     }
 
     static public Moves getAllMoves(BoardState boardState) {
