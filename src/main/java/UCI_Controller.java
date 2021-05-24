@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class UCI_Controller {
     public BoardState boardState;
     public boolean uci_mode;
@@ -30,18 +32,16 @@ public class UCI_Controller {
                 setFen(message.substring(startIndex, endIndex));
                 if(endIndex+2 < message.length()) {
                     String [] moves = message.substring(endIndex+2).split(" ");
-                    for (int i = 1; i < moves.length; i++) {
-                        boardState.movePiece(Utils.parseCommand(moves[i]));
-                    }
+                    moves = Arrays.copyOfRange(moves, 1, moves.length);
+                    boardState.playMoves(moves);
                 }
                 return;
             }
 
             if(split[1].equals("startpos")) {
                 setFen(defaultBoard);
-                for (int i = 3; i < split.length; i++) {
-                    boardState.movePiece(Utils.parseCommand(split[i]));
-                }
+                String [] moves = Arrays.copyOfRange(split, 3, split.length);
+                boardState.playMoves(moves);
                 return;
             }
         }
@@ -75,6 +75,9 @@ public class UCI_Controller {
         if(split[0].equals("quit")) {
             System.exit(0);
         }
+        if(split[0].equals("ucinewgame")) {
+            return;
+        }
         System.out.println("COMMANDNOTRECOGNIZED");
     }
 
@@ -104,9 +107,10 @@ public class UCI_Controller {
     }
 
     public void startEval(int depth) {
-        eval.assignNewTask(boardState);
-        eval.setDepth(depth);
-        eval.startEvaluation();
+//        eval.assignNewTask(boardState);
+//        eval.setDepth(depth);
+//        eval.startEvaluation();
+        endEval();
     }
 
     public int runPerft(int depth, int start, boolean print) {
@@ -127,7 +131,8 @@ public class UCI_Controller {
     }
 
     public void endEval() {
-        Move bestMove = eval.endEvaluation();
+//        Move bestMove = eval.endEvaluation();
+        Move bestMove =  MoveGenerator.getLegalMoves(boardState).peek();
         System.out.print("bestmove " + Utils.parseCommand(bestMove));
         System.out.print('\n');
     }

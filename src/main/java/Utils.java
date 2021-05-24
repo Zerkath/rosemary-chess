@@ -30,11 +30,19 @@ class Utils {
     }
 
     static public String parseCommand(Move move) {
-        return parseCoordinate(move.origin) + parseCoordinate(move.destination);
+        String sMove = parseCoordinate(move.origin) + parseCoordinate(move.destination);
+        if(move.promotion != '-') {
+            sMove += Character.toLowerCase(move.promotion);
+        }
+        return sMove;
     }
 
     static public Move parseCommand(String command) {
-        return new Move(parseCoordinate(command.substring(0, 2)), parseCoordinate(command.substring(2, 4)));
+        Move move = new Move(parseCoordinate(command.substring(0, 2)), parseCoordinate(command.substring(2, 4)));
+        if(command.length() == 5) {
+            move.promotion = command.charAt(4);
+        }
+        return move;
     }
 
     static public String toFenString(BoardState boardState) {
@@ -135,6 +143,7 @@ class Utils {
     }
 
     static public void printBoard(BoardState board) {
+        System.out.println(Utils.toFenString(board));
         System.out.println(getVisualBoardString(board.board));
     }
 
