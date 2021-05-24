@@ -4,13 +4,12 @@ import java.util.LinkedList;
 public class Evaluation {
 
     //eval values TODO optimize
-    final int ePawn = 100;
-    final int eKnight = 180;
-    final int eBishop = 220;
-    final int eRook = 400;
-    final int eQueen = 780;
-    final int eKing = 10000;
-
+    static final int ePawn = 100;
+    static final int eKnight = 180;
+    static final int eBishop = 220;
+    static final int eRook = 400;
+    static final int eQueen = 780;
+    static final int eKing = 10000;
 
     int threadCount;
     int depthCount = 0;
@@ -96,7 +95,13 @@ public class Evaluation {
         this.threadCount = threads;
     }
 
-    public int calculateMaterial(BoardState curr) {
+    static public int calculateEvaluation(BoardState board) {
+        int eval = calculateMaterial(board);
+
+        return eval;
+    }
+
+    static public int calculateMaterial(BoardState curr) {
         int result = 0;
         int [] arr = curr.countPieces();
         result += arr[3] * ePawn;
