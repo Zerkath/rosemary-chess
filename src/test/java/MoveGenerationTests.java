@@ -129,6 +129,83 @@ public class MoveGenerationTests {
 //        Assertions.assertEquals(193690690, depth[4]);
     }
 
+    @Test
+    @Order(102)
+    void movesFromPosition2() {
+        int [] depth = new int[6];
+        for (int i = 0; i < depth.length; i++) {
+            long start = System.currentTimeMillis();
+            depth[i] = recursion(i+1, getTestBoard("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"), i+1);
+            long end = System.currentTimeMillis();
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+
+        }
+
+        Assertions.assertEquals(14, depth[0]);
+        Assertions.assertEquals(191, depth[1]);
+        Assertions.assertEquals(2812, depth[2]);
+        Assertions.assertEquals(43238, depth[3]);
+        Assertions.assertEquals(674624, depth[4]);
+        Assertions.assertEquals(11030083, depth[5]);
+    }
+
+    @Test
+    @Order(103)
+    void movesFromPosition3() {
+        int [] depth = new int[4];
+        for (int i = 0; i < depth.length; i++) {
+            long start = System.currentTimeMillis();
+            depth[i] = recursion(i+1, getTestBoard("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"), i+1);
+            long end = System.currentTimeMillis();
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+
+        }
+
+        Assertions.assertEquals(6, depth[0]);
+        Assertions.assertEquals(264, depth[1]);
+        Assertions.assertEquals(9467, depth[2]);
+        Assertions.assertEquals(422333, depth[3]);
+//        Assertions.assertEquals(15833292, depth[4]);
+    }
+
+    @Test
+    @Order(104)
+    void movesFromPosition3mirrored() {
+        int [] depth = new int[4];
+        for (int i = 0; i < depth.length; i++) {
+            long start = System.currentTimeMillis();
+            depth[i] = recursion(i+1, getTestBoard("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1"), i+1);
+            long end = System.currentTimeMillis();
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+
+        }
+
+        Assertions.assertEquals(6, depth[0]);
+        Assertions.assertEquals(264, depth[1]);
+        Assertions.assertEquals(9467, depth[2]);
+        Assertions.assertEquals(422333, depth[3]);
+//        Assertions.assertEquals(15833292, depth[4]);
+    }
+
+    @Test
+    @Order(105)
+    void movesFromPosition4() {
+        int [] depth = new int[4];
+        for (int i = 0; i < depth.length; i++) {
+            long start = System.currentTimeMillis();
+            depth[i] = recursion(i+1, getTestBoard("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8"), i+1);
+            long end = System.currentTimeMillis();
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+
+        }
+
+        Assertions.assertEquals(44, depth[0]);
+        Assertions.assertEquals(1486, depth[1]);
+        Assertions.assertEquals(62379, depth[2]);
+        Assertions.assertEquals(2103487, depth[3]);
+//        Assertions.assertEquals(89941194, depth[4]);
+    }
+
     private int recursion(int depth, BoardState boardState, int start) {
 
         if(depth <= 0) {
