@@ -350,7 +350,7 @@ public class MoveGenerator {
 
         //castling
         if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) { //todo add rook and bishop checks
-            if(col == 4 && ((isWhite && row == 7) || (!isWhite && row == 0)) && !bothCastlingsStoppedByKnight(isWhite, board))  { //only check if the king is in the original position and hasn't moved
+            if(col == 4 && ((isWhite && row == 7) || (!isWhite && row == 0)) && !bothCastlingsStoppedByKnight(isWhite, board) && !inCheckVertically(isWhite, board) && !inCheckDiagonally(isWhite, board))  { //only check if the king is in the original position and hasn't moved
                 char [] backRow = board[row];
 
                 boolean qSide = Character.toLowerCase(backRow[0]) == 'r' &&
@@ -360,8 +360,8 @@ public class MoveGenerator {
                         backRow[3] == '-' &&
                         !backRankThreat(isWhite, board) &&
                         !leftCastlingStoppedByKnight(isWhite, board) &&
-                        !leftCastlingStoppedByRookOrQueen(isWhite, board);
-                //todo add bishop
+                        !leftCastlingStoppedVertically(isWhite, board) &&
+                        !leftCastlingStoppedDiagonally(isWhite, board);
 
                 boolean kSide = Character.toLowerCase(backRow[7]) == 'r' &&
                         !isOpposingColor(orig, backRow[7]) &&
@@ -369,8 +369,8 @@ public class MoveGenerator {
                         backRow[5] == '-' &&
                         !backRankThreat(isWhite, board) &&
                         !rightCastlingStoppedByKnight(isWhite, board) &&
-                        !rightCastlingStoppedByRookOrQueen(isWhite, board);
-                //todo add bishop
+                        !rightCastlingStoppedVertically(isWhite, board) &&
+                        !rightCastlingStoppedDiagonally(isWhite, board);
 
                 CastlingRights current = null;
 
@@ -493,69 +493,30 @@ public class MoveGenerator {
         }
         for (int i = 3; i >= 0; i--) {
             char piece = board[backrank][i];
-            if (piece == oppQueen || piece == oppRook) {
-                return true;
-            }
-            if(piece != '-') {
-                break;
-            }
+            if (piece == oppQueen || piece == oppRook) return true;
+            if(piece != '-') break;
         }
         for (int i = 5; i <= 7; i++) {
             char piece = board[backrank][i];
-            if (piece == oppQueen || piece == oppRook) {
-                return true;
-            }
-            if(piece != '-') {
-                break;
-            }
+            if (piece == oppQueen || piece == oppRook) return true;
+            if(piece != '-') break;
         }
         return false;
     }
 
     static private boolean leftCastlingStoppedVertically(boolean isWhite, char[][] board) {
-        int backRank;
-        int iteration;
-        char oR;
-        char oQ;
-        int oppBackRank;
-
-        if(isWhite) {
-            oR = 'r';
-            oQ = 'q';
-            backRank = 7;
-            iteration = -1;
-            oppBackRank = 0;
-        } else {
-            oR = 'R';
-            oQ = 'Q';
-            backRank = 0;
-            iteration = 1;
-            oppBackRank = 7;
-        }
-
-        for(int i = backRank; i != oppBackRank; i += iteration) {
-            char piece = board[i][2];
-            if(piece == oR || piece == oQ) {
-                return true;
-            } else if(piece != '-') {
-                break;
-            }
-        }
-
-        for(int i = backRank; i != oppBackRank; i += iteration) {
-            char piece = board[i][3];
-            if(piece == oR || piece == oQ) {
-                return true;
-            } else if(piece != '-') {
-                break;
-            }
-        }
-
-        return false;
-
+        return isThreatenedVertically(isWhite, board, 2, 3);
     }
 
     static private boolean rightCastlingStoppedVertically(boolean isWhite, char[][] board) {
+        return isThreatenedVertically(isWhite, board, 5, 6);
+    }
+
+    static private boolean inCheckVertically(boolean isWhite, char [][] board) {
+        return isThreatenedVertically(isWhite, board, 4, 4);
+    }
+
+    static private boolean isThreatenedVertically(boolean isWhite, char[][] board, int startIndex, int endIndex) {
         int backRank, iteration;
         char oR, oQ;
         int oppBackRank;
@@ -574,57 +535,46 @@ public class MoveGenerator {
             oppBackRank = 7;
         }
 
-        for(int i = backRank; i != oppBackRank; i += iteration) {
-            char piece = board[i][5];
-            if(piece == oR || piece == oQ) {
-                return true;
-            } else if(piece != '-') {
-                break;
-            }
-        }
-
-        for(int i = backRank; i != oppBackRank; i += iteration) {
-            char piece = board[i][6];
-            if(piece == oR || piece == oQ) {
-                return true;
-            } else if(piece != '-') {
-                break;
+        for (int j = startIndex; j < endIndex; j++) {
+            for(int i = backRank; i != oppBackRank; i += iteration) {
+                char piece = board[i][j];
+                if(piece == oR || piece == oQ) return true;
+                if(piece != '-') break;
             }
         }
 
         return false;
-
     }
 
     static private boolean leftCastlingStoppedDiagonally(boolean isWhite, char[][] board) {
-
         return isThreatenedDiagonally(isWhite, board, 2, 3);
-
     }
 
     static private boolean rightCastlingStoppedDiagonally(boolean isWhite, char[][] board) {
-
         return isThreatenedDiagonally(isWhite, board, 5, 6);
+    }
 
+    static private boolean inCheckDiagonally(boolean isWhite, char[][] board) {
+        return isThreatenedDiagonally(isWhite, board, 4, 4);
     }
 
     static private boolean isThreatenedDiagonally(boolean isWhite, char[][] board, int startIndex, int endIndex) {
 
-        char oB, oQ;
+        char oB, oQ, k;
         int horIndex, verIndex, verIteration;
-        int verIndexWhite = 7;
-        int verIndexBlack = 0;
 
         if(isWhite) {
             oB = 'b';
             oQ = 'q';
+            k = 'K';
             verIteration = -1;
-            verIndex = verIndexWhite;
+            verIndex = 7;
         } else {
             oB = 'B';
             oQ = 'Q';
+            k = 'k';
             verIteration = 1;
-            verIndex = verIndexBlack;
+            verIndex = 0;
         }
 
         for(int i = startIndex; i <= endIndex; i++) {
@@ -635,16 +585,17 @@ public class MoveGenerator {
                 if(piece == oB || piece == oQ) return true;
                 if(piece != '-') break;
 
-                horIndex --;
+                horIndex--;
                 verIndex += verIteration;
             }
+            horIndex = i;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
                 char piece = board[verIndex][horIndex];
 
                 if(piece == oB || piece == oQ) return true;
                 if(piece != '-') break;
 
-                horIndex ++;
+                horIndex++;
                 verIndex += verIteration;
             }
         }
