@@ -161,7 +161,7 @@ public class BoardState {
             halfMove++;
         }
 
-        if(enPassant != null && enPassant.row == move.destination.row && enPassant.column == move.destination.column) {
+        if(Character.toLowerCase(selected) == 'p' && enPassant != null && enPassant.row == move.destination.row && enPassant.column == move.destination.column) {
             int offSet = isWhite ? 1 : -1;
             board[enPassant.row + offSet][enPassant.column] = '-';
         }
@@ -188,8 +188,8 @@ public class BoardState {
         }
 
         //Castling
-        if(Character.toLowerCase(selected) == 'k' && (move.origin.row == 0 || move.origin.row == 7) && (dCol == 2 || dCol == 6)) {
-            if (MoveGenerator.isWhite(selected)) {
+        if(Character.toLowerCase(selected) == 'k' && move.origin.column == 4 && ((move.origin.row == 0 && dRow == 0)  || move.origin.row == 7 && dRow == 7) && (dCol == 2 || dCol == 6)) {
+            if (isWhite) {
                 whiteCastling = CastlingRights.NONE;
             } else {
                 blackCastling = CastlingRights.NONE;
@@ -208,7 +208,7 @@ public class BoardState {
         }
 
         if(Character.toLowerCase(selected) == 'k') {
-            if(MoveGenerator.isWhite(selected)) {
+            if(isWhite) {
                 this.whiteCastling = CastlingRights.NONE;
             } else {
                 this.blackCastling = CastlingRights.NONE;
@@ -225,13 +225,6 @@ public class BoardState {
             }
         }
         replaceSquare(move.destination, piece);
-        Moves attacks = MoveGenerator.getPieceMoves(move.destination, this);
-        int kingRow = this.turn == PlayerTurn.WHITE ? 0 : 7;
-        for (Move attack: attacks) {
-            if(attack.destination.row == kingRow && attack.destination.column > 1 && attack.destination.column < 7) {
-
-            }
-        }
 
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;
