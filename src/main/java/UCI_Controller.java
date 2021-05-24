@@ -4,15 +4,13 @@ public class UCI_Controller {
     public BoardState boardState;
     public boolean uci_mode;
     public int threadCount = 2; //defaults
-    public int depth = 5;
+    public int depth = 4;
+    private int startingDepth = depth;
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    public Evaluation eval = new Evaluation(threadCount, 5);
-    private final String name = "Rosemary 1";
-    private final String authors = "Rosemary devs";
 
     public UCI_Controller() {
         boardState = new BoardState(Utils.parseFen(defaultBoard));
-        System.out.print(name + " by " + authors + "\n");
+//        System.out.print(name + " by " + authors + "\n");
     }
 
     public void setToDefault() {
@@ -39,7 +37,7 @@ public class UCI_Controller {
             }
 
             if(split[1].equals("startpos")) {
-                setFen(defaultBoard);
+                setToDefault();
                 String [] moves = Arrays.copyOfRange(split, 3, split.length);
                 boardState.playMoves(moves);
                 return;
@@ -50,11 +48,14 @@ public class UCI_Controller {
             return;
         }
         if(split[0].equals("go")) {
-            if(split[1].equals("perft")) {
-                int depth = Integer.parseInt(split[2]);
-                System.out.println("\nDepth " + depth + " nodes: " + runPerft(depth, depth, true));
-                return;
+            if(split.length > 2) {
+                if(split[1].equals("perft")) {
+                    int depth = Integer.parseInt(split[2]);
+                    System.out.println("\nDepth " + depth + " nodes: " + runPerft(depth, depth, true));
+                    return;
+                }
             }
+
             startEval();
             return;
         }
@@ -63,13 +64,15 @@ public class UCI_Controller {
             return;
         }
         if(split[0].equals("setoption")) {
-            if(split[2].equals("Threads")) {
-                this.threadCount = Integer.parseInt(split[4]);
-                return;
-            }
-            if(split[2].equals("Depth")) {
-                this.depth = Integer.parseInt(split[4]);
-                return;
+            if(split.length >= 4) {
+                if(split[2].equals("Threads")) {
+                    this.threadCount = Integer.parseInt(split[4]);
+                    return;
+                }
+                if(split[2].equals("Depth")) {
+                    this.depth = Integer.parseInt(split[4]);
+                    return;
+                }
             }
         }
         if(split[0].equals("quit")) {
@@ -91,8 +94,10 @@ public class UCI_Controller {
 
     public void setToUCI() {
         uci_mode = true;
-        System.out.print("id name Rosemary 1\n");
-        System.out.print("id author Rosemary Devs\n\n");
+        String name = "Rosemary";
+        System.out.print("id name " + name + '\n');
+        String authors = "Rosemary_devs";
+        System.out.print("id author " + authors + '\n');
         System.out.print("option name Threads type spin default 2 min 1 max 250\n");
         System.out.print("option name Depth type spin default 5 min 1 max 99\n");
         System.out.print("uciok\n");
@@ -107,10 +112,9 @@ public class UCI_Controller {
     }
 
     public void startEval(int depth) {
-//        eval.assignNewTask(boardState);
-//        eval.setDepth(depth);
-//        eval.startEvaluation();
-        endEval();
+        startingDepth = depth;
+        int eval = alphaBetaMax(this.boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+        System.out.println(eval);
     }
 
     public int runPerft(int depth, int start, boolean print) {
@@ -121,7 +125,7 @@ public class UCI_Controller {
         int numPositions = 0;
 
         for (Move move: moves) {
-            boardState.movePiece(move);
+            boardState.makeMove(move);
             int result = runPerft(depth-1, start, print);
             if(depth == start && print) System.out.println(Utils.parseCommand(move) + ": " + result);
             numPositions += result;
@@ -131,9 +135,44 @@ public class UCI_Controller {
     }
 
     public void endEval() {
-//        Move bestMove = eval.endEvaluation();
-        Move bestMove =  MoveGenerator.getLegalMoves(boardState).peek();
-        System.out.print("bestmove " + Utils.parseCommand(bestMove));
-        System.out.print('\n');
+    }
+
+    int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) {
+        if(depth == 0) return Evaluation.calculateEvaluation(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        Move bestMove = null;
+        for(Move move: moves) {
+            boardState.makeMove(move);
+            int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
+            boardState.unMakeMove();
+            if(eval >= beta) {
+                return beta;
+            }
+            if(eval > alpha) {
+                bestMove = move;
+                alpha = eval;
+            }
+        }
+        if(startingDepth == depth && bestMove != null) {
+            System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
+        }
+        return alpha;
+    }
+
+    int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) {
+        if(depth == 0) return -Evaluation.calculateEvaluation(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        for(Move move: moves) {
+            boardState.makeMove(move);
+            int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
+            boardState.unMakeMove();
+            if(eval <= alpha) {
+                return alpha;
+            }
+            if(eval < beta) {
+                beta = eval;
+            }
+        }
+        return beta;
     }
 }
