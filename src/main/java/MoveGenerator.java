@@ -198,12 +198,30 @@ public class MoveGenerator {
         return moves;
     }
 
+    static private Moves pawnPromotions(Move move, boolean isWhite) {
+        Moves moves = new Moves();
+        if(isWhite) {
+            moves.add(new Move(move.origin, move.destination, 'Q'));
+            moves.add(new Move(move.origin, move.destination, 'N'));
+            moves.add(new Move(move.origin, move.destination, 'R'));
+            moves.add(new Move(move.origin, move.destination, 'B'));
+        } else {
+            moves.add(new Move(move.origin, move.destination, 'q'));
+            moves.add(new Move(move.origin, move.destination, 'n'));
+            moves.add(new Move(move.origin, move.destination, 'r'));
+            moves.add(new Move(move.origin, move.destination, 'b'));
+        }
+        return moves;
+    }
+
     static public Moves pawnMoves(Coordinate origin, BoardState boardState) {
 
         char [][] board = boardState.board;
 
         Moves moves = new Moves();
         char orig = getCoordinate(origin, board);
+        boolean isWhite = isWhite(orig);
+        boolean promotion = false;
         int row = origin.row;
         int col = origin.column;
 
@@ -211,30 +229,35 @@ public class MoveGenerator {
         int doubleJump = row;
         int enPassantRow;
 
-        if(isWhite(orig)) {
+        if(isWhite) {
             nextRow -= 1;
             doubleJump -=2;
             enPassantRow = 3;
             if(nextRow == 0) {
-                //promotion todo
+                promotion = true;
             }
         } else {
             nextRow += 1;
             doubleJump +=2;
             enPassantRow = 4;
             if(nextRow == 7) {
-                //promotion todo
+                promotion = true;
             }
         }
 
         boolean leftEdge = col == 0;
         boolean rightEdge = col == 7;
 
-        if(!isCoordinateInBounds(new Coordinate(col, nextRow))) return moves;
+        if(!isCoordinateInBounds(new Coordinate(col, nextRow))) return moves; // if nextRow == -1 / 8
 
         //forward
         if(locationIsEmpty(new Coordinate(col, nextRow), board)) {
-            moves.add(new Move(origin, new Coordinate(col, nextRow)));
+            Move nextMove = new Move(origin, new Coordinate(col, nextRow));
+            if(promotion) {
+                moves.addAll(pawnPromotions(nextMove, isWhite));
+            } else {
+                moves.add(nextMove);
+            }
 
             if((isWhite(orig) && row == 6 || (!isWhite(orig) && row == 1)) && locationIsEmpty(new Coordinate(col, doubleJump), board)) {
                 //if at starting square and nothing in front
@@ -245,13 +268,22 @@ public class MoveGenerator {
 
         //captures
         if(!leftEdge && pawnCapturePossible(new Coordinate(col-1, nextRow), orig, board)) {
-            moves.add(new Move(origin, new Coordinate(col-1, nextRow)));
+            Move nextMove = new Move(origin, new Coordinate(col-1, nextRow));
+            if(promotion) {
+                moves.addAll(pawnPromotions(nextMove, isWhite));
+            } else {
+                moves.add(nextMove);
+            }
         }
 
         if(!rightEdge && pawnCapturePossible(new Coordinate(col+1, nextRow), orig, board)) {
-            moves.add(new Move(origin, new Coordinate(col+1, nextRow)));
+            Move nextMove = new Move(origin, new Coordinate(col+1, nextRow));
+            if(promotion) {
+                moves.addAll(pawnPromotions(nextMove, isWhite));
+            } else {
+                moves.add(nextMove);
+            }
         }
-
 
         if(boardState.enPassant != null && row == enPassantRow) {
 
@@ -303,6 +335,7 @@ public class MoveGenerator {
         Moves moves = new Moves();
 
         char orig = getCoordinate(origin, board);
+        boolean isWhite = isWhite(orig);
         int row = origin.row;
         int col = origin.column;
 
@@ -316,49 +349,100 @@ public class MoveGenerator {
         }
 
         //castling
-        if(col == 4) { //only check if the king is in the original position and hasn't moved
-            char [] backRow = board[row];
+        if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) {
+            if(col == 4 && ((isWhite && row == 7) || (!isWhite && row == 0)) && !bothCastlingsStoppedByKnight(isWhite, board)) { //only check if the king is in the original position and hasn't moved
+                char [] backRow = board[row];
 
-            boolean qSide = Character.toLowerCase(backRow[0]) == 'r' &&
-                    !isOpposingColor(orig, backRow[0]) &&
-                    backRow[1] == '-' &&
-                    backRow[2] == '-' &&
-                    backRow[3] == '-';
+                boolean qSide = Character.toLowerCase(backRow[0]) == 'r' &&
+                        !isOpposingColor(orig, backRow[0]) &&
+                        backRow[1] == '-' &&
+                        backRow[2] == '-' &&
+                        backRow[3] == '-';
 
-            boolean kSide = Character.toLowerCase(backRow[7]) == 'r' &&
-                    !isOpposingColor(orig, backRow[7]) &&
-                    backRow[6] == '-' &&
-                    backRow[5] == '-';
+                boolean kSide = Character.toLowerCase(backRow[7]) == 'r' &&
+                        !isOpposingColor(orig, backRow[7]) &&
+                        backRow[6] == '-' &&
+                        backRow[5] == '-';
 
-            CastlingRights current = null;
+                CastlingRights current = null;
 
-            if(isWhite(orig) && row == 7 && turn == PlayerTurn.WHITE) {
-                current = whiteCastling;
-            }
+                if(isWhite && turn == PlayerTurn.WHITE) {
+                    current = whiteCastling;
+                }
 
-            if(!isWhite(orig) && row == 0 && turn == PlayerTurn.BLACK) {
-                current = blackCastling;
-            }
+                if(!isWhite && turn == PlayerTurn.BLACK) {
+                    current = blackCastling;
+                }
 
-            if(current != null) {
-                switch (current) {
-                    case BOTH: {
-                        if(qSide) moves.add(new Move(origin, new Coordinate(2, row)));
-                        if(kSide) moves.add(new Move(origin, new Coordinate(6, row))); //king side
-                        break;
-                    }
-                    case KINGSIDE: {
-                        if(kSide) moves.add(new Move(origin, new Coordinate(6, row)));
-                        break;
-                    }
-                    case QUEENSIDE: {
-                        if(qSide) moves.add(new Move(origin, new Coordinate(2, row)));
-                        break;
+                if(current != null) {
+                    switch (current) {
+                        case BOTH: {
+                            if(qSide) moves.add(new Move(origin, new Coordinate(2, row)));
+                            if(kSide) moves.add(new Move(origin, new Coordinate(6, row))); //king side
+                            break;
+                        }
+                        case KINGSIDE: {
+                            if(kSide) moves.add(new Move(origin, new Coordinate(6, row)));
+                            break;
+                        }
+                        case QUEENSIDE: {
+                            if(qSide) moves.add(new Move(origin, new Coordinate(2, row)));
+                            break;
+                        }
                     }
                 }
             }
         }
+
         return moves;
+    }
+    static private boolean bothCastlingsStoppedByKnight(boolean isWhite, char[][] board) {
+
+        int sixth, seventh;
+        char oK;
+        char p;
+        if(isWhite) {
+            oK = 'n';
+            p = 'p';
+            sixth = 5;
+            seventh = 6;
+        } else {
+            oK = 'N';
+            p = 'P';
+            sixth = 2;
+            seventh = 1;
+        }
+        return(board[seventh][2] == oK || board[seventh][6] == oK || board[sixth][3] == oK || board[sixth][5] == oK || board[sixth][4] == oK || board[seventh][4] == oK || board[seventh][4] == p);
+    }
+
+    static private boolean leftCastlingStoppedByKnight(boolean isWhite, char[][] board) {
+
+        int sixth, seventh;
+        char oK;
+        if(isWhite) {
+            oK = 'n';
+            sixth = 5;
+            seventh = 6;
+        } else {
+            oK = 'N';
+            sixth = 2;
+            seventh = 1;
+        }
+        return(board[seventh][0] == oK || board[seventh][1] == oK || board[sixth][1] == oK || board[sixth][2] == oK || board[seventh][5] == oK);
+    }
+    static private boolean rightCastlingStoppedByKnight(boolean isWhite, char[][] board) {
+        int sixth, seventh;
+        char oK;
+        if(isWhite) {
+            oK = 'n';
+            sixth = 5;
+            seventh = 6;
+        } else {
+            oK = 'N';
+            sixth = 2;
+            seventh = 1;
+        }
+        return(board[seventh][3] == oK || board[seventh][7] == oK || board[sixth][6] == oK || board[sixth][7] == oK);
     }
 
     static public Moves getAllMoves(BoardState boardState) {

@@ -126,27 +126,27 @@ public class Evaluation {
         }
 
         public void run() {
-            while(!this.isInterrupted() && depthCount < depth) {
-                Moves moves = getNextMoveSequence();
-                BoardState game = new BoardState(Utils.parseFen(fen));
-                if(moves != null) {
-                    Moves copy = new Moves();
-
-                    while(moves.size() > 0) {
-                        Move move = moves.pop();
-                        copy.add(move);
-                        game.movePiece(move); //advance to current position
-                    }
-                    Moves newMoves = MoveGenerator.getAllMoves(game);
-                    while(newMoves.size() > 0) {
-                        Move move = newMoves.pop(); //get the next move
-                        Moves nextMoveSequence = new Moves(); //create new list
-                        nextMoveSequence.addAll(copy);
-                        nextMoveSequence.add(move); //add new move to the end
-                        addToNextMoves(nextMoveSequence); //add this to the next moves list
-                    }
-                }
-            }
+//            while(!this.isInterrupted() && depthCount < depth) {
+//                Moves moves = getNextMoveSequence();
+//                BoardState game = new BoardState(Utils.parseFen(fen));
+//                if(moves != null) {
+//                    Moves copy = new Moves();
+//
+//                    while(moves.size() > 0) {
+//                        Move move = moves.pop();
+//                        copy.add(move);
+//                        game.movePiece(move); //advance to current position
+//                    }
+//                    Moves newMoves = MoveGenerator.getAllMoves(game);
+//                    while(newMoves.size() > 0) {
+//                        Move move = newMoves.pop(); //get the next move
+//                        Moves nextMoveSequence = new Moves(); //create new list
+//                        nextMoveSequence.addAll(copy);
+//                        nextMoveSequence.add(move); //add new move to the end
+//                        addToNextMoves(nextMoveSequence); //add this to the next moves list
+//                    }
+//                }
+//            }
         }
     }
 }

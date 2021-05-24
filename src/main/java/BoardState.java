@@ -9,6 +9,9 @@ public class BoardState {
     CastlingRights whiteCastling = CastlingRights.NONE;
     CastlingRights blackCastling = CastlingRights.NONE;
 
+    boolean [][] whiteAttacks = new boolean[8][];
+    boolean [][] blackAttacks = new boolean[8][];
+
     int turnNumber = 1;
     int halfMove = 0;
 
@@ -86,6 +89,12 @@ public class BoardState {
         }
     }
 
+    public void playMoves(String [] moves) {
+        for (String move : moves) {
+            this.movePiece(Utils.parseCommand(move));
+        }
+    }
+
     public void unMakeMove() {
         setBoardState(previous);
     }
@@ -140,6 +149,7 @@ public class BoardState {
         int dRow = move.destination.row;
         int dCol = move.destination.column;
         char selected = MoveGenerator.getCoordinate(move.origin, board);
+        boolean isBeingPromoted = move.promotion != '-';
         boolean isWhite = MoveGenerator.isWhite(selected);
 
         checkForCastlingRights(move);
@@ -206,14 +216,29 @@ public class BoardState {
         }
 
         removePiece(move.origin);
-        replaceSquare(move.destination, selected);
+        char piece = selected;
+        if(isBeingPromoted) {
+            if(isWhite) {
+                piece = Character.toUpperCase(move.promotion);
+            } else {
+                piece = Character.toLowerCase(move.promotion);
+            }
+        }
+        replaceSquare(move.destination, piece);
+        Moves attacks = MoveGenerator.getPieceMoves(move.destination, this);
+        int kingRow = this.turn == PlayerTurn.WHITE ? 0 : 7;
+        for (Move attack: attacks) {
+            if(attack.destination.row == kingRow && attack.destination.column > 1 && attack.destination.column < 7) {
+
+            }
+        }
+
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;
             this.turn = PlayerTurn.WHITE;
         } else {
             this.turn = PlayerTurn.BLACK;
         }
-
     }
 
     private void removePiece(Coordinate coord) {

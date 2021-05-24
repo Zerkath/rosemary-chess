@@ -61,6 +61,19 @@ public class MoveGenerationTests {
 
     @Test
     @Order(6)
+    void PawnPromotion() {
+        BoardState boardState = new BoardState(Utils.parseFen("5q1q/6P1/8/8/8/8/8/8 w - - 0 1"));
+        Utils.printBoard(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        Assertions.assertEquals(12, moves.size());
+        for (Move move: moves) {
+            System.out.println(Utils.parseCommand(move));
+        }
+    }
+
+
+    @Test
+    @Order(100)
     void movesToDepth() {
 
         int [] depth = new int[5];
@@ -81,7 +94,7 @@ public class MoveGenerationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(101)
     void movesFromPosition1() {
         int [] depth = new int[4];
         for (int i = 0; i < depth.length; i++) {
