@@ -14,10 +14,13 @@ public class BoardState {
 
     Coordinate enPassant;
 
+    int eval;
+
     public BoardState() { }
 
     public BoardState(BoardState state) {
         setBoardState(state);
+        eval = Evaluation.calculateEvaluation(this);
     }
 
     public void setBoardState(BoardState state) {
@@ -32,6 +35,7 @@ public class BoardState {
         for (int i = 0; i < state.board.length; i++) {
             System.arraycopy(state.board[i], 0, this.board[i], 0, state.board.length);
         }
+        this.eval = Evaluation.calculateEvaluation(this);
     }
 
     public void setCastling(char [] castling) {
