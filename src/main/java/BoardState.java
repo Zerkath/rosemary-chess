@@ -1,5 +1,3 @@
-import java.util.LinkedList;
-
 public class BoardState {
     char[][] board = new char[8][8];
     BoardState previous;
@@ -12,15 +10,14 @@ public class BoardState {
     int turnNumber = 1;
     int halfMove = 0;
 
-    Coordinate enPassant;
+    boolean inCheck;
 
-    int eval;
+    Coordinate enPassant;
 
     public BoardState() { }
 
     public BoardState(BoardState state) {
         setBoardState(state);
-        eval = Evaluation.calculateEvaluation(this);
     }
 
     public void setBoardState(BoardState state) {
@@ -35,7 +32,6 @@ public class BoardState {
         for (int i = 0; i < state.board.length; i++) {
             System.arraycopy(state.board[i], 0, this.board[i], 0, state.board.length);
         }
-        this.eval = Evaluation.calculateEvaluation(this);
     }
 
     public void setCastling(char [] castling) {
@@ -92,7 +88,7 @@ public class BoardState {
 
     public void playMoves(String [] moves) {
         for (String move : moves) {
-            this.movePiece(Utils.parseCommand(move));
+            this.makeMove(Utils.parseCommand(move));
         }
     }
 
@@ -143,10 +139,11 @@ public class BoardState {
     }
 
 
-    public void movePiece(Move move) {
+    public void makeMove(Move move) {
 
         previous = new BoardState(this);
 
+        inCheck = false; //reset status
         int dRow = move.destination.row;
         int dCol = move.destination.column;
         char selected = MoveGenerator.getCoordinate(move.origin, board);
@@ -225,6 +222,44 @@ public class BoardState {
             }
         }
         replaceSquare(move.destination, piece);
+
+        if(this.turn == PlayerTurn.BLACK) {
+            turnNumber++;
+            this.turn = PlayerTurn.WHITE;
+        } else {
+            this.turn = PlayerTurn.BLACK;
+        }
+    }
+
+    public void makeMoveDoCheck(Move move) {
+        makeMove(move);
+        boolean isWhite = this.turn == PlayerTurn.WHITE;
+        inCheck(isWhite);
+    }
+
+    private void inCheck(boolean isWhite) {
+
+        if(this.turn == PlayerTurn.WHITE) {
+            turnNumber++;
+            this.turn = PlayerTurn.BLACK;
+        } else {
+            this.turn = PlayerTurn.WHITE;
+        }
+
+        Moves moves = MoveGenerator.getLegalMoves(this);
+        for (Move m: moves) {
+            char target = MoveGenerator.getCoordinate(m.destination, this.board);
+            if(Character.toLowerCase(target) == 'k') {
+                if(isWhite && target == 'K') {
+                    inCheck = true;
+                    break;
+                }
+                if(!isWhite && target == 'k') {
+                    inCheck = true;
+                    break;
+                }
+            }
+        }
 
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;

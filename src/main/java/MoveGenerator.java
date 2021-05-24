@@ -627,7 +627,7 @@ public class MoveGenerator {
         Moves pseudoLegal = getAllMoves(boardState);
 
         for (Move pLegalMove: pseudoLegal) {
-            boardState.movePiece(pLegalMove);
+            boardState.makeMove(pLegalMove);
             Moves responses = getAllMoves(boardState);
             boolean legal = true;
             for (Move response: responses) {
@@ -656,31 +656,5 @@ public class MoveGenerator {
             case 'k': return kingMoves(coord, boardState);
             default: return null;
         }
-    }
-
-    static public int minimax(BoardState board, int depth) {
-
-        if(depth == 0) {
-            return board.eval;
-        }
-
-        Moves moves = MoveGenerator.getLegalMoves(board);
-
-        BoardState[] boards = new BoardState[moves.size()];
-
-        int index = 0;
-        for(Move newMove : moves) {
-            boards[index] = new BoardState(board);
-            boards[index].movePiece(newMove);
-            index++;
-        }
-
-        if(board.turn == PlayerTurn.WHITE) {
-
-
-        } else {
-
-        }
-
     }
 }
