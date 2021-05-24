@@ -524,19 +524,19 @@ public class MoveGenerator {
         if(isWhite) {
             oR = 'r';
             oQ = 'q';
-            backRank = 7;
+            backRank = 6;
             iteration = -1;
             oppBackRank = 0;
         } else {
             oR = 'R';
             oQ = 'Q';
-            backRank = 0;
+            backRank = 1;
             iteration = 1;
             oppBackRank = 7;
         }
 
-        for (int j = startIndex; j < endIndex; j++) {
-            for(int i = backRank; i != oppBackRank+iteration; i += iteration) {
+        for (int j = startIndex; j <= endIndex; j++) {
+            for(int i = backRank; i != oppBackRank; i += iteration) {
                 char piece = board[i][j];
                 if(piece == oR || piece == oQ) return true;
                 if(piece != '-') break;

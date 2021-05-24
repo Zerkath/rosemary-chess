@@ -80,6 +80,14 @@ public class MoveGenerationTests {
         System.out.println(Character.toLowerCase('q') == 'p');
     }
 
+    @Test
+    @Order(8)
+    void weirdPawnBehavior() {
+        BoardState boardState = new BoardState(Utils.parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"));
+        boardState.playMoves("e1f1 h3g2 f1g2".split(" "));
+        Utils.printBoard(boardState);
+    }
+
 
     @Test
     @Order(100)
@@ -105,7 +113,7 @@ public class MoveGenerationTests {
     @Test
     @Order(101)
     void movesFromPosition1() {
-        int [] depth = new int[4];
+        int [] depth = new int[5];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
             depth[i] = recursion(i+1, getTestBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"), i+1);
@@ -118,7 +126,7 @@ public class MoveGenerationTests {
         Assertions.assertEquals(2039, depth[1]);
         Assertions.assertEquals(97862, depth[2]);
         Assertions.assertEquals(4085603, depth[3]);
-//        Assertions.assertEquals(193690690, depth[4]);
+        Assertions.assertEquals(193690690, depth[4]);
     }
 
     private int recursion(int depth, BoardState boardState, int start) {
