@@ -3,9 +3,9 @@ import java.util.*;
 public class UCI_Controller {
     public BoardState boardState;
     public boolean uci_mode;
-    public int depth = 4;
-    private int startingDepth = depth;
-    private boolean stopCommand = false;
+    public int depth = 6;
+    public ThreadGroup threadGroup = new ThreadGroup("evaluation");
+
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     public UCI_Controller() {
@@ -79,7 +79,9 @@ public class UCI_Controller {
             System.exit(0);
         }
         if(split[0].equals("ucinewgame")) {
-//            startEval();
+            try {
+                wait(150);
+            } catch (InterruptedException ignored) {}
             return;
         }
         if(split[0].equals("xboard")) return;
@@ -101,7 +103,7 @@ public class UCI_Controller {
         String authors = "Rosemary_devs";
         System.out.print("id author " + authors + '\n');
 //        System.out.print("option name Threads type spin default 2 min 1 max 250\n");
-        System.out.print("option name depth type spin default 4 min 1 max 10\n");
+        System.out.print("option name depth type spin default 6 min 1 max 10\n");
         System.out.print("uciok\n");
     }
 
@@ -111,13 +113,6 @@ public class UCI_Controller {
 
     public void startEval() {
         startEval(this.depth);
-    }
-
-    public void startEval(int depth) {
-        startingDepth = depth;
-        stopCommand = false;
-        int eval = alphaBetaMax(this.boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
-//        System.out.println(eval);
     }
 
     public int runPerft(int depth, int start, boolean print) {
@@ -138,45 +133,12 @@ public class UCI_Controller {
     }
 
     public void endEval() {
-        stopCommand = true;
+        if(threadGroup.activeCount() > 0) {
+            threadGroup.interrupt();
+        }
     }
 
-    int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) {
-        if(depth == 0 || stopCommand) return (int) (Evaluation.calculateEvaluation(boardState) * (Math.random() + 0.25)); //random variety
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
-        Move bestMove = null;
-        for(Move move: moves) {
-            boardState.makeMove(move);
-            int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
-            boardState.unMakeMove();
-            if(eval >= beta) {
-                return beta;
-            }
-            if(eval > alpha) {
-                bestMove = move;
-                alpha = eval;
-            }
-        }
-        if(startingDepth == depth && bestMove != null) {
-            System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
-        }
-        return alpha;
-    }
-
-    int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) {
-        if(depth == 0) return -Evaluation.calculateEvaluation(boardState);
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
-        for(Move move: moves) {
-            boardState.makeMove(move);
-            int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
-            boardState.unMakeMove();
-            if(eval <= alpha) {
-                return alpha;
-            }
-            if(eval < beta) {
-                beta = eval;
-            }
-        }
-        return beta;
+    public void startEval(int depth) {
+        new Thread(threadGroup, new Evaluation.EvalutionThread(this.boardState, depth)).start();
     }
 }
