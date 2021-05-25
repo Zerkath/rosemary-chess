@@ -10,6 +10,12 @@ public class BoardState {
     int turnNumber = 1;
     int halfMove = 0;
 
+    long blackTime = 0;
+    long whiteTime = 0;
+
+    long blackInterval = 0;
+    long whiteInterval = 0;
+
     boolean inCheck;
 
     Coordinate enPassant;

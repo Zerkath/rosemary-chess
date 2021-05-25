@@ -1,9 +1,11 @@
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class UCI_Controller {
     public BoardState boardState;
     public boolean uci_mode;
-    public int depth = 6;
+    public int depth = 4;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
 
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -18,6 +20,29 @@ public class UCI_Controller {
     }
 
     public void handleMessage(String message) {
+        BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+        handleMessage(message, queue);
+    }
+
+    class waitForReady implements Runnable {
+
+        BlockingQueue<String> queue;
+        public waitForReady(BlockingQueue<String> queue) {
+            this.queue = queue;
+        }
+
+        @Override
+        public void run() {
+            while(!queue.isEmpty()) {
+                try {
+                    wait(100);
+                } catch (InterruptedException ignored) {}
+            }
+            System.out.println("readyok");
+        }
+    }
+
+    public void handleMessage(String message, BlockingQueue<String> queue) { //todo rework to tokenize the commands given by the ui (change to switch case)
         String [] split = message.split(" ");
         if(message.equals("uci")) {
             setToUCI();
@@ -44,7 +69,7 @@ public class UCI_Controller {
             }
         }
         if(split[0].equals("isready")) {
-            readyResponse();
+            readyResponse(queue);
             return;
         }
         if(split[0].equals("go")) {
@@ -54,8 +79,22 @@ public class UCI_Controller {
                     System.out.println("\nDepth " + depth + " nodes: " + runPerft(depth, depth, true));
                     return;
                 }
-            }
 
+//                if(split[1].equals("wtime")) {
+//                    boardState.whiteTime = Long.parseLong(split[2]);
+//                    if(split[3].equals("btime")) {
+//                        boardState.blackTime = Long.parseLong(split[4]);
+//                    }
+//                    if(split[5].equals("winc")) {
+//                        boardState.whiteInterval = Long.parseLong(split[6]);
+//                    }
+//                    if(split[7].equals("binc")) {
+//                        boardState.blackInterval = Long.parseLong(split[8]);
+//                    }
+//                    startEval();
+//                    return;
+//                }
+            }
             startEval();
             return;
         }
@@ -78,14 +117,19 @@ public class UCI_Controller {
         if(split[0].equals("quit")) {
             System.exit(0);
         }
+        if(split[0].equals("debug")) {
+            return;
+        }
+        if(split[0].equals("register")) {
+            System.out.println("register later");
+            return;
+        }
         if(split[0].equals("ucinewgame")) {
-            try {
-                wait(150);
-            } catch (InterruptedException ignored) {}
+            setToDefault();
             return;
         }
         if(split[0].equals("xboard")) return;
-        System.out.println("COMMANDNOTRECOGNIZED");
+        System.out.println("?");
     }
 
 
@@ -99,16 +143,16 @@ public class UCI_Controller {
     public void setToUCI() {
         uci_mode = true;
         String name = "Rosemary";
-        System.out.print("id name " + name + '\n');
+        System.out.println("id name " + name);
         String authors = "Rosemary_devs";
-        System.out.print("id author " + authors + '\n');
+        System.out.println("id author " + authors);
 //        System.out.print("option name Threads type spin default 2 min 1 max 250\n");
-        System.out.print("option name depth type spin default 6 min 1 max 10\n");
-        System.out.print("uciok\n");
+        System.out.println("option name depth type spin default 4 min 1 max 10\n");
+        System.out.println("uciok");
     }
 
-    public void readyResponse() {
-        System.out.print("readyok\n");
+    public void readyResponse(BlockingQueue<String> queue) {
+        new Thread(new waitForReady(queue)).start(); //should wait for queue to empty
     }
 
     public void startEval() {
@@ -139,6 +183,8 @@ public class UCI_Controller {
     }
 
     public void startEval(int depth) {
-        new Thread(threadGroup, new Evaluation.EvalutionThread(this.boardState, depth)).start();
+        if(threadGroup.activeCount() < 1) {
+            new Thread(threadGroup, new Evaluation.EvalutionThread(this.boardState, depth)).start();
+        }
     }
 }
