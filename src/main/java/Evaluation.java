@@ -17,7 +17,6 @@ public class Evaluation {
         this.threadCount = threadCount;
     }
 
-
     static public int calculateEvaluation(BoardState board) {
         int negation = board.turn == PlayerTurn.BLACK ? -1 : 1;
         Moves moves = MoveGenerator.getLegalMoves(board);
@@ -59,5 +58,71 @@ public class Evaluation {
         result += arr[11] * eQueen;
         result -= arr[12] * eQueen;
         return result;
+    }
+
+    static class EvalutionThread implements Runnable {
+
+        BoardState boardState;
+        int startingDepth;
+        int depth;
+
+        public EvalutionThread(BoardState boardState, int depth) {
+            this.boardState = boardState;
+            this.startingDepth = depth;
+            this.depth = depth;
+        }
+
+        @Override
+        public void run() {
+            if(this.boardState.turn == PlayerTurn.WHITE) {
+                alphaBetaMax(this.boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+            } else {
+                alphaBetaMin(this.boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+            }
+        }
+
+        int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) {
+            if(depth == 0 || Thread.currentThread().isInterrupted()) return (int) (Evaluation.calculateEvaluation(boardState) * (Math.random() + 0.25)); //random variety
+            Moves moves = MoveGenerator.getLegalMoves(boardState);
+            Move bestMove = null;
+            for(Move move: moves) {
+                boardState.makeMove(move);
+                int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
+                boardState.unMakeMove();
+                if(eval >= beta) {
+                    return beta;
+                }
+                if(eval > alpha) {
+                    bestMove = move;
+                    alpha = eval;
+                }
+            }
+            if(startingDepth == depth && bestMove != null) {
+                System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
+            }
+            return alpha;
+        }
+
+        int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) {
+            if(depth == 0 || Thread.currentThread().isInterrupted()) return (int) (Evaluation.calculateEvaluation(boardState) * (Math.random() + 0.25));
+            Moves moves = MoveGenerator.getLegalMoves(boardState);
+            Move bestMove = null;
+            for(Move move: moves) {
+                boardState.makeMove(move);
+                int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
+                boardState.unMakeMove();
+                if(eval <= alpha) {
+                    return alpha;
+                }
+                if(eval < beta) {
+                    bestMove = move;
+                    beta = eval;
+                }
+            }
+            if(startingDepth == depth && bestMove != null) {
+                System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
+            }
+            return beta;
+        }
     }
 }
