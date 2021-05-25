@@ -1,6 +1,3 @@
-import java.util.Arrays;
-import java.util.LinkedList;
-
 public class Evaluation {
 
     static final int ePawn = 100;
@@ -11,8 +8,6 @@ public class Evaluation {
 
     int threadCount;
 
-    ThreadGroup tg = new ThreadGroup("Evaluation_Threads");
-
     public Evaluation(int threadCount, int depth) {
         this.threadCount = threadCount;
     }
@@ -20,7 +15,7 @@ public class Evaluation {
     static public int calculateEvaluation(BoardState board) {
         int negation = board.turn == PlayerTurn.BLACK ? -1 : 1;
         Moves moves = MoveGenerator.getLegalMoves(board);
-        int options = (moves.size() * negation * 2);
+        int options = (int)(moves.size()  * 0.5);
         int centralControl = calculatePiecesInMiddle(board);
         int materialAdvantage = calculateMaterial(board);
         return options+materialAdvantage+centralControl;
@@ -74,17 +69,18 @@ public class Evaluation {
 
         @Override
         public void run() {
-            if(this.boardState.turn == PlayerTurn.WHITE) {
-                alphaBetaMax(this.boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
-            } else {
-                alphaBetaMin(this.boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
-            }
+            int eval;
+            eval = alphaBetaMax(this.boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
         }
 
         int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) {
-            if(depth == 0 || Thread.currentThread().isInterrupted()) return (int) (Evaluation.calculateEvaluation(boardState) * (Math.random() + 0.25)); //random variety
+            if(depth == 0 || Thread.currentThread().isInterrupted()) {
+                return Evaluation.calculateEvaluation(boardState);
+            }
             Moves moves = MoveGenerator.getLegalMoves(boardState);
+
             Move bestMove = null;
+
             for(Move move: moves) {
                 boardState.makeMove(move);
                 int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
@@ -97,16 +93,22 @@ public class Evaluation {
                     alpha = eval;
                 }
             }
-            if(startingDepth == depth && bestMove != null) {
+
+            if(depth == startingDepth) {
+                if(bestMove == null) bestMove = moves.get(0);
                 System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
             }
             return alpha;
         }
 
         int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) {
-            if(depth == 0 || Thread.currentThread().isInterrupted()) return (int) (Evaluation.calculateEvaluation(boardState) * (Math.random() + 0.25));
+            if(depth == 0 || Thread.currentThread().isInterrupted()) {
+                return Evaluation.calculateEvaluation(boardState);
+            }
             Moves moves = MoveGenerator.getLegalMoves(boardState);
+
             Move bestMove = null;
+
             for(Move move: moves) {
                 boardState.makeMove(move);
                 int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
@@ -119,7 +121,9 @@ public class Evaluation {
                     beta = eval;
                 }
             }
-            if(startingDepth == depth && bestMove != null) {
+
+            if(depth == startingDepth) {
+                if(bestMove == null) bestMove = moves.get(0);
                 System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
             }
             return beta;
