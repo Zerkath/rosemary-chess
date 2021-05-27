@@ -6,6 +6,7 @@ public class UCI_Controller {
     public BoardState boardState;
     public boolean uci_mode;
     public int depth = 4;
+    public boolean debug = false;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
 
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -24,7 +25,7 @@ public class UCI_Controller {
         handleMessage(message, queue);
     }
 
-    class waitForReady implements Runnable {
+    static class waitForReady implements Runnable {
 
         BlockingQueue<String> queue;
         public waitForReady(BlockingQueue<String> queue) {
@@ -79,21 +80,6 @@ public class UCI_Controller {
                     System.out.println("\nDepth " + depth + " nodes: " + runPerft(depth, depth, true));
                     return;
                 }
-
-//                if(split[1].equals("wtime")) {
-//                    boardState.whiteTime = Long.parseLong(split[2]);
-//                    if(split[3].equals("btime")) {
-//                        boardState.blackTime = Long.parseLong(split[4]);
-//                    }
-//                    if(split[5].equals("winc")) {
-//                        boardState.whiteInterval = Long.parseLong(split[6]);
-//                    }
-//                    if(split[7].equals("binc")) {
-//                        boardState.blackInterval = Long.parseLong(split[8]);
-//                    }
-//                    startEval();
-//                    return;
-//                }
             }
             startEval();
             return;
@@ -118,6 +104,7 @@ public class UCI_Controller {
             System.exit(0);
         }
         if(split[0].equals("debug")) {
+            debug = split[1].equals("on");
             return;
         }
         if(split[0].equals("register")) {
@@ -184,7 +171,7 @@ public class UCI_Controller {
 
     public void startEval(int depth) {
         if(threadGroup.activeCount() < 1) {
-            new Thread(threadGroup, new Evaluation.EvalutionThread(this.boardState, depth)).start();
+            new Thread(threadGroup, new Evaluation.EvaluationThread(this.boardState, depth, debug)).start();
         }
     }
 }
