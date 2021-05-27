@@ -16,6 +16,8 @@ public class BoardState {
     long blackInterval = 0;
     long whiteInterval = 0;
 
+    int[] pieces;
+
     boolean inCheck;
 
     Coordinate enPassant;
@@ -235,6 +237,7 @@ public class BoardState {
         } else {
             this.turn = PlayerTurn.BLACK;
         }
+        pieces = countPieces();
     }
 
     public void makeMoveDoCheck(Move move) {
@@ -303,7 +306,7 @@ public class BoardState {
      * 13 w king            <br />
      * 14 b king            <br />
      */
-    public int[] countPieces() {
+    private int[] countPieces() {
 
         int [] results = new int[15];
         for (char [] row: board) {
