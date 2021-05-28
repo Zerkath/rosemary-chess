@@ -605,7 +605,7 @@ public class MoveGenerator {
     }
 
     static public Moves getAllMoves(BoardState boardState) {
-
+        
         Moves moves = new Moves();
         char [][] board = boardState.board;
         PlayerTurn turn = boardState.turn;
