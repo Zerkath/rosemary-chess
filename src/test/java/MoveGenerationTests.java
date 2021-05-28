@@ -88,6 +88,47 @@ public class MoveGenerationTests {
         Utils.printBoard(boardState);
     }
 
+    @Test
+    @Order(9)
+    void speedStartPos10000PseudoLegal() {
+        BoardState boardState = new BoardState(Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            MoveGenerator.getAllMoves(boardState);
+        }
+    }
+
+    @Test
+    @Order(10)
+    void speedStartPos10000Legal() {
+        BoardState boardState = new BoardState(Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            MoveGenerator.getLegalMoves(boardState);
+        }
+    }
+
+    //r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10
+
+    @Test
+    @Order(10)
+    void speedMiddlegame10000PseudoLegal() {
+        BoardState boardState = new BoardState(Utils.parseFen("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10"));
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            MoveGenerator.getAllMoves(boardState);
+        }
+    }
+
+    @Test
+    @Order(10)
+    void speedMiddlegame10000Legal() {
+        BoardState boardState = new BoardState(Utils.parseFen("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10"));
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            MoveGenerator.getLegalMoves(boardState);
+        }
+    }
 
     @Test
     @Order(100)
