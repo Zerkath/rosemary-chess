@@ -50,7 +50,7 @@ public class Evaluation {
                 boardState.makeMove(move);
                 int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
                 boardState.unMakeMove();
-                if(debug && depth == startingDepth) System.out.println("info depth " + startingDepth + " score cp " + eval + " currmove " + Utils.parseCommand(move));
+                if(depth == startingDepth) System.out.println("info depth " + startingDepth + " score cp " + eval + " currmove " + Utils.parseCommand(move));
                 if(eval >= beta) {
                     return beta;
                 }
@@ -79,7 +79,7 @@ public class Evaluation {
                 boardState.makeMove(move);
                 int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
                 boardState.unMakeMove();
-                if(debug && depth == startingDepth) System.out.println("info depth " + startingDepth + " score cp " + eval + " currmove " + Utils.parseCommand(move));
+                if(depth == startingDepth) System.out.println("info depth " + startingDepth + " score cp " + eval + " currmove " + Utils.parseCommand(move));
                 if(eval <= alpha) {
                     return alpha;
                 }
