@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class UCI_Controller {
     public BoardState boardState;
     public boolean uci_mode;
-    public int depth = 4;
+    public int depth = 5;
     public boolean debug = false;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
 
