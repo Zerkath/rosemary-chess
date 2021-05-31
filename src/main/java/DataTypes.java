@@ -23,6 +23,12 @@ class Move {
         this.promotion = promotion;
     }
 
+    public Move(Move move, char promotion) {
+        this.origin = move.origin;
+        this.destination = move.destination;
+        this.promotion = promotion;
+    }
+
     public Move() {}
     public Coordinate origin;
     public Coordinate destination;
