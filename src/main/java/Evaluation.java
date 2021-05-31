@@ -1,95 +1,234 @@
-import java.util.Arrays;
-import java.util.LinkedList;
-
 public class Evaluation {
 
-    //eval values TODO optimize
-    final int ePawn = 100;
-    final int eKnight = 180;
-    final int eBishop = 220;
-    final int eRook = 400;
-    final int eQueen = 780;
-    final int eKing = 10000;
+    static final int ePawn = 100; //material values
+    static final int eKnight = 300;
+    static final int eBishop = 310;
+    static final int eRook = 500;
+    static final int eQueen = 900;
 
+    static final int mate = 2000000050;
 
     int threadCount;
-    int depthCount = 0;
-    int nodesSearched = 0;
-    boolean itemsBeingAdded = false;
-    Game task;
-    String fen;
-    int material = 0; //equal
-    int depth = 1;
-    Utils utils = new Utils();
+    int depth;
 
-    ThreadGroup tg = new ThreadGroup("Evaluation_Threads");
-
-    public Evaluation(int threadCount, int depth) {
-        this.threadCount = threadCount;
+    public Evaluation(int depth, int threadCount) {
         this.depth = depth;
-    }
-
-    public Evaluation(int threadCount, Game task) {
         this.threadCount = threadCount;
-        this.task = task;
     }
 
-    public void startEvaluation() {
-        depthCount = 1;
-        task.getPossibleMovesForTurn();
-        nodesSearched = task.moves.size();
-        System.out.println("info depth " + depthCount + " nodes " + nodesSearched);
-        for (int i = 0; i < threadCount; i++) {
-            new Worker(tg, i).start();
+    public Evaluation() {
+
+    }
+
+    static class EvaluationThread implements Runnable {
+
+        BoardState boardState;
+        int startingDepth;
+        PlayerTurn playerTurn;
+        boolean debug;
+        int depth;
+
+        public EvaluationThread(BoardState boardState, int depth, boolean debug) {
+            this.boardState = boardState;
+            this.startingDepth = depth;
+            this.depth = depth;
+            this.debug = debug;
+            this.playerTurn = boardState.turn;
         }
-    }
 
-    public void assignNewTask(Game task) {
-        material = calculateMaterial(task);
-        this.fen = task.toFenString();
-        this.task = task;
-        this.task.getPossibleMovesForTurn();
-    }
+        @Override
+        public void run() {
+            int eval;
+            eval = boardState.turn == PlayerTurn.WHITE ? alphaBetaMax(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth) : alphaBetaMin(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+        }
 
-    public synchronized LinkedList<int[][]> getNextMoveSequence() {
-        if (task.moves.size() > 0) {
-            return task.moves.pop();
-        } else {
-            try {
-                while(itemsBeingAdded) {
-                    wait(750);
+        int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) { //white
+
+            Moves moves = MoveGenerator.getLegalMoves(boardState);
+            if(moves.isEmpty()) { //no moves this turn in checkmate or draw
+                if(inCheck(boardState)) {
+                    return -mate+((startingDepth - depth)/2);
                 }
-            } catch (InterruptedException ignored) {}
-
-            task.moves.addAll(task.nextMoves); //change to opponent responses //todo increase depth every other empty list (maybe print the total moves)
-            if(depthCount >= depth) {
-                tg.interrupt();
+                return 0;
             }
-            task.nextMoves.clear(); //clear old items so we can append to list
-            depthCount++;
-            nodesSearched += task.moves.size();
-            System.out.println("info depth " + depthCount + " nodes " + nodesSearched);
-            return null;
+
+            if(depth == 0 || Thread.currentThread().isInterrupted()) {
+                return Evaluation.calculateEvaluation(boardState);
+            }
+
+
+            Move bestMove = null;
+
+            for(Move move: moves) {
+                boardState.makeMove(move);
+                int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
+                boardState.unMakeMove();
+                if(depth == startingDepth) {
+                    printInfoUCI(depth, eval, move);
+                }
+                if(eval >= beta) {
+                    return beta;
+                }
+                if(eval > alpha) {
+                    bestMove = move;
+                    alpha = eval;
+                }
+            }
+
+            if(depth == startingDepth) {
+                if(bestMove == null) bestMove = moves.get(0);
+                System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
+            }
+            return alpha;
+        }
+
+        int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) { //black
+
+            Moves moves = MoveGenerator.getLegalMoves(boardState);
+            if(moves.isEmpty()) { //no moves this turn in checkmate or draw
+                if(inCheck(boardState)) {
+                    return mate-((startingDepth - depth)/2);
+                }
+                return 0;
+            }
+
+            if(depth == 0 || Thread.currentThread().isInterrupted()) {
+                return Evaluation.calculateEvaluation(boardState);
+            }
+
+            Move bestMove = null;
+
+            for(Move move: moves) {
+                boardState.makeMove(move);
+                int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
+                boardState.unMakeMove();
+                if(depth == startingDepth) {
+                    printInfoUCI(depth, eval, move);
+                }
+                if(eval <= alpha) {
+                    return alpha;
+                }
+                if(eval < beta) {
+                    bestMove = move;
+                    beta = eval;
+                }
+            }
+
+            if(depth == startingDepth) {
+                if(bestMove == null) bestMove = moves.get(0);
+                System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
+            }
+            return beta;
+        }
+
+        private void printInfoUCI(int depth, int eval, Move move) {
+
+            String outString = "info depth " + depth;
+            String currMove = " currmove " + Utils.parseCommand(move);
+
+            boolean isMate = eval >= mate-50 || eval <= -mate+50;
+
+            if(isMate) {
+
+                int offset = eval >= mate-50 ?  1+mate-eval : -1-mate-eval;
+                outString += " score mate " + offset;
+            } else {
+                outString += " score cp " + eval;
+            }
+            System.out.println(outString+currMove);
         }
     }
 
-    public synchronized void addToNextMoves(LinkedList<int[][]> moveSequence) {
-        itemsBeingAdded = true;
-        task.nextMoves.add(moveSequence);
-        itemsBeingAdded = false;
+
+    static private boolean inCheck(BoardState state) {
+        PlayerTurn old = state.turn;
+        boolean isWhite = state.turn == PlayerTurn.WHITE;
+        state.turn = state.turn == PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
+        Moves opponent = MoveGenerator.getLegalMoves(state);
+        for (Move move: opponent) {
+            char c = MoveGenerator.getCoordinate(move.destination, state.board);
+            if((isWhite && c == 'K') || (!isWhite && c == 'k')) {
+                state.turn = old;
+                return true;
+            }
+        }
+        state.turn = old;
+        return false;
     }
 
-    public void setDepth(int depth) {
-        this.depth = depth;
+    //evaluation values
+
+    static public int calculateEvaluation(BoardState state) {
+        int negation = state.turn == PlayerTurn.BLACK ? -1 : 1;
+        Moves moves = MoveGenerator.getLegalMoves(state);
+        int centralControl = calculatePiecesInMiddle(state);
+        int materialAdvantage = calculateMaterial(state);
+        return materialAdvantage+centralControl+kingSafety(state);
     }
 
-    public void changeThreadCount(int threads) {
-        this.threadCount = threads;
+    static private int calculatePiecesInMiddle(BoardState state) {
+        char [][] data = state.board;
+        int value = 0;
+        for (int i = 2; i < 6; i++) {
+            for (int j = 2; j < 6; j++) {
+                char piece = data[i][j];
+                if(piece != '-') {
+                    if(Character.isLowerCase(piece)) {
+                        value -= 30;
+                    } else {
+                        value += 30;
+                    }
+                }
+            }
+        }
+        return value;
     }
 
-    public int calculateMaterial(Game curr) {
+    static private int kingSafety(BoardState state) {
+        char [][] data = state.board;
+        int value = 0;
+        if(state.turnNumber < 20) {
+            if(data[0][2] == 'k') { //black king queenSide
+                for (int i = 0; i < 3; i++) {
+                    if(data[1][i] != 'p') break;
+                    if(i == 2) value-=10;
+                }
+            }
+            if(data[7][2] == 'K') { //white king queenSide
+                for (int i = 0; i < 3; i++) {
+                    if(data[6][i] != 'P') break;
+                    if(i == 2) value+=10;
+                }
+            }
+            if(data[0][6] == 'k') { //black king kingSide
+                for (int i = 5; i < 8; i++) {
+                    if(data[1][i] != 'p') break;
+                    if(i == 7) value-=20;
+                }
+            }
+            if(data[7][6] == 'k') { //white king kingSide
+                for (int i = 5; i < 8; i++) {
+                    if(data[6][i] != 'p') break;
+                    if(i == 7) value+=20;
+                }
+            }
+        }
+        return value;
+    }
+
+    static private int development(BoardState state) {
+        char [][] data = state.board;
+        int value = 0;
+
+
+
+
+        return value;
+    }
+
+    static public int calculateMaterial(BoardState state) { //+ if white, -if black
         int result = 0;
-        int [] arr = curr.countPieces();
+        int [] arr = state.pieces;
         result += arr[3] * ePawn;
         result -= arr[4] * ePawn;
         result += arr[5] * eBishop;
@@ -100,44 +239,7 @@ public class Evaluation {
         result -= arr[10] * eKnight;
         result += arr[11] * eQueen;
         result -= arr[12] * eQueen;
-        result += arr[13] * eKing;
-        result -= arr[14] * eKing;
         return result;
     }
 
-    public int[][] endEvaluation() {
-        tg.interrupt();
-        return new int[][]{{6, 3}, {4, 3}}; //todo just a placeholder get best move (this is just d2 to d4)
-    }
-
-    class Worker extends Thread {
-
-        public Worker(ThreadGroup tg, int id) {
-            super(tg, "worker-"+id);
-        }
-
-        public void run() {
-            while(!this.isInterrupted() && depthCount < depth) {
-                LinkedList<int[][]> movesToPos = getNextMoveSequence();
-                if(movesToPos != null) {
-                    LinkedList<int[][]> movesToPosCopy = new LinkedList<>();
-                    Game game = new Game();
-                    game.parseFen(fen);
-                    while(movesToPos.size() > 0) {
-                        int[][] move = movesToPos.pop();
-                        movesToPosCopy.add(move);
-                        game.movePiece(move); //advance to current position
-                    }
-                    game.getPossibleMovesForTurn(); //get new moves from position
-                    LinkedList<LinkedList<int[][]>> newMoves = game.moves;
-                    while(newMoves.size() > 0) {
-                        int[][] move = newMoves.pop().pop(); //get the next move
-                        LinkedList<int[][]> nextMoveSequence = new LinkedList<>(movesToPosCopy); //create new list
-                        nextMoveSequence.add(move); //add new move to the end
-                        addToNextMoves(nextMoveSequence); //add this to the next moves list
-                    }
-                }
-            }
-        }
-    }
 }
