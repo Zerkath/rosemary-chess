@@ -49,7 +49,7 @@ class InputHandler extends Thread {
                 input = queue.poll(5000, TimeUnit.MILLISECONDS);
 
                 if(input != null) {
-                    uci.handleMessage(input);
+                    uci.handleMessage(input, queue);
                 }
             } catch (Exception ignored) {}
         }
