@@ -201,15 +201,15 @@ public class MoveGenerator {
     static private Moves pawnPromotions(Move move, boolean isWhite) {
         Moves moves = new Moves();
         if(isWhite) {
-            moves.add(new Move(move.origin, move.destination, 'Q'));
-            moves.add(new Move(move.origin, move.destination, 'N'));
-            moves.add(new Move(move.origin, move.destination, 'R'));
-            moves.add(new Move(move.origin, move.destination, 'B'));
+            moves.add(new Move(move, 'Q'));
+            moves.add(new Move(move, 'N'));
+            moves.add(new Move(move, 'R'));
+            moves.add(new Move(move, 'B'));
         } else {
-            moves.add(new Move(move.origin, move.destination, 'q'));
-            moves.add(new Move(move.origin, move.destination, 'n'));
-            moves.add(new Move(move.origin, move.destination, 'r'));
-            moves.add(new Move(move.origin, move.destination, 'b'));
+            moves.add(new Move(move, 'q'));
+            moves.add(new Move(move, 'n'));
+            moves.add(new Move(move, 'r'));
+            moves.add(new Move(move, 'b'));
         }
         return moves;
     }
