@@ -22,6 +22,7 @@ public class Evaluation {
 
         BoardState boardState;
         int startingDepth;
+        PlayerTurn playerTurn;
         boolean debug;
         int depth;
 
@@ -30,6 +31,7 @@ public class Evaluation {
             this.startingDepth = depth;
             this.depth = depth;
             this.debug = debug;
+            this.playerTurn = boardState.turn;
         }
 
         @Override
@@ -38,16 +40,18 @@ public class Evaluation {
             eval = boardState.turn == PlayerTurn.WHITE ? alphaBetaMax(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth) : alphaBetaMin(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
         }
 
-        int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) {
+        int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) { //white
             if(depth == 0 || Thread.currentThread().isInterrupted()) {
                 return Evaluation.calculateEvaluation(boardState);
             }
             Moves moves = MoveGenerator.getLegalMoves(boardState);
+            if(moves.isEmpty()) return Integer.MIN_VALUE; //no moves for us this turn in checkmate or draw
 
             Move bestMove = null;
 
             for(Move move: moves) {
                 boardState.makeMove(move);
+                System.out.println("info depth " + depth + " currmove " + Utils.parseCommand(move));
                 int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
                 boardState.unMakeMove();
                 if(depth == startingDepth) System.out.println("info depth " + startingDepth + " score cp " + eval + " currmove " + Utils.parseCommand(move));
@@ -67,16 +71,18 @@ public class Evaluation {
             return alpha;
         }
 
-        int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) {
+        int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) { //black
             if(depth == 0 || Thread.currentThread().isInterrupted()) {
                 return Evaluation.calculateEvaluation(boardState);
             }
             Moves moves = MoveGenerator.getLegalMoves(boardState);
+            if(moves.isEmpty()) return Integer.MAX_VALUE; //no moves this turn in checkmate or draw
 
             Move bestMove = null;
 
             for(Move move: moves) {
                 boardState.makeMove(move);
+                System.out.println("info depth " + depth + " currmove " + Utils.parseCommand(move));
                 int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
                 boardState.unMakeMove();
                 if(depth == startingDepth) System.out.println("info depth " + startingDepth + " score cp " + eval + " currmove " + Utils.parseCommand(move));
