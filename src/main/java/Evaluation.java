@@ -6,6 +6,8 @@ public class Evaluation {
     static final int eRook = 500;
     static final int eQueen = 900;
 
+    static final int mate = 2000000050;
+
     int threadCount;
     int depth;
 
@@ -41,20 +43,29 @@ public class Evaluation {
         }
 
         int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) { //white
+
+            Moves moves = MoveGenerator.getLegalMoves(boardState);
+            if(moves.isEmpty()) { //no moves this turn in checkmate or draw
+                if(inCheck(boardState)) {
+                    return -mate+((startingDepth - depth)/2);
+                }
+                return 0;
+            }
+
             if(depth == 0 || Thread.currentThread().isInterrupted()) {
                 return Evaluation.calculateEvaluation(boardState);
             }
-            Moves moves = MoveGenerator.getLegalMoves(boardState);
-            if(moves.isEmpty()) return Integer.MIN_VALUE; //no moves for us this turn in checkmate or draw
+
 
             Move bestMove = null;
 
             for(Move move: moves) {
                 boardState.makeMove(move);
-                System.out.println("info depth " + depth + " currmove " + Utils.parseCommand(move));
                 int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
                 boardState.unMakeMove();
-                if(depth == startingDepth) System.out.println("info depth " + startingDepth + " score cp " + eval + " currmove " + Utils.parseCommand(move));
+                if(depth == startingDepth) {
+                    printInfoUCI(depth, eval, move);
+                }
                 if(eval >= beta) {
                     return beta;
                 }
@@ -72,20 +83,28 @@ public class Evaluation {
         }
 
         int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) { //black
+
+            Moves moves = MoveGenerator.getLegalMoves(boardState);
+            if(moves.isEmpty()) { //no moves this turn in checkmate or draw
+                if(inCheck(boardState)) {
+                    return mate-((startingDepth - depth)/2);
+                }
+                return 0;
+            }
+
             if(depth == 0 || Thread.currentThread().isInterrupted()) {
                 return Evaluation.calculateEvaluation(boardState);
             }
-            Moves moves = MoveGenerator.getLegalMoves(boardState);
-            if(moves.isEmpty()) return Integer.MAX_VALUE; //no moves this turn in checkmate or draw
 
             Move bestMove = null;
 
             for(Move move: moves) {
                 boardState.makeMove(move);
-                System.out.println("info depth " + depth + " currmove " + Utils.parseCommand(move));
                 int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
                 boardState.unMakeMove();
-                if(depth == startingDepth) System.out.println("info depth " + startingDepth + " score cp " + eval + " currmove " + Utils.parseCommand(move));
+                if(depth == startingDepth) {
+                    printInfoUCI(depth, eval, move);
+                }
                 if(eval <= alpha) {
                     return alpha;
                 }
@@ -101,6 +120,40 @@ public class Evaluation {
             }
             return beta;
         }
+
+        private void printInfoUCI(int depth, int eval, Move move) {
+
+            String outString = "info depth " + depth;
+            String currMove = " currmove " + Utils.parseCommand(move);
+
+            boolean isMate = eval >= mate-50 || eval <= -mate+50;
+
+            if(isMate) {
+
+                int offset = eval >= mate-50 ?  1+mate-eval : -1-mate-eval;
+                outString += " score mate " + offset;
+            } else {
+                outString += " score cp " + eval;
+            }
+            System.out.println(outString+currMove);
+        }
+    }
+
+
+    static private boolean inCheck(BoardState state) {
+        PlayerTurn old = state.turn;
+        boolean isWhite = state.turn == PlayerTurn.WHITE;
+        state.turn = state.turn == PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
+        Moves opponent = MoveGenerator.getLegalMoves(state);
+        for (Move move: opponent) {
+            char c = MoveGenerator.getCoordinate(move.destination, state.board);
+            if((isWhite && c == 'K') || (!isWhite && c == 'k')) {
+                state.turn = old;
+                return true;
+            }
+        }
+        state.turn = old;
+        return false;
     }
 
     //evaluation values
