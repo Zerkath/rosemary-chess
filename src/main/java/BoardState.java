@@ -3,22 +3,13 @@ public class BoardState {
     BoardState previous;
     PlayerTurn turn;
 
-
     CastlingRights whiteCastling = CastlingRights.NONE;
     CastlingRights blackCastling = CastlingRights.NONE;
 
     int turnNumber = 1;
     int halfMove = 0;
 
-    long blackTime = 0;
-    long whiteTime = 0;
-
-    long blackInterval = 0;
-    long whiteInterval = 0;
-
     int [] pieces;
-
-    boolean inCheck;
 
     Coordinate enPassant;
 
@@ -152,29 +143,29 @@ public class BoardState {
 
         previous = new BoardState(this);
 
-        inCheck = false; //reset status
         int dRow = move.destination.row;
         int dCol = move.destination.column;
         char selected = MoveGenerator.getCoordinate(move.origin, board);
+        char nSelected = Character.toLowerCase(selected);
         boolean isBeingPromoted = move.promotion != '-';
         boolean isWhite = MoveGenerator.isWhite(selected);
 
         checkForCastlingRights(move);
 
-        if(Character.toLowerCase(selected) == 'p' || MoveGenerator.getCoordinate(move.destination, board) != '-') {
+        if(nSelected == 'p' || MoveGenerator.getCoordinate(move.destination, board) != '-') {
             halfMove = 0;
         } else {
             halfMove++;
         }
 
-        if(Character.toLowerCase(selected) == 'p' && enPassant != null && enPassant.row == move.destination.row && enPassant.column == move.destination.column) {
+        if(nSelected == 'p' && enPassant != null && enPassant.row == move.destination.row && enPassant.column == move.destination.column) {
             int offSet = isWhite ? 1 : -1;
             board[enPassant.row + offSet][enPassant.column] = '-';
         }
 
         enPassant = null;
         //add En passant
-        if(Character.toLowerCase(selected) == 'p' && ((move.origin.row == 6 && move.destination.row == 4) || (move.origin.row == 1 && move.destination.row == 3))) {
+        if(nSelected == 'p' && ((move.origin.row == 6 && move.destination.row == 4) || (move.origin.row == 1 && move.destination.row == 3))) {
             char right = '-';
             char left = '-';
             if(dCol == 0) right = board[dRow][dCol+1];
@@ -194,7 +185,7 @@ public class BoardState {
         }
 
         //Castling
-        if(Character.toLowerCase(selected) == 'k' && move.origin.column == 4 && ((move.origin.row == 0 && dRow == 0)  || move.origin.row == 7 && dRow == 7) && (dCol == 2 || dCol == 6)) {
+        if(nSelected == 'k' && move.origin.column == 4 && ((move.origin.row == 0 && dRow == 0)  || move.origin.row == 7 && dRow == 7) && (dCol == 2 || dCol == 6)) {
             if (isWhite) {
                 whiteCastling = CastlingRights.NONE;
             } else {
@@ -213,7 +204,7 @@ public class BoardState {
             }
         }
 
-        if(Character.toLowerCase(selected) == 'k') {
+        if(nSelected == 'k') {
             if(isWhite) {
                 this.whiteCastling = CastlingRights.NONE;
             } else {
@@ -231,38 +222,6 @@ public class BoardState {
             }
         }
         replaceSquare(move.destination, piece);
-
-        if(this.turn == PlayerTurn.BLACK) {
-            turnNumber++;
-            this.turn = PlayerTurn.WHITE;
-        } else {
-            this.turn = PlayerTurn.BLACK;
-        }
-    }
-
-    private void inCheck(boolean isWhite) {
-
-        if(this.turn == PlayerTurn.WHITE) {
-            turnNumber++;
-            this.turn = PlayerTurn.BLACK;
-        } else {
-            this.turn = PlayerTurn.WHITE;
-        }
-
-        Moves moves = MoveGenerator.getLegalMoves(this);
-        for (Move m: moves) {
-            char target = MoveGenerator.getCoordinate(m.destination, this.board);
-            if(Character.toLowerCase(target) == 'k') {
-                if(isWhite && target == 'K') {
-                    inCheck = true;
-                    break;
-                }
-                if(!isWhite && target == 'k') {
-                    inCheck = true;
-                    break;
-                }
-            }
-        }
 
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;

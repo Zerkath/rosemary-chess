@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 
 class Coordinate {
     public Coordinate(int column, int row) {
@@ -10,6 +9,9 @@ class Coordinate {
     public byte column;
     public byte row;
 }
+
+class Coordinates extends LinkedList<Coordinate> {}
+
 class Move {
     public Move(Coordinate origin, Coordinate destination) {
         this.origin = origin;
@@ -35,9 +37,7 @@ class Move {
     char promotion;
 }
 
-class Moves extends ArrayList<Move> {}
-
-class MoveSequenceList extends ArrayList<Moves> {}
+class Moves extends LinkedList<Move> {}
 
 enum PlayerTurn {
     WHITE,
