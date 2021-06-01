@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class UCI_Controller {
     public BoardState boardState;
     public boolean uci_mode;
-    public int depth = 4;
+    public int depth = 5;
     public boolean debug = false;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
 
@@ -134,7 +134,7 @@ public class UCI_Controller {
         String authors = "Rosemary_devs";
         System.out.println("id author " + authors);
 //        System.out.print("option name Threads type spin default 2 min 1 max 250\n");
-        System.out.println("option name depth type spin default 4 min 1 max 10\n");
+        System.out.println("option name depth type spin default 5 min 1 max 7\n");
         System.out.println("uciok");
     }
 
