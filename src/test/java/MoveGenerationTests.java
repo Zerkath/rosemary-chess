@@ -131,6 +131,46 @@ public class MoveGenerationTests {
     }
 
     @Test
+    @Order(11)
+    void speedRooksPseudo() {
+        BoardState boardState = new BoardState(Utils.parseFen("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1"));
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            MoveGenerator.getAllMoves(boardState);
+        }
+    }
+
+    @Test
+    @Order(12)
+    void speedRooksLegal() {
+        BoardState boardState = new BoardState(Utils.parseFen("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1"));
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            MoveGenerator.getLegalMoves(boardState);
+        }
+    }
+
+    @Test
+    @Order(13)
+    void speedBishopsPseudo() {
+        BoardState boardState = new BoardState(Utils.parseFen("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1"));
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            MoveGenerator.getAllMoves(boardState);
+        }
+    }
+
+    @Test
+    @Order(14)
+    void speedBishopsLegal() {
+        BoardState boardState = new BoardState(Utils.parseFen("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1"));
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            MoveGenerator.getLegalMoves(boardState);
+        }
+    }
+
+    @Test
     @Order(100)
     void movesToDepth() {
 
@@ -149,6 +189,7 @@ public class MoveGenerationTests {
         Assertions.assertEquals(197281, depth[3]);
         Assertions.assertEquals(4865609, depth[4]);
 //        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
+        //took 355s to complete on 1/06
     }
 
     @Test
