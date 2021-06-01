@@ -6,7 +6,9 @@ public class Evaluation {
     static final int eRook = 500;
     static final int eQueen = 900;
 
-    static final int mate = 2000000050;
+    static final int mateOffset = 50;
+    static final int mate = 2000000000 + mateOffset;
+
 
     int threadCount;
     int depth;
@@ -53,7 +55,7 @@ public class Evaluation {
             }
 
             if(depth == 0 || Thread.currentThread().isInterrupted()) {
-                return Evaluation.calculateEvaluation(boardState);
+                return Evaluation.calculate(boardState);
             }
 
 
@@ -64,7 +66,7 @@ public class Evaluation {
                 int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
                 boardState.unMakeMove();
                 if(depth == startingDepth) {
-                    printInfoUCI(depth, eval, move);
+                    printInfoUCI(depth, eval, move, true);
                 }
                 if(eval >= beta) {
                     return beta;
@@ -93,7 +95,7 @@ public class Evaluation {
             }
 
             if(depth == 0 || Thread.currentThread().isInterrupted()) {
-                return Evaluation.calculateEvaluation(boardState);
+                return Evaluation.calculate(boardState);
             }
 
             Move bestMove = null;
@@ -103,7 +105,7 @@ public class Evaluation {
                 int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
                 boardState.unMakeMove();
                 if(depth == startingDepth) {
-                    printInfoUCI(depth, eval, move);
+                    printInfoUCI(depth, eval, move, false);
                 }
                 if(eval <= alpha) {
                     return alpha;
@@ -121,16 +123,17 @@ public class Evaluation {
             return beta;
         }
 
-        private void printInfoUCI(int depth, int eval, Move move) {
+        private void printInfoUCI(int depth, int eval, Move move, boolean isWhite) {
 
             String outString = "info depth " + depth;
             String currMove = " currmove " + Utils.parseCommand(move);
 
-            boolean isMate = eval >= mate-50 || eval <= -mate+50;
+            boolean whiteHasMate = eval >= mate-mateOffset;
+            boolean isMate = whiteHasMate || eval <= -mate+mateOffset;
+            int whiteTurn = isWhite ? 1 : -1;
 
             if(isMate) {
-
-                int offset = eval >= mate-50 ?  1+mate-eval : -1-mate-eval;
+                int offset = whiteHasMate ? whiteTurn+mate-eval : whiteTurn-mate-eval;
                 outString += " score mate " + offset;
             } else {
                 outString += " score cp " + eval;
@@ -158,12 +161,14 @@ public class Evaluation {
 
     //evaluation values
 
-    static public int calculateEvaluation(BoardState state) {
+    static public int calculate(BoardState state) {
+        state.updatePieceCount();
         int negation = state.turn == PlayerTurn.BLACK ? -1 : 1;
-        Moves moves = MoveGenerator.getLegalMoves(state);
+//        Moves moves = MoveGenerator.getLegalMoves(state);
         int centralControl = calculatePiecesInMiddle(state);
         int materialAdvantage = calculateMaterial(state);
-        return materialAdvantage+centralControl+kingSafety(state);
+        int kingSafety = kingSafety(state);
+        return materialAdvantage+centralControl+kingSafety;
     }
 
     static private int calculatePiecesInMiddle(BoardState state) {
