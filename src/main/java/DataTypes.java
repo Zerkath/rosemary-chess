@@ -10,8 +10,6 @@ class Coordinate {
     public byte row;
 }
 
-class Coordinates extends LinkedList<Coordinate> {}
-
 class Move {
     public Move(Coordinate origin, Coordinate destination) {
         this.origin = origin;
