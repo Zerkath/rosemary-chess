@@ -82,7 +82,7 @@ public class Evaluation {
             }
 
             if(depth == 0 || Thread.currentThread().isInterrupted()) {
-                return -Evaluation.calculate(boardState);
+                return Evaluation.calculate(boardState);
             }
 
             Move bestMove = null;
