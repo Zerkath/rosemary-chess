@@ -16,7 +16,7 @@ public class BoardState {
     long blackInterval = 0;
     long whiteInterval = 0;
 
-    int[] pieces;
+    int [] pieces;
 
     boolean inCheck;
 
@@ -40,6 +40,7 @@ public class BoardState {
         for (int i = 0; i < state.board.length; i++) {
             System.arraycopy(state.board[i], 0, this.board[i], 0, state.board.length);
         }
+        this.pieces = countPieces();
     }
 
     public void setCastling(char [] castling) {
@@ -237,13 +238,6 @@ public class BoardState {
         } else {
             this.turn = PlayerTurn.BLACK;
         }
-        pieces = countPieces();
-    }
-
-    public void makeMoveDoCheck(Move move) {
-        makeMove(move);
-        boolean isWhite = this.turn == PlayerTurn.WHITE;
-        inCheck(isWhite);
     }
 
     private void inCheck(boolean isWhite) {
@@ -331,5 +325,9 @@ public class BoardState {
         }
         results[2] = results[0] + results[1];
         return results;
+    }
+
+    public void updatePieceCount() {
+        this.pieces = countPieces();
     }
 }
