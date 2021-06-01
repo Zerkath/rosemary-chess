@@ -9,19 +9,6 @@ public class Evaluation {
     static final int mateOffset = 50;
     static final int mate = 2000000000 + mateOffset;
 
-
-    int threadCount;
-    int depth;
-
-    public Evaluation(int depth, int threadCount) {
-        this.depth = depth;
-        this.threadCount = threadCount;
-    }
-
-    public Evaluation() {
-
-    }
-
     static class EvaluationThread implements Runnable {
 
         BoardState boardState;
@@ -78,7 +65,7 @@ public class Evaluation {
             }
 
             if(depth == startingDepth) {
-                if(bestMove == null) bestMove = moves.get(0);
+                if(bestMove == null) bestMove = moves.iterator().next();
                 System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
             }
             return alpha;
@@ -95,7 +82,7 @@ public class Evaluation {
             }
 
             if(depth == 0 || Thread.currentThread().isInterrupted()) {
-                return Evaluation.calculate(boardState);
+                return -Evaluation.calculate(boardState);
             }
 
             Move bestMove = null;
@@ -117,7 +104,7 @@ public class Evaluation {
             }
 
             if(depth == startingDepth) {
-                if(bestMove == null) bestMove = moves.get(0);
+                if(bestMove == null) bestMove = moves.iterator().next();
                 System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
             }
             return beta;
@@ -164,7 +151,6 @@ public class Evaluation {
     static public int calculate(BoardState state) {
         state.updatePieceCount();
         int negation = state.turn == PlayerTurn.BLACK ? -1 : 1;
-//        Moves moves = MoveGenerator.getLegalMoves(state);
         int centralControl = calculatePiecesInMiddle(state);
         int materialAdvantage = calculateMaterial(state);
         int kingSafety = kingSafety(state);
