@@ -34,38 +34,38 @@ public class Evaluation {
         int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) { //white
 
             Moves moves = MoveGenerator.getLegalMoves(boardState);
-            if(moves.isEmpty()) { //no moves this turn in checkmate or draw
-                if(inCheck(boardState)) {
-                    return -mate+((startingDepth - depth)/2);
+            if (moves.isEmpty()) { //no moves this turn in checkmate or draw
+                if (inCheck(boardState)) {
+                    return -mate + ((startingDepth - depth) / 2);
                 }
                 return 0;
             }
 
-            if(depth == 0 || Thread.currentThread().isInterrupted()) {
+            if (depth == 0 || Thread.currentThread().isInterrupted()) {
                 return Evaluation.calculate(boardState);
             }
 
 
             Move bestMove = null;
 
-            for(Move move: moves) {
+            for (Move move : moves) {
                 boardState.makeMove(move);
-                int eval = alphaBetaMin(boardState, alpha, beta, depth-1);
+                int eval = alphaBetaMin(boardState, alpha, beta, depth - 1);
                 boardState.unMakeMove();
-                if(depth == startingDepth) {
+                if (depth == startingDepth) {
                     printInfoUCI(depth, eval, move, true);
                 }
-                if(eval >= beta) {
+                if (eval >= beta) {
                     return beta;
                 }
-                if(eval > alpha) {
+                if (eval > alpha) {
                     bestMove = move;
                     alpha = eval;
                 }
             }
 
-            if(depth == startingDepth) {
-                if(bestMove == null) bestMove = moves.iterator().next();
+            if (depth == startingDepth) {
+                if (bestMove == null) bestMove = moves.iterator().next();
                 System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
             }
             return alpha;
@@ -74,37 +74,37 @@ public class Evaluation {
         int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) { //black
 
             Moves moves = MoveGenerator.getLegalMoves(boardState);
-            if(moves.isEmpty()) { //no moves this turn in checkmate or draw
-                if(inCheck(boardState)) {
-                    return mate-((startingDepth - depth)/2);
+            if (moves.isEmpty()) { //no moves this turn in checkmate or draw
+                if (inCheck(boardState)) {
+                    return mate - ((startingDepth - depth) / 2);
                 }
                 return 0;
             }
 
-            if(depth == 0 || Thread.currentThread().isInterrupted()) {
+            if (depth == 0 || Thread.currentThread().isInterrupted()) {
                 return Evaluation.calculate(boardState);
             }
 
             Move bestMove = null;
 
-            for(Move move: moves) {
+            for (Move move : moves) {
                 boardState.makeMove(move);
-                int eval = alphaBetaMax(boardState, alpha, beta, depth-1);
+                int eval = alphaBetaMax(boardState, alpha, beta, depth - 1);
                 boardState.unMakeMove();
-                if(depth == startingDepth) {
+                if (depth == startingDepth) {
                     printInfoUCI(depth, eval, move, false);
                 }
-                if(eval <= alpha) {
+                if (eval <= alpha) {
                     return alpha;
                 }
-                if(eval < beta) {
+                if (eval < beta) {
                     bestMove = move;
                     beta = eval;
                 }
             }
 
-            if(depth == startingDepth) {
-                if(bestMove == null) bestMove = moves.iterator().next();
+            if (depth == startingDepth) {
+                if (bestMove == null) bestMove = moves.iterator().next();
                 System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
             }
             return beta;
@@ -115,17 +115,17 @@ public class Evaluation {
             String outString = "info depth " + depth;
             String currMove = " currmove " + Utils.parseCommand(move);
 
-            boolean whiteHasMate = eval >= mate-mateOffset;
-            boolean isMate = whiteHasMate || eval <= -mate+mateOffset;
+            boolean whiteHasMate = eval >= mate - mateOffset;
+            boolean isMate = whiteHasMate || eval <= -mate + mateOffset;
             int whiteTurn = isWhite ? 1 : -1;
 
-            if(isMate) {
-                int offset = whiteHasMate ? whiteTurn+mate-eval : whiteTurn-mate-eval;
+            if (isMate) {
+                int offset = whiteHasMate ? whiteTurn + mate - eval : whiteTurn - mate - eval;
                 outString += " score mate " + offset;
             } else {
                 outString += " score cp " + eval;
             }
-            System.out.println(outString+currMove);
+            System.out.println(outString + currMove);
         }
     }
 
@@ -135,9 +135,9 @@ public class Evaluation {
         boolean isWhite = state.turn == PlayerTurn.WHITE;
         state.turn = state.turn == PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
         Moves opponent = MoveGenerator.getLegalMoves(state);
-        for (Move move: opponent) {
+        for (Move move : opponent) {
             char c = MoveGenerator.getCoordinate(move.destination, state.board);
-            if((isWhite && c == 'K') || (!isWhite && c == 'k')) {
+            if ((isWhite && c == 'K') || (!isWhite && c == 'k')) {
                 state.turn = old;
                 return true;
             }
@@ -154,20 +154,21 @@ public class Evaluation {
         int centralControl = calculatePiecesInMiddle(state);
         int materialAdvantage = calculateMaterial(state);
         int kingSafety = kingSafety(state);
-        return materialAdvantage+centralControl+kingSafety;
+        int development = development(state);
+        return materialAdvantage + centralControl + kingSafety + development + (int)(5 * (1 + Math.random())); //slight random, doesnt play the same move always?
     }
 
     static private int calculatePiecesInMiddle(BoardState state) {
-        char [][] data = state.board;
+        char[][] data = state.board;
         int value = 0;
         for (int i = 2; i < 6; i++) {
             for (int j = 2; j < 6; j++) {
                 char piece = data[i][j];
-                if(piece != '-') {
-                    if(Character.isLowerCase(piece)) {
-                        value -= 30;
+                if (piece != '-') {
+                    if (Character.isLowerCase(piece)) {
+                        value -= 20;
                     } else {
-                        value += 30;
+                        value += 20;
                     }
                 }
             }
@@ -176,31 +177,31 @@ public class Evaluation {
     }
 
     static private int kingSafety(BoardState state) {
-        char [][] data = state.board;
+        char[][] data = state.board;
         int value = 0;
-        if(state.turnNumber < 20) {
-            if(data[0][2] == 'k') { //black king queenSide
+        if (state.turnNumber < 20) {
+            if (data[0][2] == 'k') { //black king queenSide
                 for (int i = 0; i < 3; i++) {
-                    if(data[1][i] != 'p') break;
-                    if(i == 2) value-=10;
+                    if (data[1][i] != 'p') break;
+                    if (i == 2) value -= 50;
                 }
             }
-            if(data[7][2] == 'K') { //white king queenSide
+            if (data[7][2] == 'K') { //white king queenSide
                 for (int i = 0; i < 3; i++) {
-                    if(data[6][i] != 'P') break;
-                    if(i == 2) value+=10;
+                    if (data[6][i] != 'P') break;
+                    if (i == 2) value += 50;
                 }
             }
-            if(data[0][6] == 'k') { //black king kingSide
+            if (data[0][6] == 'k') { //black king kingSide
                 for (int i = 5; i < 8; i++) {
-                    if(data[1][i] != 'p') break;
-                    if(i == 7) value-=20;
+                    if (data[1][i] != 'p') break;
+                    if (i == 7) value -= 80;
                 }
             }
-            if(data[7][6] == 'k') { //white king kingSide
+            if (data[7][6] == 'k') { //white king kingSide
                 for (int i = 5; i < 8; i++) {
-                    if(data[6][i] != 'p') break;
-                    if(i == 7) value+=20;
+                    if (data[6][i] != 'p') break;
+                    if (i == 7) value += 80;
                 }
             }
         }
@@ -208,18 +209,30 @@ public class Evaluation {
     }
 
     static private int development(BoardState state) {
-        char [][] data = state.board;
+        char[][] data = state.board;
         int value = 0;
+        char knight = 'n';
+        char bishop = 'b';
+        int whiteRow = 7;
+        int blackRow = 0;
+        if(data[blackRow][1] == knight) value += 15; //developing knight is good for black etc
+        if(data[blackRow][2] == bishop) value += 17;
+        if(data[blackRow][5] == bishop) value += 20;
+        if(data[blackRow][6] == knight) value += 16;
 
-
-
+        knight = Character.toUpperCase(knight);
+        bishop = Character.toUpperCase(bishop);
+        if(data[whiteRow][1] == knight) value -= 15; //developing knight is good for white etc
+        if(data[whiteRow][2] == bishop) value -= 17;
+        if(data[whiteRow][5] == bishop) value -= 20;
+        if(data[whiteRow][6] == knight) value -= 16;
 
         return value;
     }
 
     static public int calculateMaterial(BoardState state) { //+ if white, -if black
         int result = 0;
-        int [] arr = state.pieces;
+        int[] arr = state.pieces;
         result += arr[3] * ePawn;
         result -= arr[4] * ePawn;
         result += arr[5] * eBishop;
@@ -232,5 +245,4 @@ public class Evaluation {
         result -= arr[12] * eQueen;
         return result;
     }
-
 }
