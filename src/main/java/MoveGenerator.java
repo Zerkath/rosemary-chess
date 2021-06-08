@@ -604,6 +604,71 @@ public class MoveGenerator {
         return false;
     }
 
+    /**
+     * returns true if the king isn't in check
+     * @param boardState
+     * @return true if the state is legal
+     */
+    static private boolean kingNotInCheck(BoardState boardState) {
+        //its inverse turn
+        boolean white = boardState.turn == PlayerTurn.BLACK;
+        //lets try the most likely moves to cause check (bishop and rook)
+        Moves moves;
+        Coordinate origin = white ? boardState.whiteKing : boardState.blackKing;
+        if(origin == null) return true;
+        moves = rookMoves(origin, boardState); //todo refactor
+        for (Move move: moves) {
+            char c = MoveGenerator.getCoordinate(move.destination, boardState.board);
+            char j = Character.toLowerCase(c);
+            if(j == 'r' || j == 'q') {
+                if(Character.isLowerCase(c) && white || !Character.isLowerCase(c) && !white) {
+                    return false; //found a check return false
+                }
+            }
+        }
+        moves = bishopMoves(origin, boardState);
+        for (Move move: moves) {
+            char c = MoveGenerator.getCoordinate(move.destination, boardState.board);
+            char j = Character.toLowerCase(c);
+            if(j == 'b' || j == 'q') {
+                if(Character.isLowerCase(c) && white || !Character.isLowerCase(c) && !white) {
+                    return false; //found a check return false
+                }
+            }
+        }
+        moves = knightMoves(origin, boardState);
+        for (Move move: moves) {
+            char c = MoveGenerator.getCoordinate(move.destination, boardState.board);
+            char j = Character.toLowerCase(c);
+            if(j == 'n') {
+                if(Character.isLowerCase(c) && white || !Character.isLowerCase(c) && !white) {
+                    return false; //found a check return false
+                }
+            }
+        }
+        //check for pawns
+        if(origin.row <= 7 && origin.row >= 0 && origin.column >= 0 && origin.column <= 7) {
+            int col = origin.column;
+            int row = origin.row;
+            if(white) {
+                if(col != 7 && row > 0 && 'p' == MoveGenerator.getCoordinate(new Coordinate(col + 1, row - 1), boardState.board)) {
+                    return false;
+                }
+                if(col != 0 && row > 0 && 'p' == MoveGenerator.getCoordinate(new Coordinate(col - 1, row - 1), boardState.board)) {
+                    return false;
+                }
+            } else {
+                if(col != 7 && row < 7 && 'P' == MoveGenerator.getCoordinate(new Coordinate(col + 1, row + 1), boardState.board)) {
+                    return false;
+                }
+                if(col != 0 && row < 7 && 'P' == MoveGenerator.getCoordinate(new Coordinate(col - 1, row + 1), boardState.board)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     static public Moves getAllMoves(BoardState boardState) {
         
         Moves moves = new Moves();
@@ -628,16 +693,7 @@ public class MoveGenerator {
 
         for (Move pLegalMove: pseudoLegal) {
             boardState.makeMove(pLegalMove);
-            Moves responses = getAllMoves(boardState);
-            boolean legal = true;
-            for (Move response: responses) {
-                char target = getCoordinate(response.destination, boardState.board);
-                if(Character.toLowerCase(target) == 'k') {
-                    legal = false;
-                    break;
-                }
-            }
-            if(legal) moves.add(pLegalMove);
+            if(kingNotInCheck(boardState)) moves.add(pLegalMove);
 
             boardState.unMakeMove();
         }
