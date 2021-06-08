@@ -13,6 +13,9 @@ public class BoardState {
 
     Coordinate enPassant;
 
+    Coordinate whiteKing;
+    Coordinate blackKing;
+
     public BoardState() { }
 
     public BoardState(BoardState state) {
@@ -32,6 +35,8 @@ public class BoardState {
             System.arraycopy(state.board[i], 0, this.board[i], 0, state.board.length);
         }
         this.pieces = countPieces();
+        this.blackKing = state.blackKing;
+        this.whiteKing = state.whiteKing;
     }
 
     public void setCastling(char [] castling) {
@@ -81,6 +86,14 @@ public class BoardState {
                 }
             } else {
                 board[index][c] = ch;
+                if(Character.toLowerCase(ch) == 'k') {
+                    Coordinate pos = new Coordinate(c, index);
+                    if(MoveGenerator.isWhite(ch)) {
+                        whiteKing = pos;
+                    } else {
+                        blackKing = pos;
+                    }
+                }
                 c++;
             }
         }
@@ -206,8 +219,10 @@ public class BoardState {
 
         if(nSelected == 'k') {
             if(isWhite) {
+                this.whiteKing = move.destination;
                 this.whiteCastling = CastlingRights.NONE;
             } else {
+                this.blackKing = move.destination;
                 this.blackCastling = CastlingRights.NONE;
             }
         }
