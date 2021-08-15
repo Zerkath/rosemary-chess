@@ -13,7 +13,6 @@ public class UCI_Controller {
 
     public UCI_Controller() {
         boardState = new BoardState(Utils.parseFen(defaultBoard));
-//        System.out.print(name + " by " + authors + "\n");
     }
 
     public void setToDefault() {
