@@ -174,13 +174,12 @@ public class MoveGenerationTests {
     @Order(200)
     void movesToDepth() {
 
-        int [] depth = new int[6];
+        int [] depth = new int[5];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
             depth[i] = recursion(i+1, getTestBoard(), i+1);
             long end = System.currentTimeMillis();
             System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
-
         }
 
         Assertions.assertEquals(20, depth[0]);
@@ -188,7 +187,7 @@ public class MoveGenerationTests {
         Assertions.assertEquals(8902, depth[2]);
         Assertions.assertEquals(197281, depth[3]);
         Assertions.assertEquals(4865609, depth[4]);
-        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
+//        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
         //took 206s~ after changes
     }
 
