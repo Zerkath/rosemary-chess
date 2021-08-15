@@ -220,8 +220,8 @@ public class Evaluation {
         if(data[blackRow][5] == bishop) value += 20;
         if(data[blackRow][6] == knight) value += 16;
 
-        knight = Character.toUpperCase(knight);
-        bishop = Character.toUpperCase(bishop);
+        knight = 'N';
+        bishop = 'B';
         if(data[whiteRow][1] == knight) value -= 15; //developing knight is good for white etc
         if(data[whiteRow][2] == bishop) value -= 17;
         if(data[whiteRow][5] == bishop) value -= 20;

@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class MoveGenerator {
 
     static public boolean isWhite(char c) {
@@ -200,17 +202,14 @@ public class MoveGenerator {
 
     static private Moves pawnPromotions(Move move, boolean isWhite) {
         Moves moves = new Moves();
+        char queen, knight, rook, bishop;
+
         if(isWhite) {
-            moves.add(new Move(move, 'Q'));
-            moves.add(new Move(move, 'N'));
-            moves.add(new Move(move, 'R'));
-            moves.add(new Move(move, 'B'));
+            queen = 'Q'; knight = 'N'; rook = 'R'; bishop = 'B';
         } else {
-            moves.add(new Move(move, 'q'));
-            moves.add(new Move(move, 'n'));
-            moves.add(new Move(move, 'r'));
-            moves.add(new Move(move, 'b'));
+            queen = 'q'; knight = 'n'; rook = 'r'; bishop = 'b';
         }
+        moves.addAll(Arrays.asList(new Move(move, queen), new Move(move, knight), new Move(move, rook), new Move(move, bishop)));
         return moves;
     }
 
@@ -349,7 +348,7 @@ public class MoveGenerator {
         }
 
         //castling
-        if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) { //todo add rook and bishop checks
+        if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) {
             if(col == 4 && ((isWhite && row == 7) || (!isWhite && row == 0)) && !bothCastlingsStoppedByKnight(isWhite, board) && !inCheckVertically(isWhite, board) && !inCheckDiagonally(isWhite, board))  { //only check if the king is in the original position and hasn't moved
                 char [] backRow = board[row];
 
@@ -604,6 +603,10 @@ public class MoveGenerator {
         return false;
     }
 
+    static private boolean check(char c, boolean white) {
+        return Character.isLowerCase(c) && white || !Character.isLowerCase(c) && !white;
+    }
+
     /**
      * returns true if the king isn't in check
      * @param boardState
@@ -621,7 +624,7 @@ public class MoveGenerator {
             char c = MoveGenerator.getCoordinate(move.destination, boardState.board);
             char j = Character.toLowerCase(c);
             if(j == 'r' || j == 'q') {
-                if(Character.isLowerCase(c) && white || !Character.isLowerCase(c) && !white) {
+                if(check(c, white)) {
                     return false; //found a check return false
                 }
             }
@@ -631,7 +634,7 @@ public class MoveGenerator {
             char c = MoveGenerator.getCoordinate(move.destination, boardState.board);
             char j = Character.toLowerCase(c);
             if(j == 'b' || j == 'q') {
-                if(Character.isLowerCase(c) && white || !Character.isLowerCase(c) && !white) {
+                if(check(c, white)) {
                     return false; //found a check return false
                 }
             }
@@ -641,7 +644,7 @@ public class MoveGenerator {
             char c = MoveGenerator.getCoordinate(move.destination, boardState.board);
             char j = Character.toLowerCase(c);
             if(j == 'n') {
-                if(Character.isLowerCase(c) && white || !Character.isLowerCase(c) && !white) {
+                if(check(c, white)) {
                     return false; //found a check return false
                 }
             }
@@ -654,16 +657,12 @@ public class MoveGenerator {
                 if(col != 7 && row > 0 && 'p' == MoveGenerator.getCoordinate(new Coordinate(col + 1, row - 1), boardState.board)) {
                     return false;
                 }
-                if(col != 0 && row > 0 && 'p' == MoveGenerator.getCoordinate(new Coordinate(col - 1, row - 1), boardState.board)) {
-                    return false;
-                }
+                return col == 0 || row <= 0 || 'p' != MoveGenerator.getCoordinate(new Coordinate(col - 1, row - 1), boardState.board);
             } else {
                 if(col != 7 && row < 7 && 'P' == MoveGenerator.getCoordinate(new Coordinate(col + 1, row + 1), boardState.board)) {
                     return false;
                 }
-                if(col != 0 && row < 7 && 'P' == MoveGenerator.getCoordinate(new Coordinate(col - 1, row + 1), boardState.board)) {
-                    return false;
-                }
+                return col == 0 || row >= 7 || 'P' != MoveGenerator.getCoordinate(new Coordinate(col - 1, row + 1), boardState.board);
             }
         }
         return true;
