@@ -120,7 +120,7 @@ public class Evaluation {
             int whiteTurn = isWhite ? 1 : -1;
 
             if (isMate) {
-                int offset = whiteHasMate ? whiteTurn + mate - eval : whiteTurn - mate - eval;
+                int offset = whiteHasMate ? whiteTurn + mate - eval : whiteTurn - mate - eval - (isWhite ? 1 : 0);
                 outString += " score mate " + offset;
             } else {
                 outString += " score cp " + eval;
