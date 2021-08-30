@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.*;
-public class UtilsTests {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class UtilsTest {
     @Test
     void characters() {
         for (int i = 0; i < 8; i++) {

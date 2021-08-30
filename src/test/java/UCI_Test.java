@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.*;
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UCI_Test {
     UCI_Controller uci = new UCI_Controller();
 

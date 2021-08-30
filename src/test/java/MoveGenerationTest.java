@@ -1,7 +1,8 @@
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MoveGenerationTests {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class MoveGenerationTest {
     BoardState game = new BoardState();
     String d_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     BoardState boardState = new BoardState(Utils.parseFen(d_fen));
