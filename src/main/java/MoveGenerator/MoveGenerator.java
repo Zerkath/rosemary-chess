@@ -1,3 +1,8 @@
+package MoveGenerator;
+
+import BoardRepresentation.BoardState;
+import DataTypes.*;
+
 import java.util.Arrays;
 
 public class MoveGenerator {

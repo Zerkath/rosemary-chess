@@ -1,3 +1,6 @@
+import BoardRepresentation.BoardState;
+import DataTypes.CastlingRights;
+import CommonTools.Utils;
 import org.junit.jupiter.api.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -14,24 +17,24 @@ public class FenParseTest {
 //    void noWhiteQueenSide() {
 //        game.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kkq - 0 1");
 //        game.printBoard();
-//        Assertions.assertEquals(Game.CastlingRights.BOTH, game.blackCastling);
-//        Assertions.assertEquals(Game.CastlingRights.KINGSIDE, game.whiteCastling);
+//        Assertions.assertEquals(Game.CommonTools.CastlingRights.BOTH, game.blackCastling);
+//        Assertions.assertEquals(Game.CommonTools.CastlingRights.KINGSIDE, game.whiteCastling);
 //    }
 //
 //    @Test
 //    void noBlackQueenSide() {
 //        game.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQk - 0 1");
 //        game.printBoard();
-//        Assertions.assertEquals(Game.CastlingRights.KINGSIDE, game.blackCastling);
-//        Assertions.assertEquals(Game.CastlingRights.BOTH, game.whiteCastling);
+//        Assertions.assertEquals(Game.CommonTools.CastlingRights.KINGSIDE, game.blackCastling);
+//        Assertions.assertEquals(Game.CommonTools.CastlingRights.BOTH, game.whiteCastling);
 //    }
 //
 //    @Test
 //    void noCastlingRights() {
 //        game.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
 //        game.printBoard();
-//        Assertions.assertEquals(Game.CastlingRights.NONE, game.blackCastling);
-//        Assertions.assertEquals(Game.CastlingRights.NONE, game.whiteCastling);
+//        Assertions.assertEquals(Game.CommonTools.CastlingRights.NONE, game.blackCastling);
+//        Assertions.assertEquals(Game.CommonTools.CastlingRights.NONE, game.whiteCastling);
 //    }
 //
 //    @Test

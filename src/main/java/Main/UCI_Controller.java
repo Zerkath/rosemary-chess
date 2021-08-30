@@ -1,3 +1,12 @@
+package Main;
+
+import BoardRepresentation.BoardState;
+import DataTypes.Move;
+import DataTypes.Moves;
+import CommonTools.Utils;
+import Evaluation.EvaluationThread;
+import MoveGenerator.MoveGenerator;
+
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -170,7 +179,7 @@ public class UCI_Controller {
 
     public void startEval(int depth) {
         if(threadGroup.activeCount() < 1) {
-            new Thread(threadGroup, new Evaluation.EvaluationThread(this.boardState, depth, debug)).start();
+            new Thread(threadGroup, new EvaluationThread(this.boardState, depth, debug)).start();
         }
     }
 }

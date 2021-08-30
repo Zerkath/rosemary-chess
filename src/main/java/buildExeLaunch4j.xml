@@ -15,7 +15,7 @@
   <manifest></manifest>
   <icon></icon>
   <classPath>
-    <mainClass>Program</mainClass>
+    <mainClass>Main.Program</mainClass>
   </classPath>
   <jre>
     <path></path>

@@ -1,3 +1,6 @@
+import BoardRepresentation.BoardState;
+import CommonTools.Utils;
+import Main.UCI_Controller;
 import org.junit.jupiter.api.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UCI_Test {

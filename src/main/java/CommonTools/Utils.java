@@ -1,4 +1,11 @@
-class Utils {
+package CommonTools;
+
+import BoardRepresentation.BoardState;
+import DataTypes.Coordinate;
+import DataTypes.Move;
+import DataTypes.PlayerTurn;
+
+public class Utils {
 
     private static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     //todo change functions to return Coordinates

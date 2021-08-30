@@ -1,20 +1,26 @@
+package BoardRepresentation;
+
+import DataTypes.*;
+import CommonTools.Utils;
+import MoveGenerator.MoveGenerator;
+
 public class BoardState {
-    char[][] board = new char[8][8];
-    BoardState previous;
-    PlayerTurn turn;
+    public char[][] board = new char[8][8];
+    public BoardState previous;
+    public PlayerTurn turn;
 
-    CastlingRights whiteCastling = CastlingRights.NONE;
-    CastlingRights blackCastling = CastlingRights.NONE;
+    public CastlingRights whiteCastling = CastlingRights.NONE;
+    public CastlingRights blackCastling = CastlingRights.NONE;
 
-    int turnNumber = 1;
-    int halfMove = 0;
+    public int turnNumber = 1;
+    public int halfMove = 0;
 
-    int [] pieces;
+    public int [] pieces;
 
-    Coordinate enPassant;
+    public Coordinate enPassant;
 
-    Coordinate whiteKing;
-    Coordinate blackKing;
+    public Coordinate whiteKing;
+    public Coordinate blackKing;
 
     public BoardState() { }
 
