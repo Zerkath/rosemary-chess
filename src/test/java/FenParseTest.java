@@ -1,5 +1,7 @@
 import org.junit.jupiter.api.*;
-public class FenParseTests {
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class FenParseTest {
     BoardState game = new BoardState();
     @Test
     void startingBoard() {
