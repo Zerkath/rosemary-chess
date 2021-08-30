@@ -1,3 +1,8 @@
+import BoardRepresentation.BoardState;
+import DataTypes.Move;
+import DataTypes.Moves;
+import CommonTools.Utils;
+import MoveGenerator.MoveGenerator;
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
