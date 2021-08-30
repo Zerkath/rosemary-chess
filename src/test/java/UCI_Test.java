@@ -84,4 +84,29 @@ public class UCI_Test {
         Utils.printBoard(boardState);
         uci.handleMessage("go");
     }
+
+    @Test
+    void testPerft() {
+        uci.handleMessage("position startpos moves");
+        Assertions.assertEquals(400, uci.runPerft(2, 2, false));
+    }
+
+    @Test
+    void testPerftPrint() {
+        uci.handleMessage("position startpos moves");
+        Assertions.assertEquals(400, uci.runPerft(2, 2, true));
+    }
+
+    @Test
+    void settingToUCI() {
+        uci.setToUCI();
+    }
+
+    @Test
+    void endingEvaluationDuringEvaluation() {
+        uci.setToDefault();
+        uci.startEval(10);
+        uci.endEval();
+        uci.setToDefault();
+    }
 }
