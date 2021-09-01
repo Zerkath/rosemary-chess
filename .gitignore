@@ -1,5 +1,11 @@
-out\
-target
-*.jar
-*.class
-*.exe
+out/
+target/
+src/main/java/build/*.jar
+src/main/java/build/*.class
+src/main/java/build/*.log
+src/main/java/build/*.exe
+
+
+.gradle
+.idea
+.settings
