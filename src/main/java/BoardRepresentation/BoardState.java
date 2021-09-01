@@ -2,7 +2,8 @@ package BoardRepresentation;
 
 import DataTypes.*;
 import CommonTools.Utils;
-import MoveGenerator.MoveGenerator;
+import MoveGeneration.MoveGenerationUtils;
+import MoveGeneration.MoveGenerator;
 
 public class BoardState {
     public char[][] board = new char[8][8];
@@ -22,7 +23,9 @@ public class BoardState {
     public Coordinate whiteKing;
     public Coordinate blackKing;
 
-    public BoardState() { }
+    MoveGenerationUtils moveUtils = new MoveGenerationUtils();
+
+    public BoardState() {}
 
     public BoardState(BoardState state) {
         setBoardState(state);
@@ -94,7 +97,7 @@ public class BoardState {
                 board[index][c] = ch;
                 if(Character.toLowerCase(ch) == 'k') {
                     Coordinate pos = new Coordinate(c, index);
-                    if(MoveGenerator.isWhite(ch)) {
+                    if(moveUtils.isWhite(ch)) {
                         whiteKing = pos;
                     } else {
                         blackKing = pos;
@@ -116,10 +119,10 @@ public class BoardState {
     }
 
     private void addEnPassantMove(boolean white, char destination, int dCol, int dRow) {
-        if(white && !MoveGenerator.isWhite(destination)) {
+        if(white && !moveUtils.isWhite(destination)) {
             enPassant = new Coordinate(dCol, dRow+1);
         }
-        if(!white && MoveGenerator.isWhite(destination)) {
+        if(!white && moveUtils.isWhite(destination)) {
             enPassant = new Coordinate(dCol, dRow-1);
         }
     }
@@ -164,14 +167,14 @@ public class BoardState {
 
         int dRow = move.destination.row;
         int dCol = move.destination.column;
-        char selected = MoveGenerator.getCoordinate(move.origin, board);
+        char selected = moveUtils.getCoordinate(move.origin, board);
         char nSelected = Character.toLowerCase(selected);
         boolean isBeingPromoted = move.promotion != '-';
-        boolean isWhite = MoveGenerator.isWhite(selected);
+        boolean isWhite = moveUtils.isWhite(selected);
 
         checkForCastlingRights(move);
 
-        if(nSelected == 'p' || MoveGenerator.getCoordinate(move.destination, board) != '-') {
+        if(nSelected == 'p' || moveUtils.getCoordinate(move.destination, board) != '-') {
             halfMove = 0;
         } else {
             halfMove++;
@@ -286,12 +289,12 @@ public class BoardState {
         for (char [] row: board) {
             for (char piece: row) {
                 if(piece != '-') {
-                    if(MoveGenerator.isWhite(piece)) {
+                    if(moveUtils.isWhite(piece)) {
                         results[0]++;
                     } else {
                         results[1]++;
                     }
-                    int offSet = MoveGenerator.isWhite(piece) ? 0 : 1;
+                    int offSet = moveUtils.isWhite(piece) ? 0 : 1;
                     switch(Character.toLowerCase(piece)) {
                         case 'p': results[3 + offSet]++; break;
                         case 'b': results[5 + offSet]++; break;
