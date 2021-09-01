@@ -5,7 +5,8 @@ import CommonTools.Utils;
 import DataTypes.Move;
 import DataTypes.Moves;
 import DataTypes.PlayerTurn;
-import MoveGenerator.MoveGenerator;
+import MoveGeneration.MoveGenerationUtils;
+import MoveGeneration.MoveGenerator;
 
 public class EvaluationThread implements Runnable {
 
@@ -16,6 +17,8 @@ public class EvaluationThread implements Runnable {
     int depth;
     EvaluationValues values = new EvaluationValues();
     EvaluationCalculations evalCalculator = new EvaluationCalculations();
+    MoveGenerator moveGenerator = new MoveGenerator();
+    MoveGenerationUtils moveUtils = new MoveGenerationUtils();
 
     public EvaluationThread(BoardState boardState, int depth, boolean debug) {
         this.boardState = boardState;
@@ -33,7 +36,7 @@ public class EvaluationThread implements Runnable {
 
     int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) { //white
 
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         if (moves.isEmpty()) { //no moves this turn in checkmate or draw
             if (inCheck(boardState)) {
                 return -values.mate + ((startingDepth - depth) / 2);
@@ -73,7 +76,7 @@ public class EvaluationThread implements Runnable {
 
     private int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) { //black
 
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         if (moves.isEmpty()) { //no moves this turn in checkmate or draw
             if (inCheck(boardState)) {
                 return values.mate - ((startingDepth - depth) / 2);
@@ -132,9 +135,9 @@ public class EvaluationThread implements Runnable {
         PlayerTurn old = state.turn;
         boolean isWhite = state.turn == PlayerTurn.WHITE;
         state.turn = state.turn == PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
-        Moves opponent = MoveGenerator.getLegalMoves(state);
+        Moves opponent = moveGenerator.getLegalMoves(state);
         for (Move move : opponent) {
-            char c = MoveGenerator.getCoordinate(move.destination, state.board);
+            char c = moveUtils.getCoordinate(move.destination, state.board);
             if ((isWhite && c == 'K') || (!isWhite && c == 'k')) {
                 state.turn = old;
                 return true;

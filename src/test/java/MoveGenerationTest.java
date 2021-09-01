@@ -2,7 +2,7 @@ import BoardRepresentation.BoardState;
 import DataTypes.Move;
 import DataTypes.Moves;
 import CommonTools.Utils;
-import MoveGenerator.MoveGenerator;
+import MoveGeneration.MoveGenerator;
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -12,11 +12,13 @@ public class MoveGenerationTest {
     String d_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     BoardState boardState = new BoardState(Utils.parseFen(d_fen));
 
+    MoveGenerator moveGenerator = new MoveGenerator();
+
     @Test
     @Order(1)
     void whiteStartMoves() {
         game = new BoardState(Utils.parseFen(d_fen));
-        Moves moves = MoveGenerator.getAllMoves(game);
+        Moves moves = moveGenerator.getAllMoves(game);
         Assertions.assertEquals(20, moves.size());
     }
 
@@ -25,7 +27,7 @@ public class MoveGenerationTest {
     void blackStartMoves() {
         game = new BoardState(Utils.parseFen(d_fen));
         game.makeMove(Utils.parseCommand("d2d4"));
-        Moves moves = MoveGenerator.getAllMoves(game);
+        Moves moves = moveGenerator.getAllMoves(game);
         Assertions.assertEquals(20, moves.size());
     }
 
@@ -35,7 +37,7 @@ public class MoveGenerationTest {
         game = new BoardState(Utils.parseFen(d_fen));
         game.makeMove(Utils.parseCommand("d2d4"));
         game.makeMove(Utils.parseCommand("e7e5"));
-        Moves moves = MoveGenerator.getAllMoves(game);
+        Moves moves = moveGenerator.getAllMoves(game);
         Assertions.assertEquals(29, moves.size());
     }
 
@@ -43,7 +45,7 @@ public class MoveGenerationTest {
     @Order(4)
     void leftSideEnPassant() {
         String position = "rnbqkbnr/2pppppp/8/pP6/8/8/PP1PPPPP/RNBQKBNR w KQkq a6 0 3";
-        Moves moves = MoveGenerator.getLegalMoves(Utils.parseFen(position));
+        Moves moves = moveGenerator.getLegalMoves(Utils.parseFen(position));
         Assertions.assertEquals(23, moves.size());
     }
 
@@ -51,7 +53,7 @@ public class MoveGenerationTest {
     @Order(5)
     void kingUnderAttack() {
         String position = "rnbq1bnr/pppkpppp/3pQ3/8/8/2P5/PP1PPPPP/RNB1KBNR b KQ - 3 3";
-        Moves moves = MoveGenerator.getLegalMoves(Utils.parseFen(position));
+        Moves moves = moveGenerator.getLegalMoves(Utils.parseFen(position));
         Assertions.assertEquals(4, moves.size());
     }
 
@@ -70,7 +72,7 @@ public class MoveGenerationTest {
     void PawnPromotion() {
         BoardState boardState = new BoardState(Utils.parseFen("5q1q/6P1/8/8/8/8/8/8 w - - 0 1"));
         Utils.printBoard(boardState);
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(12, moves.size());
         for (Move move: moves) {
             System.out.println(Utils.parseCommand(move));
@@ -100,7 +102,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            MoveGenerator.getAllMoves(boardState);
+            moveGenerator.getAllMoves(boardState);
         }
     }
 
@@ -110,7 +112,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            MoveGenerator.getLegalMoves(boardState);
+            moveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -122,7 +124,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            MoveGenerator.getAllMoves(boardState);
+            moveGenerator.getAllMoves(boardState);
         }
     }
 
@@ -132,7 +134,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            MoveGenerator.getLegalMoves(boardState);
+            moveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -142,7 +144,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            MoveGenerator.getAllMoves(boardState);
+            moveGenerator.getAllMoves(boardState);
         }
     }
 
@@ -152,7 +154,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            MoveGenerator.getLegalMoves(boardState);
+            moveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -162,7 +164,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            MoveGenerator.getAllMoves(boardState);
+            moveGenerator.getAllMoves(boardState);
         }
     }
 
@@ -172,7 +174,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            MoveGenerator.getLegalMoves(boardState);
+            moveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -298,7 +300,7 @@ public class MoveGenerationTest {
         if(depth <= 0) {
             return 1;
         }
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         int numPositions = 0;
 
         for (Move move: moves) {
