@@ -9,3 +9,4 @@ src/main/java/build/*.exe
 .gradle
 .idea
 .settings
+build/
