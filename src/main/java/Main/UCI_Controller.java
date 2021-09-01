@@ -5,7 +5,8 @@ import DataTypes.Move;
 import DataTypes.Moves;
 import CommonTools.Utils;
 import Evaluation.EvaluationThread;
-import MoveGenerator.MoveGenerator;
+import MoveGeneration.MoveGenerationUtils;
+import MoveGeneration.MoveGenerator;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -17,6 +18,8 @@ public class UCI_Controller {
     public int depth = 4;
     public boolean debug = false;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
+    MoveGenerator moveGenerator = new MoveGenerator();
+    MoveGenerationUtils moveGenerationUtils = new MoveGenerationUtils();
 
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -158,7 +161,7 @@ public class UCI_Controller {
         if(depth <= 0) {
             return 1;
         }
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         int numPositions = 0;
 
         for (Move move: moves) {
