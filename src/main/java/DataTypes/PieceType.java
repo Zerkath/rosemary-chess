@@ -1,8 +1,7 @@
 package DataTypes;
 
-public enum PieceTypes {
+public enum PieceType {
     BISHOP,
-    EMPTY,
     KING,
     KNIGHT,
     PAWN,

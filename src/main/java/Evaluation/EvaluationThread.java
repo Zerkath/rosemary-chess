@@ -5,7 +5,6 @@ import CommonTools.Utils;
 import DataTypes.Move;
 import DataTypes.Moves;
 import DataTypes.PlayerTurn;
-import MoveGeneration.MoveGenerationUtils;
 import MoveGeneration.MoveGenerator;
 
 public class EvaluationThread implements Runnable {

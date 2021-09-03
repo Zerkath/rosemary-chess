@@ -5,7 +5,6 @@ import DataTypes.Move;
 import DataTypes.Moves;
 import CommonTools.Utils;
 import Evaluation.EvaluationThread;
-import MoveGeneration.MoveGenerationUtils;
 import MoveGeneration.MoveGenerator;
 
 import java.util.*;

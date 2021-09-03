@@ -1,11 +1,11 @@
 package DataTypes;
 
 public class Coordinate {
-    public Coordinate(int column, int row) {
-        this.column = (byte)column;
-        this.row = (byte)row;
+    public int column;
+    public int row;
+    public Coordinate(int row, int column) {
+        this.column = column;
+        this.row = row;
     }
     public Coordinate() {}
-    public byte column;
-    public byte row;
 }

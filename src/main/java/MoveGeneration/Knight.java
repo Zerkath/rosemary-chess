@@ -5,7 +5,7 @@ import DataTypes.Coordinate;
 import DataTypes.Move;
 import DataTypes.Moves;
 
-public class Knight implements Piece {
+public class Knight implements PieceGenerator {
 
     MoveGenerationUtils moveUtils = new MoveGenerationUtils();
 
