@@ -1,20 +1,16 @@
 package MoveGeneration;
 
 import BoardRepresentation.BoardState;
-import DataTypes.Coordinate;
-import DataTypes.Move;
-import DataTypes.Moves;
+import DataTypes.*;
 
 public class Rook {
 
-    MoveGenerationUtils moveUtils = new MoveGenerationUtils();
-
     public Moves rookMoves(Coordinate origin, BoardState boardState) {
 
-        char [][] board = boardState.board;
+        Board board = boardState.board;
 
         Moves moves = new Moves();
-        char orig = moveUtils.getCoordinate(origin, board);
+        Piece orig = board.getCoordinate(origin);
         int row = origin.row;
         int col = origin.column;
 
@@ -22,10 +18,10 @@ public class Rook {
         for(int i = 1; col - i >= 0; i++) { //Runs as long as destination is within board limits
             Coordinate destination = new Coordinate(col - i, row);
 
-            if(moveUtils.isOpposingColourOrEmpty(destination, orig, board)) {
+            if(board.isOpposingColourOrEmpty(destination, orig)) {
                 moves.add(new Move(origin, destination));
 
-                if(!moveUtils.locationIsEmpty(destination, board)) { //Checks if move ends in capture to end the loop
+                if(board.getCoordinate(destination) != null) { //Checks if move ends in capture to end the loop
                     break;
                 }
             } else {
@@ -38,10 +34,10 @@ public class Rook {
         for(int i = 1; row - i >= 0; i++) {
             Coordinate destination = new Coordinate(col, row - i);
 
-            if(moveUtils.isOpposingColourOrEmpty(destination, orig, board)) {
+            if(board.isOpposingColourOrEmpty(destination, orig)) {
                 moves.add(new Move(origin, destination));
 
-                if(!moveUtils.locationIsEmpty(destination, board)) { //Checks if move ends in capture to end the loop
+                if(board.getCoordinate(destination) != null) { //Checks if move ends in capture to end the loop
                     break;
                 }
             } else {
@@ -53,10 +49,10 @@ public class Rook {
         for(int i = 1; col + i <= 7; i++) {
             Coordinate destination = new Coordinate(col + i, row);
 
-            if(moveUtils.isOpposingColourOrEmpty(destination, orig, board)) {
+            if(board.isOpposingColourOrEmpty(destination, orig)) {
                 moves.add(new Move(origin, destination));
 
-                if(!moveUtils.locationIsEmpty(destination, board)) { //Checks if move ends in capture to end the loop
+                if(board.getCoordinate(destination) != null) { //Checks if move ends in capture to end the loop
                     break;
                 }
             } else {
@@ -68,10 +64,10 @@ public class Rook {
         for(int i = 1; row + i <= 7; i++) {
             Coordinate destination = new Coordinate(col, row + i);
 
-            if(moveUtils.isOpposingColourOrEmpty(destination, orig, board)) {
+            if(board.isOpposingColourOrEmpty(destination, orig)) {
                 moves.add(new Move(origin, destination));
 
-                if(!moveUtils.locationIsEmpty(destination, board)) { //Checks if move ends in capture to end the loop
+                if(board.getCoordinate(destination) != null) { //Checks if move ends in capture to end the loop
                     break;
                 }
             } else {

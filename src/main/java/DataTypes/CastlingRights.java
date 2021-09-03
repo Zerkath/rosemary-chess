@@ -1,8 +1,8 @@
 package DataTypes;
 
 public enum CastlingRights {
-    QUEENSIDE,
-    KINGSIDE,
+    QUEEN,
+    KING,
     BOTH,
     NONE
 }
