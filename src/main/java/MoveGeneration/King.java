@@ -1,26 +1,26 @@
 package MoveGeneration;
 
 import BoardRepresentation.BoardState;
+import CommonTools.Utils;
 import DataTypes.*;
 
-public class King implements Piece {
+public class King implements PieceGenerator {
 
-    MoveGenerationUtils moveUtils = new MoveGenerationUtils();
     Rook rook = new Rook();
     Bishop bishop = new Bishop();
     Knight knight = new Knight();
 
     public Moves getMoves(Coordinate origin, BoardState boardState) {
 
-        char [][] board = boardState.board;
+        Board board = boardState.board;
         PlayerTurn turn = boardState.turn;
-        CastlingRights whiteCastling = boardState.whiteCastling;
-        CastlingRights blackCastling = boardState.blackCastling;
+        CastlingRights whiteCastling = board.getWhiteCastling();
+        CastlingRights blackCastling = board.getBlackCastling();
 
         Moves moves = new Moves();
 
-        char orig = moveUtils.getCoordinate(origin, board);
-        boolean isWhite = moveUtils.isWhite(orig);
+        Piece orig = board.getCoordinate(origin);
+        boolean isWhite = Utils.isWhite(orig);
         int row = origin.row;
         int col = origin.column;
 
@@ -28,7 +28,7 @@ public class King implements Piece {
             for (int j = col-1; j <= col+1; j++) {
                 if(i != row || j != col) {
                     Coordinate destination = new Coordinate(j, i);
-                    if(moveUtils.isOpposingColourOrEmpty(destination, orig, board)) moves.add(new Move(origin, destination));
+                    if(board.isOpposingColourOrEmpty(destination, orig)) moves.add(new Move(origin, destination));
                 }
             }
         }
@@ -74,11 +74,11 @@ public class King implements Piece {
                             if(kSide) moves.add(new Move(origin, new Coordinate(6, row))); //king side
                             break;
                         }
-                        case KINGSIDE: {
+                        case KING: {
                             if(kSide) moves.add(new Move(origin, new Coordinate(6, row)));
                             break;
                         }
-                        case QUEENSIDE: {
+                        case QUEEN: {
                             if(qSide) moves.add(new Move(origin, new Coordinate(2, row)));
                             break;
                         }
@@ -90,7 +90,7 @@ public class King implements Piece {
         return moves;
     }
 
-    private boolean bothCastlingsStoppedByKnight(boolean isWhite, char[][] board) {
+    private boolean bothCastlingsStoppedByKnight(boolean isWhite, Piece board) {
 
         int sixth, seventh;
         char oK;
@@ -117,7 +117,7 @@ public class King implements Piece {
                 board[seventh][5] == p);
     }
 
-    private boolean leftCastlingStoppedByKnight(boolean isWhite, char[][] board) {
+    private boolean leftCastlingStoppedByKnight(boolean isWhite, Board board) {
 
         int sixth, seventh;
         char oK;
@@ -142,7 +142,7 @@ public class King implements Piece {
                 board[seventh][2] == p);
     }
 
-    private boolean rightCastlingStoppedByKnight(boolean isWhite, char[][] board) {
+    private boolean rightCastlingStoppedByKnight(boolean isWhite, Board board) {
         int sixth, seventh;
         char oK;
         char p;
@@ -164,7 +164,7 @@ public class King implements Piece {
                 board[seventh][6] == p);
     }
 
-    private boolean backRankThreat(boolean isWhite, char[][] board) {
+    private boolean backRankThreat(boolean isWhite, Board board) {
         int backrank;
         char oppRook;
         char oppQueen;
@@ -178,33 +178,32 @@ public class King implements Piece {
             oppQueen = 'Q';
         }
         for (int i = 3; i >= 0; i--) {
-            char piece = board[backrank][i];
+            Piece piece = board.getCoordinate(new Coordinate(backrank, i));
             if (piece == oppQueen || piece == oppRook) return true;
-            if(piece != '-') break;
+            if(piece != null) break;
         }
         for (int i = 5; i <= 7; i++) {
-            char piece = board[backrank][i];
+            Piece piece = board.getCoordinate(new Coordinate(backrank, i));
             if (piece == oppQueen || piece == oppRook) return true;
-            if(piece != '-') break;
+            if(piece != null) break;
         }
         return false;
     }
 
-    private boolean leftCastlingStoppedVertically(boolean isWhite, char[][] board) {
+    private boolean leftCastlingStoppedVertically(boolean isWhite, Board board) {
         return isThreatenedVertically(isWhite, board, 2, 3);
     }
 
-    private boolean rightCastlingStoppedVertically(boolean isWhite, char[][] board) {
+    private boolean rightCastlingStoppedVertically(boolean isWhite, Board board) {
         return isThreatenedVertically(isWhite, board, 5, 6);
     }
 
-    private boolean inCheckVertically(boolean isWhite, char [][] board) {
+    private boolean inCheckVertically(boolean isWhite, Board board) {
         return isThreatenedVertically(isWhite, board, 4, 4);
     }
 
-    private boolean isThreatenedVertically(boolean isWhite, char[][] board, int startIndex, int endIndex) {
+    private boolean isThreatenedVertically(boolean isWhite, Board board, int startIndex, int endIndex) {
         int backRank, iteration;
-        char oR, oQ;
         int oppBackRank;
 
         if(isWhite) {
@@ -223,42 +222,35 @@ public class King implements Piece {
 
         for (int j = startIndex; j <= endIndex; j++) {
             for(int i = backRank; i != oppBackRank; i += iteration) {
-                char piece = board[i][j];
+                Piece piece = board.getCoordinate(new Coordinate(i, j));
                 if(piece == oR || piece == oQ) return true;
-                if(piece != '-') break;
+                if(piece != null) break;
             }
         }
 
         return false;
     }
 
-    private boolean leftCastlingStoppedDiagonally(boolean isWhite, char[][] board) {
+    private boolean leftCastlingStoppedDiagonally(boolean isWhite, Board board) {
         return isThreatenedDiagonally(isWhite, board, 2, 3);
     }
 
-    private boolean rightCastlingStoppedDiagonally(boolean isWhite, char[][] board) {
+    private boolean rightCastlingStoppedDiagonally(boolean isWhite, Board board) {
         return isThreatenedDiagonally(isWhite, board, 5, 6);
     }
 
-    private boolean inCheckDiagonally(boolean isWhite, char[][] board) {
+    private boolean inCheckDiagonally(boolean isWhite, Board board) {
         return isThreatenedDiagonally(isWhite, board, 4, 4);
     }
 
-    private boolean isThreatenedDiagonally(boolean isWhite, char[][] board, int startIndex, int endIndex) {
+    private boolean isThreatenedDiagonally(boolean isWhite, Board board, int startIndex, int endIndex) {
 
-        char oB, oQ, k;
         int horIndex, verStart, verIteration, verIndex;
 
         if(isWhite) {
-            oB = 'b';
-            oQ = 'q';
-            k = 'K';
             verIteration = -1;
             verStart = 6;
         } else {
-            oB = 'B';
-            oQ = 'Q';
-            k = 'k';
             verIteration = 1;
             verStart = 1;
         }
@@ -267,10 +259,10 @@ public class King implements Piece {
             horIndex = i - 1;
             verIndex = verStart;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
-                char piece = board[verIndex][horIndex];
+                Piece piece = board.getCoordinate(new Coordinate(verIndex, horIndex));
 
                 if(piece == oB || piece == oQ) return true;
-                if(piece != '-') break;
+                if(piece != null) break;
 
                 horIndex--;
                 verIndex += verIteration;
@@ -278,10 +270,10 @@ public class King implements Piece {
             horIndex = i + 1;
             verIndex = verStart;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
-                char piece = board[verIndex][horIndex];
+                Piece piece = board.getCoordinate(new Coordinate(verIndex, horIndex));
 
                 if(piece == oB || piece == oQ) return true;
-                if(piece != '-') break;
+                if(piece != null) break;
 
                 horIndex++;
                 verIndex += verIteration;
@@ -290,8 +282,8 @@ public class King implements Piece {
         return false;
     }
 
-    private boolean check(char c, boolean white) {
-        return Character.isLowerCase(c) && white || !Character.isLowerCase(c) && !white;
+    private boolean check(Piece piece, boolean white) {
+        return piece.getColour() == Colour.BLACK && white || piece.getColour() == Colour.WHITE && !white;
     }
 
     /**
@@ -301,35 +293,36 @@ public class King implements Piece {
     public boolean kingNotInCheck(BoardState boardState) {
         //its inverse turn
         boolean white = boardState.turn == PlayerTurn.BLACK;
+        Board board = boardState.board;
         //lets try the most likely moves to cause check (bishop and rook)
         Moves moves;
-        Coordinate origin = white ? boardState.whiteKing : boardState.blackKing;
+        Coordinate origin = white ? board.getWhiteKing() : board.getBlackKing();
         if(origin == null) return true;
         moves = rook.rookMoves(origin, boardState); //todo refactor
+
         for (Move move: moves) {
-            char c = moveUtils.getCoordinate(move.destination, boardState.board);
-            char j = Character.toLowerCase(c);
-            if(j == 'r' || j == 'q') {
+            Piece c = board.getCoordinate(move.destination);
+            if(c.getType() == PieceType.ROOK || c.getType() == PieceType.QUEEN) {
                 if(check(c, white)) {
                     return false; //found a check return false
                 }
             }
         }
+
         moves = bishop.getMoves(origin, boardState);
         for (Move move: moves) {
-            char c = moveUtils.getCoordinate(move.destination, boardState.board);
-            char j = Character.toLowerCase(c);
-            if(j == 'b' || j == 'q') {
+            Piece c = board.getCoordinate(move.destination);
+            if(c.getType() == PieceType.BISHOP || c.getType() == PieceType.QUEEN) {
                 if(check(c, white)) {
                     return false; //found a check return false
                 }
             }
         }
+
         moves = knight.getMoves(origin, boardState);
         for (Move move: moves) {
-            char c = moveUtils.getCoordinate(move.destination, boardState.board);
-            char j = Character.toLowerCase(c);
-            if(j == 'n') {
+            Piece c = board.getCoordinate(move.destination);
+            if(c.getType() == PieceType.KNIGHT) {
                 if(check(c, white)) {
                     return false; //found a check return false
                 }
@@ -339,16 +332,18 @@ public class King implements Piece {
         if(origin.row <= 7 && origin.row >= 0 && origin.column >= 0 && origin.column <= 7) {
             int col = origin.column;
             int row = origin.row;
+            Piece whitePawn = new Piece('P');
+            Piece blackPawn = new Piece('p');
             if(white) {
-                if(col != 7 && row > 0 && 'p' == moveUtils.getCoordinate(new Coordinate(col + 1, row - 1), boardState.board)) {
+                if(col != 7 && row > 0 && blackPawn.equals(board.getCoordinate(new Coordinate(col + 1, row - 1)))) {
                     return false;
                 }
-                return col == 0 || row <= 0 || 'p' != moveUtils.getCoordinate(new Coordinate(col - 1, row - 1), boardState.board);
+                return col == 0 || row <= 0 || !blackPawn.equals(board.getCoordinate(new Coordinate(col - 1, row - 1)));
             } else {
-                if(col != 7 && row < 7 && 'P' == moveUtils.getCoordinate(new Coordinate(col + 1, row + 1), boardState.board)) {
+                if(col != 7 && row < 7 && whitePawn.equals(board.getCoordinate(new Coordinate(col + 1, row + 1)))) {
                     return false;
                 }
-                return col == 0 || row >= 7 || 'P' != moveUtils.getCoordinate(new Coordinate(col - 1, row + 1), boardState.board);
+                return col == 0 || row >= 7 || !blackPawn.equals(board.getCoordinate(new Coordinate(col - 1, row + 1)));
             }
         }
         return true;

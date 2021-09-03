@@ -1,14 +1,12 @@
 package CommonTools;
 
 import BoardRepresentation.BoardState;
-import DataTypes.Coordinate;
-import DataTypes.Move;
-import DataTypes.PlayerTurn;
+import DataTypes.*;
 
 public class Utils {
 
     private static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    //todo change functions to return Coordinates
+
     static public char toColumnCharacter(int i) {
         return (char)(i + 'a');
     }
@@ -25,6 +23,7 @@ public class Utils {
         return 8 - Integer.parseInt(String.valueOf(c));
     }
 
+    //todo change functions to return Coordinates
     //give a string with 2 characters fen format (en passant)
     static public Coordinate parseCoordinate(String str) {
         if(str.equals("-")) return null;
@@ -53,41 +52,40 @@ public class Utils {
     }
 
     static public String toFenString(BoardState boardState) {
-        char [][] board = boardState.board;
+        Board board = boardState.board;
         StringBuilder result = new StringBuilder();
 
-        for (int i = 0; i < board.length; i++) {
+        for (int row = 0; row < 8; row++) {
             int empty = 0;
-            for (int j = 0; j < board.length; j++) {
-                if(board[i][j] == '-') {
+            for (int column = 0; column < 8; column++) {
+                Piece piece = board.getCoordinate(new Coordinate(row, column));
+                if(piece == null) {
                     empty++;
-                } else if(board[i][j] != '-') {
-                    if (empty != 0) {
-                        result.append(empty);
-                        empty = 0;
-                    }
-                    result.append(board[i][j]);
+                } else if(empty != 0) {
+                    result.append(empty);
+                    empty = 0;
+                    result.append(piece.toChar());
                 }
             }
             if(empty != 0) {
                 result.append(empty);
             }
-            if(i != 7) result.append("/");
+            if(row != 7) result.append("/");
         }
 
         result.append(boardState.turn == PlayerTurn.BLACK ? " b" : " w");
 
         String WhiteCastlingString = "";
-        switch (boardState.whiteCastling) {
-            case KINGSIDE: WhiteCastlingString = "K"; break;
-            case QUEENSIDE: WhiteCastlingString = "Q"; break;
+        switch (board.getWhiteCastling()) {
+            case KING: WhiteCastlingString = "K"; break;
+            case QUEEN: WhiteCastlingString = "Q"; break;
             case BOTH: WhiteCastlingString = "KQ"; break;
         }
 
         String BlackCastlingString = "";
-        switch (boardState.blackCastling) {
-            case KINGSIDE: BlackCastlingString = "k"; break;
-            case QUEENSIDE: BlackCastlingString = "q"; break;
+        switch (board.getBlackCastling()) {
+            case KING: BlackCastlingString = "k"; break;
+            case QUEEN: BlackCastlingString = "q"; break;
             case BOTH: BlackCastlingString = "kq"; break;
         }
 
@@ -101,7 +99,7 @@ public class Utils {
         }
 
         if(boardState.enPassant != null) {
-            result.append(parseCoordinate(boardState.enPassant)); //todo using coordinate
+            result.append(parseCoordinate(boardState.enPassant));
         } else {
             result.append("-");
         }
@@ -154,16 +152,16 @@ public class Utils {
         System.out.println(getVisualBoardString(board.board));
     }
 
-    static public String getVisualBoardString(char [][] board) {
+    static public String getVisualBoardString(Board board) {
         String divider = "=|-----|-----|-----|-----|-----|-----|-----|-----|=\n";
         StringBuilder str = new StringBuilder();
         str.append("    0     1     2     3     4     5     6     7\n");
-        for(int i = 0; i < board.length; i++) {
+        for(int i = 0; i < 8; i++) {
             str.append(divider).append(i);
-            for(int j = 0; j < board[i].length; j++) {
-                char piece = board[i][j];
-                if(piece != '-') {
-                    str.append("|  ").append(piece);
+            for(int j = 0; j < 8; j++) {
+                Piece piece = board.getCoordinate(new Coordinate(i, j));
+                if(piece != null) {
+                    str.append("|  ").append(piece.toChar());
                 } else {
                     str.append("|   ");
                 }
@@ -177,5 +175,10 @@ public class Utils {
         str.append("    a     b     c     d     e     f     g     h\n");
 
         return str.toString();
+    }
+
+
+    public static boolean isWhite(Piece piece) {
+        return piece.getColour() == Colour.WHITE;
     }
 }
