@@ -16,7 +16,7 @@ public class Bishop implements PieceGenerator {
 
         //Bishop moves down and right
         for(int i = 1; row + i <= 7 && col + i <= 7; i++) { //Runs as long as destination is within board limits
-            Coordinate destination = new Coordinate(col + i, row + i);
+            Coordinate destination = new Coordinate(row + i, col + i);
             if(board.isOpposingColourOrEmpty(destination, orig)) {
                 moves.add(new Move(origin, destination));
 
@@ -30,7 +30,7 @@ public class Bishop implements PieceGenerator {
 
         //Bishop moves down and left
         for(int i = 1; row + i <= 7 && col - i >= 0; i++) {
-            Coordinate destination = new Coordinate(col - i, row + i);
+            Coordinate destination = new Coordinate(row + i, col - i);
             if(board.isOpposingColourOrEmpty(destination, orig)) {
                 moves.add(new Move(origin, destination));
 
@@ -44,7 +44,7 @@ public class Bishop implements PieceGenerator {
 
         //Bishop moves up and right
         for(int i = 1; row - i >= 0 && col + i <= 7; i++) {
-            Coordinate destination = new Coordinate(col + i, row - i);
+            Coordinate destination = new Coordinate(row - i, col + i);
             if(board.isOpposingColourOrEmpty(destination, orig)) {
                 moves.add(new Move(origin, destination));
 
@@ -58,7 +58,7 @@ public class Bishop implements PieceGenerator {
 
         //Bishop moves up and left
         for(int i = 1; row - i >= 0 && col - i >= 0; i++) {
-            Coordinate destination = new Coordinate(col - i, row - i);
+            Coordinate destination = new Coordinate(row - i, col - i);
             if(board.isOpposingColourOrEmpty(destination, orig)) {
                 moves.add(new Move(origin, destination));
 

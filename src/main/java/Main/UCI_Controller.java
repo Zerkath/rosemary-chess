@@ -18,7 +18,6 @@ public class UCI_Controller {
     public boolean debug = false;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
     MoveGenerator moveGenerator = new MoveGenerator();
-    MoveGenerationUtils moveGenerationUtils = new MoveGenerationUtils();
 
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

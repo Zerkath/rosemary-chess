@@ -1,6 +1,11 @@
+import BoardRepresentation.BoardState;
+import CommonTools.Utils;
 import org.junit.jupiter.api.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class EvalTest {
+
+//    private Evaluation
+//
 //    @Test
 //    void equalStart() {
 //        BoardRepresentation.BoardState boardState = new BoardRepresentation.BoardState(CommonTools.Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
@@ -24,11 +29,10 @@ public class EvalTest {
 //    @Test
 //    void noPawnsWhite() {
 //        BoardRepresentation.BoardState boardState = new BoardRepresentation.BoardState(CommonTools.Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 1"));
-//        int eval = Evaluation.Evaluation.calculate(boardState);
+//        int eval = Evaluation.calculate(boardState);
 //        Assertions.assertEquals(-800, eval);
-//    } todo fix
-
-
+//    }
+//
 //    @Test
 //    void whiteMoreMiddleControl() {
 //        BoardState boardState = new BoardState(Utils.parseFen("rnbqkbnr/3pp3/8/8/8/3PP3/8/RNBQKBNR w KQkq - 0 1"));
