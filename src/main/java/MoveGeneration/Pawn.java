@@ -1,15 +1,12 @@
 package MoveGeneration;
 
 import BoardRepresentation.BoardState;
-import DataTypes.Coordinate;
-import DataTypes.Move;
-import DataTypes.Moves;
+import CommonTools.Utils;
+import DataTypes.*;
 
 import java.util.Arrays;
 
-public class Pawn {
-
-    MoveGenerationUtils moveUtils = new MoveGenerationUtils();
+public class Pawn implements PieceGenerator {
 
     private Moves pawnPromotions(Move move, boolean isWhite) {
         Moves moves = new Moves();
@@ -20,17 +17,24 @@ public class Pawn {
         } else {
             queen = 'q'; knight = 'n'; rook = 'r'; bishop = 'b';
         }
-        moves.addAll(Arrays.asList(new Move(move, queen), new Move(move, knight), new Move(move, rook), new Move(move, bishop)));
+        moves.addAll(
+                Arrays.asList(
+                        new Move(move, queen),
+                        new Move(move, knight),
+                        new Move(move, rook),
+                        new Move(move, bishop)
+                )
+        );
         return moves;
     }
 
-    public Moves pawnMoves(Coordinate origin, BoardState boardState) {
+    public Moves getMoves(Coordinate origin, BoardState boardState) {
 
-        char [][] board = boardState.board;
+        Board board = boardState.board;
 
         Moves moves = new Moves();
-        char orig = moveUtils.getCoordinate(origin, board);
-        boolean isWhite = moveUtils.isWhite(orig);
+        Piece orig = board.getCoordinate(origin);
+        boolean isWhite = Utils.isWhite(orig);
         boolean promotion = false;
         int row = origin.row;
         int col = origin.column;
@@ -41,14 +45,14 @@ public class Pawn {
 
         if(isWhite) {
             nextRow -= 1;
-            doubleJump -=2;
+            doubleJump -= 2;
             enPassantRow = 3;
             if(nextRow == 0) {
                 promotion = true;
             }
         } else {
             nextRow += 1;
-            doubleJump +=2;
+            doubleJump += 2;
             enPassantRow = 4;
             if(nextRow == 7) {
                 promotion = true;
@@ -58,28 +62,28 @@ public class Pawn {
         boolean leftEdge = col == 0;
         boolean rightEdge = col == 7;
 
-        if(!moveUtils.isCoordinateInBounds(new Coordinate(col, nextRow))) return moves; // if nextRow == -1 / 8
+        if(!board.isCoordinateInBounds(new Coordinate(nextRow, col))) return moves; // if nextRow == -1 / 8
 
         //forward
-        if(moveUtils.locationIsEmpty(new Coordinate(col, nextRow), board)) {
-            Move nextMove = new Move(origin, new Coordinate(col, nextRow));
+        if(board.locationIsEmpty(nextRow, col)) {
+            Move nextMove = new Move(origin, new Coordinate(nextRow, col));
             if(promotion) {
                 moves.addAll(pawnPromotions(nextMove, isWhite));
             } else {
                 moves.add(nextMove);
             }
 
-            if((moveUtils.isWhite(orig) && row == 6 || (!moveUtils.isWhite(orig) && row == 1))
-                    && moveUtils.locationIsEmpty(new Coordinate(col, doubleJump), board)) {
+            if((Utils.isWhite(orig) && row == 6 || (!Utils.isWhite(orig) && row == 1))
+                    && board.locationIsEmpty(doubleJump, col)) {
                 //if at starting square and nothing in front
-                Coordinate destination = new Coordinate(col, doubleJump);
+                Coordinate destination = new Coordinate(doubleJump, col);
                 moves.add(new Move(origin, destination));
             }
         }
 
         //captures
-        if(!leftEdge && moveUtils.pawnCapturePossible(new Coordinate(col-1, nextRow), orig, board)) {
-            Move nextMove = new Move(origin, new Coordinate(col-1, nextRow));
+        if(!leftEdge && board.pawnCapturePossible(new Coordinate(nextRow, col-1), orig)) {
+            Move nextMove = new Move(origin, new Coordinate(nextRow, col-1));
             if(promotion) {
                 moves.addAll(pawnPromotions(nextMove, isWhite));
             } else {
@@ -87,8 +91,8 @@ public class Pawn {
             }
         }
 
-        if(!rightEdge && moveUtils.pawnCapturePossible(new Coordinate(col+1, nextRow), orig, board)) {
-            Move nextMove = new Move(origin, new Coordinate(col+1, nextRow));
+        if(!rightEdge && board.pawnCapturePossible(new Coordinate(nextRow, col+1), orig)) {
+            Move nextMove = new Move(origin, new Coordinate(nextRow, col+1));
             if(promotion) {
                 moves.addAll(pawnPromotions(nextMove, isWhite));
             } else {

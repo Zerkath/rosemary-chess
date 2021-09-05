@@ -3,16 +3,11 @@ package DataTypes;
 public class Piece {
 
     private Colour colour;
-    private PieceType pieceType;
+    private final PieceType pieceType;
 
     public Piece(Colour colour, PieceType pieceType) {
         this.colour = colour;
         this.pieceType = pieceType;
-    }
-
-    public Piece() {
-        colour = null;
-        pieceType = null;
     }
 
     public Piece(char piece) {
@@ -41,6 +36,14 @@ public class Piece {
         return colour;
     }
 
+    public PlayerTurn getTurnColour() {
+        return colour == Colour.WHITE ? PlayerTurn.WHITE : PlayerTurn.BLACK;
+    }
+
+    public void setColour(Colour colour) {
+        this.colour = colour;
+    }
+
     public char toChar() {
         char piece = ' ';
         switch (pieceType) {
@@ -51,6 +54,12 @@ public class Piece {
             case KING: piece = 'k'; break;
             case KNIGHT: piece = 'n'; break;
         }
-        return colour == Colour.WHITE ? Character.toUpperCase(piece) : piece;
+        piece = colour == Colour.WHITE ? Character.toUpperCase(piece) : piece;
+        return piece;
+    }
+
+    public boolean equals(Piece piece) {
+        if(piece == null) return false;
+        return piece.colour == this.colour && piece.pieceType == this.pieceType;
     }
 }

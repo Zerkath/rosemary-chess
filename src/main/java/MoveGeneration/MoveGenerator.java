@@ -1,10 +1,8 @@
 package MoveGeneration;
 
 import BoardRepresentation.BoardState;
-import DataTypes.Coordinate;
-import DataTypes.Move;
-import DataTypes.Moves;
-import DataTypes.PlayerTurn;
+import CommonTools.Utils;
+import DataTypes.*;
 
 public class MoveGenerator {
 
@@ -15,19 +13,18 @@ public class MoveGenerator {
     Pawn pawn = new Pawn();
     King king = new King();
 
-    MoveGenerationUtils moveUtils = new MoveGenerationUtils();
-
-    public Moves getAllMoves(BoardState boardState) {
+    private Moves getAllMoves(BoardState boardState) {
 
         Moves moves = new Moves();
-        char [][] board = boardState.board;
+        Board board = boardState.board;
         PlayerTurn turn = boardState.turn;
 
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                char dest = board[i][j];
-                if(dest != '-' && (moveUtils.isWhite(dest) && turn == PlayerTurn.WHITE) || (!moveUtils.isWhite(dest) && turn == PlayerTurn.BLACK)) {
-                    moves.addAll(getPieceMoves(new Coordinate(j, i), boardState));
+        for (int row = 0; row < 8; row++) {
+            for (int column = 0; column < 8; column++) {
+                Piece dest = board.getCoordinate(row, column);
+                if(dest == null) continue;
+                if(turn == dest.getTurnColour()) {
+                    moves.addAll(getPieceMoves(new Coordinate(row, column), boardState));
                 }
             }
         }
@@ -36,28 +33,26 @@ public class MoveGenerator {
 
     public Moves getLegalMoves(BoardState boardState) {
         Moves moves = new Moves();
-        PlayerTurn turn = boardState.turn;
         Moves pseudoLegal = getAllMoves(boardState);
 
         for (Move pLegalMove: pseudoLegal) {
             boardState.makeMove(pLegalMove);
             if(king.kingNotInCheck(boardState)) moves.add(pLegalMove);
-
             boardState.unMakeMove();
         }
         return moves;
     }
 
     public Moves getPieceMoves(Coordinate coord, BoardState boardState) {
-        char c = Character.toLowerCase(boardState.board[coord.row][coord.column]);
-
-        switch(c) {
-            case 'p': return pawn.pawnMoves(coord, boardState);
-            case 'b': return bishop.getMoves(coord, boardState);
-            case 'n': return knight.getMoves(coord, boardState);
-            case 'r': return rook.rookMoves(coord, boardState);
-            case 'q': return queen.queenMoves(coord, boardState);
-            case 'k': return king.getMoves(coord, boardState);
+        Piece piece = boardState.board.getCoordinate(coord);
+        if(piece == null) return null;
+        switch(piece.getType()) {
+            case PAWN: return pawn.getMoves(coord, boardState);
+            case BISHOP: return bishop.getMoves(coord, boardState);
+            case KNIGHT: return knight.getMoves(coord, boardState);
+            case ROOK: return rook.getMoves(coord, boardState);
+            case QUEEN: return queen.getMoves(coord, boardState);
+            case KING: return king.getMoves(coord, boardState);
             default: return null;
         }
     }

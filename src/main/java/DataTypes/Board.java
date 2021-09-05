@@ -2,22 +2,32 @@ package DataTypes;
 
 public class Board {
 
-    private final Row [] board;
+    private final Row [] board = new Row[8];
     private CastlingRights whiteCastlingRights = CastlingRights.NONE;
     private CastlingRights blackCastlingRights = CastlingRights.NONE;
     private Coordinate whiteKing;
     private Coordinate blackKing;
 
     public Board() {
-        this.board = new Row[8];
+        for (int i = 0; i < 8; i++) {
+            this.board[i] = new Row();
+        }
     }
 
     public Board(Board board) {
-        this.board = board.board;
+        for (int row = 0; row < 8; row++) {
+            this.board[row] = new Row(board.getRow(row));
+        }
         this.whiteCastlingRights = board.whiteCastlingRights;
         this.blackCastlingRights = board.blackCastlingRights;
         this.whiteKing = board.whiteKing;
         this.blackKing = board.blackKing;
+    }
+    
+    private void replaceRow(int row, Row rowData) {
+        for (int column = 0; column < 8; column++) {
+            this.replaceCoordinate(row, column, rowData.getColumn(column));
+        }
     }
 
     public Row getRow(int row) {
@@ -28,21 +38,30 @@ public class Board {
         return getRow(coordinate.row).getColumn(coordinate.column);
     }
 
+    public Piece getCoordinate(int row, int column) {
+        return getRow(row).getColumn(column);
+    }
+
+    public void replaceCoordinate(int row, int column, Piece piece) {
+        replaceCoordinate(new Coordinate(row, column), piece);
+    }
+
     public void replaceCoordinate(Coordinate coordinate, Piece piece) {
-        replaceKing(coordinate, getRow(coordinate.row).replaceColumn(coordinate.column, piece));
+        if(piece != null && piece.getType() == PieceType.KING) {
+            replaceKing(coordinate, piece);
+        }
+        getRow(coordinate.row).replaceColumn(coordinate.column, piece);
     }
 
     public void replaceCoordinate(Coordinate coordinate, char piece) {
-        replaceKing(coordinate, getRow(coordinate.row).replaceColumn(coordinate.column, piece));
+        replaceCoordinate(coordinate, new Piece(piece));
     }
 
-    public void replaceKing(Coordinate coordinate, Piece piece) {
-        if(piece.getType() == PieceType.KING) {
-            if(piece.getColour() == Colour.WHITE) {
-                whiteKing = coordinate;
-            } else {
-                blackKing = coordinate;
-            }
+    private void replaceKing(Coordinate coordinate, Piece piece) {
+        if(piece.getColour() == Colour.WHITE) {
+            setWhiteKing(coordinate);
+        } else {
+            setBlackKing(coordinate);
         }
     }
 
@@ -82,16 +101,16 @@ public class Board {
         return blackKing;
     }
 
-    public void setBlackKing(Coordinate blackKing) {
-        this.blackKing = blackKing;
+    public void setBlackKing(Coordinate coordinate) {
+        this.blackKing = coordinate;
     }
 
-    public void setWhiteKing(Coordinate whiteKing) {
-        this.whiteKing = whiteKing;
+    public void setWhiteKing(Coordinate coordinate) {
+        this.whiteKing = coordinate;
     }
 
     public boolean isOpposingColor(Piece origin, Piece target) {
-        return origin.getType() != target.getType();
+        return origin.getColour() != target.getColour();
     }
 
     public boolean pawnCapturePossible(Coordinate coordinate, Piece origin) {
@@ -120,6 +139,14 @@ public class Board {
             return destination == null || isOpposingColor(origin, destination);
 
         } else return false;
+    }
+
+    public boolean locationIsEmpty(Coordinate coordinate) {
+        return locationIsEmpty(coordinate.row, coordinate.column);
+    }
+
+    public boolean locationIsEmpty(int row, int column) {
+        return this.getRow(row).getColumn(column) == null;
     }
 
     public boolean isEmpty(Piece piece) {

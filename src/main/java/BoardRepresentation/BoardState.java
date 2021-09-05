@@ -41,7 +41,7 @@ public class BoardState {
         for (char c : castling) {
             boolean white = !Character.isLowerCase(c);
             boolean queen = Character.toLowerCase(c) == 'q';
-            CastlingRights curr = white ? board.getBlackCastling() : board.getWhiteCastling();
+            CastlingRights curr = white ? board.getWhiteCastling() : board.getBlackCastling();
             if(curr == CastlingRights.NONE) {
                 curr = queen ? CastlingRights.QUEEN : CastlingRights.KING;
             } else if(curr == CastlingRights.BOTH) {
@@ -73,7 +73,7 @@ public class BoardState {
                     column++;
                 }
             } else {
-                board.replaceCoordinate(new Coordinate(row, column), new Piece(ch));
+                board.replaceCoordinate(new Coordinate(row, column), ch);
                 column++;
             }
         }
@@ -91,10 +91,10 @@ public class BoardState {
 
     private void addEnPassantMove(boolean white, Piece piece, int dCol, int dRow) {
         if(white && !Utils.isWhite(piece)) {
-            enPassant = new Coordinate(dCol, dRow+1);
+            enPassant = new Coordinate(dRow+1, dCol);
         }
         if(!white && Utils.isWhite(piece)) {
-            enPassant = new Coordinate(dCol, dRow-1);
+            enPassant = new Coordinate(dRow-1, dCol);
         }
     }
 
@@ -204,16 +204,17 @@ public class BoardState {
         }
 
         if(selected.getType() == PieceType.KING) {
-            board.replaceKing(move.destination, selected);
             board.setCastling(CastlingRights.NONE, isWhite);
         }
 
         board.clearCoordinate(move.origin);
+
         Piece piece = selected;
         if(isBeingPromoted) {
             piece = new Piece(move.promotion);
         }
-        board.isOpposingColourOrEmpty(move.destination, piece);
+
+        board.replaceCoordinate(move.destination, piece);
 
         if(this.turn == PlayerTurn.BLACK) {
             turnNumber++;
@@ -223,34 +224,36 @@ public class BoardState {
         }
     }
 
-//    private int[] countPieces() {
-//
-//        int [] results = new int[15];
-//        for (char [] row: board.getRow()) {
-//            for (char piece: row) {
-//                if(piece != '-') {
-//                    if(Utils.isWhite(piece)) {
-//                        results[0]++;
-//                    } else {
-//                        results[1]++;
-//                    }
-//                    int offSet = Utils.isWhite(piece) ? 0 : 1;
-//                    switch(Character.toLowerCase(piece)) {
-//                        case 'p': results[3 + offSet]++; break;
-//                        case 'b': results[5 + offSet]++; break;
-//                        case 'r': results[7 + offSet]++; break;
-//                        case 'n': results[9 + offSet]++; break;
-//                        case 'q': results[11 + offSet]++; break;
-//                        case 'k': results[13 + offSet]++; break;
-//                    }
-//                }
-//            }
-//        }
-//        results[2] = results[0] + results[1];
-//        return results;
-//    }
-//
-//    public void updatePieceCount() {
-//        this.pieces = countPieces();
-//    }
+    public int[] countPieces() {
+
+        int [] results = new int[15];
+        for (int row = 0; row < 8; row++) {
+            Row d_row = board.getRow(row);
+            for (int column = 0; column < 8; column++) {
+                Piece piece = d_row.getColumn(column);
+                if(piece != null) {
+                    if(Utils.isWhite(piece)) {
+                        results[0]++;
+                    } else {
+                        results[1]++;
+                    }
+                    int offSet = Utils.isWhite(piece) ? 0 : 1;
+                    switch(piece.getType()) {
+                        case PAWN: results[3 + offSet]++; break;
+                        case BISHOP: results[5 + offSet]++; break;
+                        case ROOK: results[7 + offSet]++; break;
+                        case KNIGHT: results[9 + offSet]++; break;
+                        case QUEEN: results[11 + offSet]++; break;
+                        case KING: results[13 + offSet]++; break;
+                    }
+                }
+            }
+        }
+        results[2] = results[0] + results[1];
+        return results;
+    }
+
+    public void updatePieceCount() {
+        this.pieces = countPieces();
+    }
 }

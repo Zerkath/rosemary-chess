@@ -5,7 +5,7 @@ import DataTypes.*;
 
 public class Utils {
 
-    private static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private final static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     static public char toColumnCharacter(int i) {
         return (char)(i + 'a');
@@ -23,12 +23,11 @@ public class Utils {
         return 8 - Integer.parseInt(String.valueOf(c));
     }
 
-    //todo change functions to return Coordinates
-    //give a string with 2 characters fen format (en passant)
+
     static public Coordinate parseCoordinate(String str) {
         if(str.equals("-")) return null;
         char[] c = str.toCharArray();
-        return new Coordinate(toColumnNumber(c[0]), toRowNumber(c[1]));
+        return new Coordinate(toRowNumber(c[1]), toColumnNumber(c[0]));
     }
 
     static public String parseCoordinate(Coordinate coords) {
@@ -64,6 +63,8 @@ public class Utils {
                 } else if(empty != 0) {
                     result.append(empty);
                     empty = 0;
+                    result.append(piece.toChar());
+                } else {
                     result.append(piece.toChar());
                 }
             }
@@ -177,8 +178,7 @@ public class Utils {
         return str.toString();
     }
 
-
     public static boolean isWhite(Piece piece) {
         return piece.getColour() == Colour.WHITE;
-    }
+    } //todo move this to piece
 }
