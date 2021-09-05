@@ -4,6 +4,7 @@ import BoardRepresentation.BoardState;
 import CommonTools.Utils;
 import DataTypes.Move;
 import DataTypes.Moves;
+import DataTypes.Piece;
 import DataTypes.PlayerTurn;
 import MoveGeneration.MoveGenerator;
 
@@ -17,7 +18,6 @@ public class EvaluationThread implements Runnable {
     EvaluationValues values = new EvaluationValues();
     EvaluationCalculations evalCalculator = new EvaluationCalculations();
     MoveGenerator moveGenerator = new MoveGenerator();
-    MoveGenerationUtils moveUtils = new MoveGenerationUtils();
 
     public EvaluationThread(BoardState boardState, int depth, boolean debug) {
         this.boardState = boardState;
@@ -136,8 +136,9 @@ public class EvaluationThread implements Runnable {
         state.turn = state.turn == PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
         Moves opponent = moveGenerator.getLegalMoves(state);
         for (Move move : opponent) {
-            char c = moveUtils.getCoordinate(move.destination, state.board);
-            if ((isWhite && c == 'K') || (!isWhite && c == 'k')) {
+            Piece piece = state.board.getCoordinate(move.destination);
+            if(piece == null) continue;
+            if ((isWhite && piece.equals(new Piece('K'))) || (!isWhite && piece.equals(new Piece('k')))) {
                 state.turn = old;
                 return true;
             }

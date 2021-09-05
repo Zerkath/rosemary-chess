@@ -2,6 +2,7 @@ import BoardRepresentation.BoardState;
 import DataTypes.Move;
 import DataTypes.Moves;
 import CommonTools.Utils;
+import Main.UCI_Controller;
 import MoveGeneration.MoveGenerator;
 import org.junit.jupiter.api.*;
 
@@ -11,6 +12,7 @@ public class MoveGenerationTest {
     BoardState game = new BoardState();
     String d_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     BoardState boardState = new BoardState(Utils.parseFen(d_fen));
+    UCI_Controller uci = new UCI_Controller();
 
     MoveGenerator moveGenerator = new MoveGenerator();
 
@@ -18,8 +20,8 @@ public class MoveGenerationTest {
     @Order(1)
     void whiteStartMoves() {
         game = new BoardState(Utils.parseFen(d_fen));
-        Moves moves = moveGenerator.getAllMoves(game);
-        Assertions.assertEquals(20, moves.size());
+        Moves moves = moveGenerator.getLegalMoves(game);
+        Assertions.assertEquals(20, moves.size(), moves.getString());
     }
 
     @Test
@@ -27,8 +29,8 @@ public class MoveGenerationTest {
     void blackStartMoves() {
         game = new BoardState(Utils.parseFen(d_fen));
         game.makeMove(Utils.parseCommand("d2d4"));
-        Moves moves = moveGenerator.getAllMoves(game);
-        Assertions.assertEquals(20, moves.size());
+        Moves moves = moveGenerator.getLegalMoves(game);
+        Assertions.assertEquals(20, moves.size(), moves.getString());
     }
 
     @Test
@@ -37,7 +39,7 @@ public class MoveGenerationTest {
         game = new BoardState(Utils.parseFen(d_fen));
         game.makeMove(Utils.parseCommand("d2d4"));
         game.makeMove(Utils.parseCommand("e7e5"));
-        Moves moves = moveGenerator.getAllMoves(game);
+        Moves moves = moveGenerator.getLegalMoves(game);
         Assertions.assertEquals(29, moves.size());
     }
 
@@ -54,7 +56,15 @@ public class MoveGenerationTest {
     void kingUnderAttack() {
         String position = "rnbq1bnr/pppkpppp/3pQ3/8/8/2P5/PP1PPPPP/RNB1KBNR b KQ - 3 3";
         Moves moves = moveGenerator.getLegalMoves(Utils.parseFen(position));
-        Assertions.assertEquals(4, moves.size());
+        Assertions.assertEquals(4, moves.size(), moves.getString());
+    }
+
+    @Test
+    @Order(5)
+    void whiteKingUnderAttack() {
+        String position = "rnb1kbnr/pp1ppppp/2p5/8/8/3Pq3/PPPKPPPP/RNBQ1BNR w - - 0 1";
+        Moves moves = moveGenerator.getLegalMoves(Utils.parseFen(position));
+        Assertions.assertEquals(4, moves.size(), moves.getString());
     }
 
     BoardState getTestBoard() {
@@ -102,7 +112,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            moveGenerator.getAllMoves(boardState);
+            moveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -124,7 +134,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            moveGenerator.getAllMoves(boardState);
+            moveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -144,7 +154,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            moveGenerator.getAllMoves(boardState);
+            moveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -164,7 +174,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(Utils.parseFen("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1"));
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            moveGenerator.getAllMoves(boardState);
+            moveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -176,6 +186,15 @@ public class MoveGenerationTest {
         for (int i = 0; i < iterations; i++) {
             moveGenerator.getLegalMoves(boardState);
         }
+    }
+
+    @Test
+    @Order(15)
+    void blackKingMoves() {
+        game = new BoardState(Utils.parseFen("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1"));
+        game.makeMove(Utils.parseCommand("d2d4"));
+        Moves moves = moveGenerator.getLegalMoves(game);
+        Assertions.assertEquals(5, moves.size(), moves.getString());
     }
 
     @Test
@@ -197,6 +216,7 @@ public class MoveGenerationTest {
         Assertions.assertEquals(4865609, depth[4]);
 //        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
         //took 206s~ after changes
+        //took 155s~ after 5/9/2021
     }
 
     @Test
@@ -293,6 +313,12 @@ public class MoveGenerationTest {
         Assertions.assertEquals(62379, depth[2]);
 //        Assertions.assertEquals(2103487, depth[3]);
 //        Assertions.assertEquals(89941194, depth[4]);
+    }
+
+    @Test
+    void randomKnight() {
+        String position = "5k2/8/8/8/8/8/4Nn1P/R2QK2R w KQ - 1 8";
+        Assertions.assertEquals(35, moveGenerator.getLegalMoves(Utils.parseFen(position)).size());
     }
 
     private int recursion(int depth, BoardState boardState, int start) {
