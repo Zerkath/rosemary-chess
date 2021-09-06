@@ -1,7 +1,6 @@
 package BoardRepresentation;
 
 import DataTypes.*;
-import CommonTools.Utils;
 
 public class BoardState {
     public Board board = new Board();
@@ -81,7 +80,7 @@ public class BoardState {
 
     public void playMoves(String [] moves) {
         for (String move : moves) {
-            this.makeMove(Utils.parseCommand(move));
+            this.makeMove(new Move(move));
         }
     }
 
@@ -90,10 +89,10 @@ public class BoardState {
     }
 
     private void addEnPassantMove(boolean white, Piece piece, int dCol, int dRow) {
-        if(white && !Utils.isWhite(piece)) {
+        if(white && !piece.isWhite()) {
             enPassant = new Coordinate(dRow+1, dCol);
         }
-        if(!white && Utils.isWhite(piece)) {
+        if(!white && piece.isWhite()) {
             enPassant = new Coordinate(dRow-1, dCol);
         }
     }
@@ -159,7 +158,7 @@ public class BoardState {
                 enPassant.column == move.destination.column
         ) {
             int offSet = isWhite ? 1 : -1;
-            board.clearCoordinate(new Coordinate((enPassant.row + offSet), enPassant.column));
+            board.clearCoordinate(enPassant.row + offSet, enPassant.column);
         }
 
         enPassant = null;
@@ -168,11 +167,11 @@ public class BoardState {
                 ((move.origin.row == 6 && move.destination.row == 4) || (move.origin.row == 1 && move.destination.row == 3))) {
             Piece right = null;
             Piece left = null;
-            if(dCol == 0) right = board.getCoordinate(new Coordinate(dRow, dCol+1));
-            if(dCol == 7) left  = board.getCoordinate(new Coordinate(dRow, dCol-1));
+            if(dCol == 0) right = board.getCoordinate(dRow, dCol+1);
+            if(dCol == 7) left  = board.getCoordinate(dRow, dCol-1);
             if(dCol > 0 && dCol < 7) {
-                right = board.getCoordinate(new Coordinate(dRow, dCol+1));
-                left  = board.getCoordinate(new Coordinate(dRow, dCol-1));
+                right = board.getCoordinate(dRow, dCol+1);
+                left  = board.getCoordinate(dRow, dCol-1);
             }
 
             if(right != null && right.getType() == PieceType.PAWN) {
@@ -193,13 +192,13 @@ public class BoardState {
 
             Piece rook;
             if (dCol == 2) {
-                rook = board.getCoordinate(new Coordinate(dRow, 0));
-                board.replaceCoordinate(new Coordinate(dRow, 3), rook);
-                board.clearCoordinate(new Coordinate(dRow, 0));
+                rook = board.getCoordinate(dRow, 0);
+                board.replaceCoordinate(dRow, 3, rook);
+                board.clearCoordinate(dRow, 0);
             } else {
-                rook = board.getCoordinate(new Coordinate(dRow, 7));
-                board.replaceCoordinate(new Coordinate(dRow, 5), rook);
-                board.clearCoordinate(new Coordinate(dRow, 7));
+                rook = board.getCoordinate(dRow, 7);
+                board.replaceCoordinate(dRow, 5, rook);
+                board.clearCoordinate(dRow, 7);
             }
         }
 
@@ -232,12 +231,12 @@ public class BoardState {
             for (int column = 0; column < 8; column++) {
                 Piece piece = d_row.getColumn(column);
                 if(piece != null) {
-                    if(Utils.isWhite(piece)) {
+                    if(piece.isWhite()) {
                         results[0]++;
                     } else {
                         results[1]++;
                     }
-                    int offSet = Utils.isWhite(piece) ? 0 : 1;
+                    int offSet = piece.isWhite() ? 0 : 1;
                     switch(piece.getType()) {
                         case PAWN: results[3 + offSet]++; break;
                         case BISHOP: results[5 + offSet]++; break;
