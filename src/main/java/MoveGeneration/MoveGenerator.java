@@ -46,14 +46,15 @@ public class MoveGenerator {
     public Moves getPieceMoves(Coordinate coord, BoardState boardState) {
         Piece piece = boardState.board.getCoordinate(coord);
         if(piece == null) return null;
+        Moves moves = new Moves();
         switch(piece.getType()) {
-            case PAWN: return pawn.getMoves(coord, boardState);
-            case BISHOP: return bishop.getMoves(coord, boardState);
-            case KNIGHT: return knight.getMoves(coord, boardState);
-            case ROOK: return rook.getMoves(coord, boardState);
-            case QUEEN: return queen.getMoves(coord, boardState);
-            case KING: return king.getMoves(coord, boardState);
-            default: return null;
+            case PAWN: moves = pawn.getMoves(coord, boardState); break;
+            case BISHOP: moves = bishop.getMoves(coord, boardState); break;
+            case KNIGHT: moves = knight.getMoves(coord, boardState); break;
+            case ROOK: moves = rook.getMoves(coord, boardState); break;
+            case QUEEN: moves = queen.getMoves(coord, boardState); break;
+            case KING: moves = king.getMoves(coord, boardState); break;
         }
+        return moves;
     }
 }

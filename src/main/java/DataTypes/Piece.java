@@ -3,7 +3,7 @@ package DataTypes;
 public class Piece {
 
     private Colour colour;
-    private final PieceType pieceType;
+    private PieceType pieceType;
 
     public Piece(Colour colour, PieceType pieceType) {
         this.colour = colour;
@@ -24,8 +24,21 @@ public class Piece {
             case 'b': pieceType = PieceType.BISHOP; break;
             case 'k': pieceType = PieceType.KING; break;
             case 'n': pieceType = PieceType.KNIGHT; break;
-            default: pieceType = null; break;
         }
+    }
+
+    public char toChar() {
+        char piece = ' ';
+        switch (pieceType) {
+            case KNIGHT: piece = 'n'; break;
+            case BISHOP: piece = 'b'; break;
+            case QUEEN: piece = 'q'; break;
+            case PAWN: piece = 'p'; break;
+            case ROOK: piece = 'r'; break;
+            case KING: piece = 'k'; break;
+        }
+        piece = colour == Colour.WHITE ? Character.toUpperCase(piece) : piece;
+        return piece;
     }
 
     public PieceType getType() {
@@ -36,6 +49,10 @@ public class Piece {
         return colour;
     }
 
+    public boolean isWhite() {
+        return colour == Colour.WHITE;
+    }
+
     public PlayerTurn getTurnColour() {
         return colour == Colour.WHITE ? PlayerTurn.WHITE : PlayerTurn.BLACK;
     }
@@ -44,22 +61,7 @@ public class Piece {
         this.colour = colour;
     }
 
-    public char toChar() {
-        char piece = ' ';
-        switch (pieceType) {
-            case PAWN: piece = 'p'; break;
-            case ROOK: piece = 'r'; break;
-            case QUEEN: piece = 'q'; break;
-            case BISHOP: piece = 'b'; break;
-            case KING: piece = 'k'; break;
-            case KNIGHT: piece = 'n'; break;
-        }
-        piece = colour == Colour.WHITE ? Character.toUpperCase(piece) : piece;
-        return piece;
-    }
-
     public boolean equals(Piece piece) {
-        if(piece == null) return false;
-        return piece.colour == this.colour && piece.pieceType == this.pieceType;
+        return piece != null && piece.colour == this.colour && piece.pieceType == this.pieceType;
     }
 }

@@ -7,49 +7,6 @@ public class Utils {
 
     private final static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    static public char toColumnCharacter(int i) {
-        return (char)(i + 'a');
-    }
-
-    static public int toColumnNumber(char c) {
-        return c - 'a';
-    }
-
-    static public char toRowNumberChar(int i) {
-        return Character.forDigit(8-i, 10);
-    }
-
-    static public int toRowNumber(char c) {
-        return 8 - Integer.parseInt(String.valueOf(c));
-    }
-
-
-    static public Coordinate parseCoordinate(String str) {
-        if(str.equals("-")) return null;
-        char[] c = str.toCharArray();
-        return new Coordinate(toRowNumber(c[1]), toColumnNumber(c[0]));
-    }
-
-    static public String parseCoordinate(Coordinate coords) {
-        return String.valueOf(toColumnCharacter(coords.column)) + toRowNumberChar(coords.row);
-    }
-
-    static public String parseCommand(Move move) {
-        String sMove = parseCoordinate(move.origin) + parseCoordinate(move.destination);
-        if(move.promotion != '-') {
-            sMove += Character.toLowerCase(move.promotion);
-        }
-        return sMove;
-    }
-
-    static public Move parseCommand(String command) {
-        Move move = new Move(parseCoordinate(command.substring(0, 2)), parseCoordinate(command.substring(2, 4)));
-        if(command.length() == 5) {
-            move.promotion = command.charAt(4);
-        }
-        return move;
-    }
-
     static public String toFenString(BoardState boardState) {
         Board board = boardState.board;
         StringBuilder result = new StringBuilder();
@@ -57,7 +14,7 @@ public class Utils {
         for (int row = 0; row < 8; row++) {
             int empty = 0;
             for (int column = 0; column < 8; column++) {
-                Piece piece = board.getCoordinate(new Coordinate(row, column));
+                Piece piece = board.getCoordinate(row, column);
                 if(piece == null) {
                     empty++;
                 } else if(empty != 0) {
@@ -100,7 +57,7 @@ public class Utils {
         }
 
         if(boardState.enPassant != null) {
-            result.append(parseCoordinate(boardState.enPassant));
+            result.append(boardState.enPassant);
         } else {
             result.append("-");
         }
@@ -138,11 +95,11 @@ public class Utils {
         boardState.setCastling(split[2].toCharArray()); //set castling rights
         boardState.turnNumber = Integer.parseInt(split[5]);
 
-        boardState.enPassant = parseCoordinate(split[3]);
+        boardState.enPassant = split[3].length() == 2 ? new Coordinate(split[3]) : null;
 
         // Add pieces to the board
-        for (int i = 0; i < rows.length; i++) {
-            boardState.addRow(rows[i], i);
+        for (int row = 0; row < rows.length; row++) {
+            boardState.addRow(rows[row], row);
         }
 
         return boardState;
@@ -157,19 +114,19 @@ public class Utils {
         String divider = "=|-----|-----|-----|-----|-----|-----|-----|-----|=\n";
         StringBuilder str = new StringBuilder();
         str.append("    0     1     2     3     4     5     6     7\n");
-        for(int i = 0; i < 8; i++) {
-            str.append(divider).append(i);
-            for(int j = 0; j < 8; j++) {
-                Piece piece = board.getCoordinate(new Coordinate(i, j));
+        for(int row = 0; row < 8; row++) {
+            str.append(divider).append(row);
+            for(int column = 0; column < 8; column++) {
+                Piece piece = board.getCoordinate(row, column);
                 if(piece != null) {
                     str.append("|  ").append(piece.toChar());
                 } else {
                     str.append("|   ");
                 }
-                if(j != 7) str.append("  ");
+                if(column != 7) str.append("  ");
                 else str.append("  |");
             }
-            str.append(8-i);
+            str.append(8-row);
             str.append("\n");
         }
         str.append(divider);
@@ -177,8 +134,4 @@ public class Utils {
 
         return str.toString();
     }
-
-    public static boolean isWhite(Piece piece) {
-        return piece.getColour() == Colour.WHITE;
-    } //todo move this to piece
 }
