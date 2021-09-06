@@ -20,10 +20,6 @@ public class Row {
         this.row[column] = piece;
     }
 
-    public void replaceColumn(int column, char piece) {
-        this.row[column] = new Piece(piece);
-    }
-
     public void clearColumn(int column) {
         this.row[column] = null;
     }

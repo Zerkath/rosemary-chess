@@ -2,44 +2,40 @@ import BoardRepresentation.BoardState;
 import DataTypes.Move;
 import DataTypes.Moves;
 import CommonTools.Utils;
-import Main.UCI_Controller;
 import MoveGeneration.MoveGenerator;
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MoveGenerationTest {
-    BoardState game = new BoardState();
     String d_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    BoardState boardState = new BoardState(Utils.parseFen(d_fen));
-    UCI_Controller uci = new UCI_Controller();
 
     MoveGenerator moveGenerator = new MoveGenerator();
 
     @Test
     @Order(1)
     void whiteStartMoves() {
-        game = new BoardState(Utils.parseFen(d_fen));
-        Moves moves = moveGenerator.getLegalMoves(game);
+        BoardState boardState = new BoardState(Utils.parseFen(d_fen));
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(20, moves.size(), moves.getString());
     }
 
     @Test
     @Order(2)
     void blackStartMoves() {
-        game = new BoardState(Utils.parseFen(d_fen));
-        game.makeMove(Utils.parseCommand("d2d4"));
-        Moves moves = moveGenerator.getLegalMoves(game);
+        BoardState boardState = new BoardState(Utils.parseFen(d_fen));
+        boardState.makeMove(new Move("d2d4"));
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(20, moves.size(), moves.getString());
     }
 
     @Test
     @Order(3)
     void whiteMovesAfter_d2d4_e7e5() {
-        game = new BoardState(Utils.parseFen(d_fen));
-        game.makeMove(Utils.parseCommand("d2d4"));
-        game.makeMove(Utils.parseCommand("e7e5"));
-        Moves moves = moveGenerator.getLegalMoves(game);
+        BoardState boardState = new BoardState(Utils.parseFen(d_fen));
+        boardState.makeMove(new Move("d2d4"));
+        boardState.makeMove(new Move("e7e5"));
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(29, moves.size());
     }
 
@@ -85,7 +81,7 @@ public class MoveGenerationTest {
         Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(12, moves.size());
         for (Move move: moves) {
-            System.out.println(Utils.parseCommand(move));
+            System.out.println(move.toString());
         }
     }
 
@@ -191,9 +187,9 @@ public class MoveGenerationTest {
     @Test
     @Order(15)
     void blackKingMoves() {
-        game = new BoardState(Utils.parseFen("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1"));
-        game.makeMove(Utils.parseCommand("d2d4"));
-        Moves moves = moveGenerator.getLegalMoves(game);
+        BoardState boardState = new BoardState(Utils.parseFen("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1"));
+        boardState.makeMove(new Move("d2d4"));
+        Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(5, moves.size(), moves.getString());
     }
 
@@ -316,6 +312,15 @@ public class MoveGenerationTest {
     }
 
     @Test
+    void queenMystery() {
+        BoardState boardState = new BoardState(Utils.parseFen("4k3/p1ppqp2/4p3/3PN3/1p2P3/5Q2/7P/4K3 w - - 0 1"));
+        boardState.makeMove(new Move("h2h3"));
+        boardState.makeMove(new Move("e7c5"));
+        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Assertions.assertEquals(32, moves.size(), moves.getString());
+    }
+
+    @Test
     void randomKnight() {
         String position = "5k2/8/8/8/8/8/4Nn1P/R2QK2R w KQ - 1 8";
         Assertions.assertEquals(35, moveGenerator.getLegalMoves(Utils.parseFen(position)).size());
@@ -332,7 +337,7 @@ public class MoveGenerationTest {
         for (Move move: moves) {
             boardState.makeMove(move);
             int result = recursion(depth-1, boardState, start);
-            if(depth == start) System.out.println(Utils.parseCommand(move) + ": " + result);
+            if(depth == start) System.out.println(move + ": " + result);
             numPositions += result;
             boardState.unMakeMove();
         }

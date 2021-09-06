@@ -34,7 +34,7 @@ public class Pawn implements PieceGenerator {
 
         Moves moves = new Moves();
         Piece orig = board.getCoordinate(origin);
-        boolean isWhite = Utils.isWhite(orig);
+        boolean isWhite = orig.isWhite();
         boolean promotion = false;
         int row = origin.row;
         int col = origin.column;
@@ -73,7 +73,7 @@ public class Pawn implements PieceGenerator {
                 moves.add(nextMove);
             }
 
-            if((Utils.isWhite(orig) && row == 6 || (!Utils.isWhite(orig) && row == 1))
+            if((isWhite && row == 6 || (!isWhite && row == 1))
                     && board.locationIsEmpty(doubleJump, col)) {
                 //if at starting square and nothing in front
                 Coordinate destination = new Coordinate(doubleJump, col);
