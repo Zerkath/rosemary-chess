@@ -165,7 +165,7 @@ public class UCI_Controller {
         for (Move move: moves) {
             boardState.makeMove(move);
             int result = runPerft(depth-1, start, print);
-            if(depth == start && print) System.out.println(Utils.parseCommand(move) + ": " + result);
+            if(depth == start && print) System.out.println(move + ": " + result);
             numPositions += result;
             boardState.unMakeMove();
         }

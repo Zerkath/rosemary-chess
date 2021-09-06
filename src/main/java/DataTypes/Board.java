@@ -23,12 +23,6 @@ public class Board {
         this.whiteKing = board.whiteKing;
         this.blackKing = board.blackKing;
     }
-    
-    private void replaceRow(int row, Row rowData) {
-        for (int column = 0; column < 8; column++) {
-            this.replaceCoordinate(row, column, rowData.getColumn(column));
-        }
-    }
 
     public Row getRow(int row) {
         return this.board[row];
@@ -67,6 +61,10 @@ public class Board {
 
     public void clearCoordinate(Coordinate coordinate) {
         getRow(coordinate.row).clearColumn(coordinate.column);
+    }
+
+    public void clearCoordinate(int row, int column) {
+        clearCoordinate(new Coordinate(row, column));
     }
 
     public CastlingRights getWhiteCastling() {
@@ -109,12 +107,12 @@ public class Board {
         this.whiteKing = coordinate;
     }
 
-    public boolean isOpposingColor(Piece origin, Piece target) {
+    public boolean isOpposingColour(Piece origin, Piece target) {
         return origin.getColour() != target.getColour();
     }
 
     public boolean pawnCapturePossible(Coordinate coordinate, Piece origin) {
-        return !isEmpty(this.getCoordinate(coordinate)) && opposingColourAndInbounds(coordinate, origin);
+        return !isEmpty(this.getCoordinate(coordinate)) && isOpposingColour(coordinate, origin);
     }
 
     public boolean isCoordinateInBounds(Coordinate coordinate) {
@@ -125,24 +123,17 @@ public class Board {
         );
     }
 
-    public boolean opposingColourAndInbounds(Coordinate coordinate, Piece origin) {
-        if(isCoordinateInBounds(coordinate)) {
-            Piece target = this.getCoordinate(coordinate);
-            return isOpposingColor(origin, target);
-
-        } else return false;
+    public boolean isOpposingColour(Coordinate coordinate, Piece origin) {
+        Piece target = this.getCoordinate(coordinate);
+        return isOpposingColour(origin, target);
     }
 
     public boolean isOpposingColourOrEmpty(Coordinate coordinate, Piece origin) {
         if(isCoordinateInBounds(coordinate)) {
             Piece destination = this.getCoordinate(coordinate);
-            return destination == null || isOpposingColor(origin, destination);
+            return destination == null || isOpposingColour(origin, destination);
 
         } else return false;
-    }
-
-    public boolean locationIsEmpty(Coordinate coordinate) {
-        return locationIsEmpty(coordinate.row, coordinate.column);
     }
 
     public boolean locationIsEmpty(int row, int column) {

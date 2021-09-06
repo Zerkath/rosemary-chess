@@ -68,7 +68,7 @@ public class EvaluationThread implements Runnable {
 
         if (depth == startingDepth) {
             if (bestMove == null) bestMove = moves.iterator().next();
-            System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
+            System.out.print("bestmove " + bestMove.toString() + "\n");
         }
         return alpha;
     }
@@ -107,7 +107,7 @@ public class EvaluationThread implements Runnable {
 
         if (depth == startingDepth) {
             if (bestMove == null) bestMove = moves.iterator().next();
-            System.out.print("bestmove " + Utils.parseCommand(bestMove) + "\n");
+            System.out.print("bestmove " + bestMove.toString() + "\n");
         }
         return beta;
     }
@@ -115,7 +115,7 @@ public class EvaluationThread implements Runnable {
     private void printInfoUCI(int depth, int eval, Move move, boolean isWhite) {
 
         String outString = "info depth " + depth;
-        String currMove = " currmove " + Utils.parseCommand(move);
+        String currMove = " currmove " + move.toString();
 
         boolean whiteHasMate = eval >= values.mateForWhite;
         boolean isMate = whiteHasMate || eval <= values.mateForBlack;

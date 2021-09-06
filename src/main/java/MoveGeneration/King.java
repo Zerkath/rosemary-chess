@@ -1,7 +1,6 @@
 package MoveGeneration;
 
 import BoardRepresentation.BoardState;
-import CommonTools.Utils;
 import DataTypes.*;
 
 public class King implements PieceGenerator {
@@ -20,7 +19,7 @@ public class King implements PieceGenerator {
         Moves moves = new Moves();
 
         Piece orig = board.getCoordinate(origin);
-        boolean isWhite = Utils.isWhite(orig);
+        boolean isWhite = orig.isWhite();
         int row = origin.row;
         int col = origin.column;
 
@@ -289,10 +288,6 @@ public class King implements PieceGenerator {
             }
         }
         return false;
-    }
-
-    private boolean isCheck(Piece piece, boolean white) {
-        return piece.getColour() == Colour.BLACK && white || piece.getColour() == Colour.WHITE && !white;
     }
 
     /**
