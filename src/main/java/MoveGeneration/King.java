@@ -93,9 +93,7 @@ public class King implements PieceGenerator {
         if(backRankThreat(isWhite, board)) return false;
         if(leftCastlingStoppedByKnight(castlingKnightData)) return false;
         if(leftCastlingStoppedVertically(isWhite, board)) return false;
-        if(leftCastlingStoppedDiagonally(isWhite, board)) return false;
-
-        return true;
+        return !leftCastlingStoppedDiagonally(isWhite, board);
     }
 
     private static boolean kingSidePossible(Row backRow, Piece piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
@@ -105,9 +103,7 @@ public class King implements PieceGenerator {
         if(backRankThreat(isWhite, board)) return false;
         if(rightCastlingStoppedByKnight(castlingKnightData)) return false;
         if(rightCastlingStoppedVertically(isWhite, board)) return false;
-        if(rightCastlingStoppedDiagonally(isWhite, board)) return false;
-
-        return true;
+        return !rightCastlingStoppedDiagonally(isWhite, board);
     }
 
 
@@ -298,7 +294,7 @@ public class King implements PieceGenerator {
         //its inverse turn
         boolean white = boardState.turn == PlayerTurn.BLACK;
         Board board = boardState.board;
-        //lets try the most likely moves to cause check (bishop and rook)
+        //let's try the most likely moves to cause check (bishop and rook)
         Moves moves;
         Coordinate origin = white ? board.getWhiteKing() : board.getBlackKing();
         if(origin == null) return true;
@@ -309,8 +305,10 @@ public class King implements PieceGenerator {
         Piece opponentKnight = new Piece(colour, PieceType.KNIGHT);
         Piece opponentPawn = new Piece(colour, PieceType.PAWN);
 
-        if(pieceHasCheck(rook, boardState, opponentRook, opponentQueen, origin)) return false;
-        if(pieceHasCheck(bishop, boardState, opponentBishop, opponentQueen, origin)) return false;
+        if (
+                pieceHasCheck(rook, boardState, opponentRook, opponentQueen, origin) ||
+                pieceHasCheck(bishop, boardState, opponentBishop, opponentQueen, origin)
+        ) return false;
 
         moves = knight.getMoves(origin, boardState);
         for (Move move: moves) {

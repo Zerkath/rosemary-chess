@@ -1,7 +1,6 @@
 package MoveGeneration;
 
 import BoardRepresentation.BoardState;
-import CommonTools.Utils;
 import DataTypes.*;
 
 import java.util.Arrays;

@@ -11,6 +11,7 @@ public class Rook implements PieceGenerator {
 
         Moves moves = new Moves();
         Piece orig = board.getCoordinate(origin);
+        boolean isWhite = orig.isWhite();
         int row = origin.row;
         int col = origin.column;
 
@@ -18,15 +19,14 @@ public class Rook implements PieceGenerator {
         for(int i = 1; col - i >= 0; i++) { //Runs as long as destination is within board limits
             Coordinate destination = new Coordinate(row, col - i);
 
-            if(board.isOpposingColourOrEmpty(destination, orig)) {
-                moves.add(new Move(origin, destination));
+            Piece target = board.getCoordinate(destination);
 
-                if(board.getCoordinate(destination) != null) { //Checks if move ends in capture to end the loop
-                    break;
-                }
-            } else {
-                break;
+            if(target == null) {
+                moves.add(origin, destination);
+                continue;
             }
+            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            break;
         }
 
 
@@ -34,45 +34,42 @@ public class Rook implements PieceGenerator {
         for(int i = 1; row - i >= 0; i++) {
             Coordinate destination = new Coordinate(row - i, col);
 
-            if(board.isOpposingColourOrEmpty(destination, orig)) {
-                moves.add(new Move(origin, destination));
+            Piece target = board.getCoordinate(destination);
 
-                if(board.getCoordinate(destination) != null) { //Checks if move ends in capture to end the loop
-                    break;
-                }
-            } else {
-                break;
+            if(target == null) {
+                moves.add(origin, destination);
+                continue;
             }
+            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            break;
         }
 
         //Rook moves to right
         for(int i = 1; col + i <= 7; i++) {
             Coordinate destination = new Coordinate(row, col + i);
 
-            if(board.isOpposingColourOrEmpty(destination, orig)) {
-                moves.add(new Move(origin, destination));
+            Piece target = board.getCoordinate(destination);
 
-                if(board.getCoordinate(destination) != null) { //Checks if move ends in capture to end the loop
-                    break;
-                }
-            } else {
-                break;
+            if(target == null) {
+                moves.add(origin, destination);
+                continue;
             }
+            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            break;
         }
 
         //Rook moves downwards
         for(int i = 1; row + i <= 7; i++) {
             Coordinate destination = new Coordinate(row + i, col);
 
-            if(board.isOpposingColourOrEmpty(destination, orig)) {
-                moves.add(new Move(origin, destination));
+            Piece target = board.getCoordinate(destination);
 
-                if(board.getCoordinate(destination) != null) { //Checks if move ends in capture to end the loop
-                    break;
-                }
-            } else {
-                break;
+            if(target == null) {
+                moves.add(origin, destination);
+                continue;
             }
+            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            break;
         }
 
         return moves;

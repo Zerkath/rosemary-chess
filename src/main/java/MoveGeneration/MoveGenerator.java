@@ -1,7 +1,6 @@
 package MoveGeneration;
 
 import BoardRepresentation.BoardState;
-import CommonTools.Utils;
 import DataTypes.*;
 
 public class MoveGenerator {
@@ -43,18 +42,17 @@ public class MoveGenerator {
         return moves;
     }
 
-    public Moves getPieceMoves(Coordinate coord, BoardState boardState) {
-        Piece piece = boardState.board.getCoordinate(coord);
+    public Moves getPieceMoves(Coordinate coordinate, BoardState boardState) {
+        Piece piece = boardState.board.getCoordinate(coordinate);
         if(piece == null) return null;
-        Moves moves = new Moves();
-        switch(piece.getType()) {
-            case PAWN: moves = pawn.getMoves(coord, boardState); break;
-            case BISHOP: moves = bishop.getMoves(coord, boardState); break;
-            case KNIGHT: moves = knight.getMoves(coord, boardState); break;
-            case ROOK: moves = rook.getMoves(coord, boardState); break;
-            case QUEEN: moves = queen.getMoves(coord, boardState); break;
-            case KING: moves = king.getMoves(coord, boardState); break;
+        switch (piece.getType()) {
+            case PAWN: return pawn.getMoves(coordinate, boardState);
+            case BISHOP: return bishop.getMoves(coordinate, boardState);
+            case KNIGHT: return knight.getMoves(coordinate, boardState);
+            case ROOK: return rook.getMoves(coordinate, boardState);
+            case QUEEN: return queen.getMoves(coordinate, boardState);
+            case KING: return king.getMoves(coordinate, boardState);
         }
-        return moves;
+        return null;
     }
 }

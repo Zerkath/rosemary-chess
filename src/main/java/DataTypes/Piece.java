@@ -11,11 +11,8 @@ public class Piece {
     }
 
     public Piece(char piece) {
-        if(Character.isUpperCase(piece)) {
-            colour = Colour.WHITE;
-        } else {
-            colour = Colour.BLACK;
-        }
+        colour = Character.isUpperCase(piece) ? Colour.WHITE : Colour.BLACK;
+
         piece = Character.toLowerCase(piece);
         switch(piece) {
             case 'p': pieceType = PieceType.PAWN; break;
@@ -37,7 +34,7 @@ public class Piece {
             case ROOK: piece = 'r'; break;
             case KING: piece = 'k'; break;
         }
-        piece = colour == Colour.WHITE ? Character.toUpperCase(piece) : piece;
+        if(colour == Colour.WHITE) piece = Character.toUpperCase(piece);
         return piece;
     }
 
@@ -63,5 +60,36 @@ public class Piece {
 
     public boolean equals(Piece piece) {
         return piece != null && piece.colour == this.colour && piece.pieceType == this.pieceType;
+    }
+
+    /**
+     * returns a hash value for a piece
+     * white 10, black 0
+     * pawn 1
+     * knight 2
+     * bishop 3
+     * rook 4
+     * queen 5
+     * king 0
+     */
+    @Override
+    public int hashCode() {
+        int hash = isWhite() ? 10 : 0;
+        switch (pieceType) {
+            case PAWN: hash += 1; break;
+            case KNIGHT: hash += 2; break;
+            case BISHOP: hash += 3; break;
+            case ROOK: hash += 4; break;
+            case QUEEN: hash += 5; break;
+        }
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null) return false;
+        if (this.getClass() != object.getClass()) return false;
+        return equals((Piece)object);
     }
 }

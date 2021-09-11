@@ -3,7 +3,7 @@ package Main;
 import BoardRepresentation.BoardState;
 import DataTypes.Move;
 import DataTypes.Moves;
-import CommonTools.Utils;
+
 import Evaluation.EvaluationThread;
 import MoveGeneration.MoveGenerator;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class UCI_Controller {
     public BoardState boardState;
     public boolean uci_mode;
-    public int depth = 4;
+    public int depth = 6;
     public boolean debug = false;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
     MoveGenerator moveGenerator = new MoveGenerator();
@@ -22,11 +22,11 @@ public class UCI_Controller {
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     public UCI_Controller() {
-        boardState = new BoardState(Utils.parseFen(defaultBoard));
+        boardState = new BoardState(defaultBoard);
     }
 
     public void setToDefault() {
-        boardState = new BoardState(Utils.parseFen(defaultBoard));
+        boardState = new BoardState(boardState.parseFen(defaultBoard));
     }
 
     public void handleMessage(String message) {
@@ -130,10 +130,10 @@ public class UCI_Controller {
 
 
     public void setFen(String fen) {
-        boardState = new BoardState(Utils.parseFen(fen));
+        boardState = new BoardState(boardState.parseFen(fen));
     }
     public String getFen() {
-        return Utils.toFenString(boardState);
+        return boardState.toFenString();
     }
 
     public void setToUCI() {
@@ -143,7 +143,7 @@ public class UCI_Controller {
         String authors = "Rosemary_devs";
         System.out.println("id author " + authors);
 //        System.out.print("option name Threads type spin default 2 min 1 max 250\n");
-        System.out.println("option name depth type spin default 4 min 1 max 7\n");
+        System.out.println("option name depth type spin default 6 min 1 max 7\n");
         System.out.println("uciok");
     }
 

@@ -1,7 +1,7 @@
 import BoardRepresentation.BoardState;
 import DataTypes.Move;
 import DataTypes.Moves;
-import CommonTools.Utils;
+
 import MoveGeneration.MoveGenerator;
 import org.junit.jupiter.api.*;
 
@@ -15,7 +15,7 @@ public class MoveGenerationTest {
     @Test
     @Order(1)
     void whiteStartMoves() {
-        BoardState boardState = new BoardState(Utils.parseFen(d_fen));
+        BoardState boardState = new BoardState(d_fen);
         Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(20, moves.size(), moves.getString());
     }
@@ -23,7 +23,7 @@ public class MoveGenerationTest {
     @Test
     @Order(2)
     void blackStartMoves() {
-        BoardState boardState = new BoardState(Utils.parseFen(d_fen));
+        BoardState boardState = new BoardState(d_fen);
         boardState.makeMove(new Move("d2d4"));
         Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(20, moves.size(), moves.getString());
@@ -32,7 +32,7 @@ public class MoveGenerationTest {
     @Test
     @Order(3)
     void whiteMovesAfter_d2d4_e7e5() {
-        BoardState boardState = new BoardState(Utils.parseFen(d_fen));
+        BoardState boardState = new BoardState(d_fen);
         boardState.makeMove(new Move("d2d4"));
         boardState.makeMove(new Move("e7e5"));
         Moves moves = moveGenerator.getLegalMoves(boardState);
@@ -43,7 +43,7 @@ public class MoveGenerationTest {
     @Order(4)
     void leftSideEnPassant() {
         String position = "rnbqkbnr/2pppppp/8/pP6/8/8/PP1PPPPP/RNBQKBNR w KQkq a6 0 3";
-        Moves moves = moveGenerator.getLegalMoves(Utils.parseFen(position));
+        Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
         Assertions.assertEquals(23, moves.size());
     }
 
@@ -51,7 +51,7 @@ public class MoveGenerationTest {
     @Order(5)
     void kingUnderAttack() {
         String position = "rnbq1bnr/pppkpppp/3pQ3/8/8/2P5/PP1PPPPP/RNB1KBNR b KQ - 3 3";
-        Moves moves = moveGenerator.getLegalMoves(Utils.parseFen(position));
+        Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
         Assertions.assertEquals(4, moves.size(), moves.getString());
     }
 
@@ -59,7 +59,7 @@ public class MoveGenerationTest {
     @Order(5)
     void whiteKingUnderAttack() {
         String position = "rnb1kbnr/pp1ppppp/2p5/8/8/3Pq3/PPPKPPPP/RNBQ1BNR w - - 0 1";
-        Moves moves = moveGenerator.getLegalMoves(Utils.parseFen(position));
+        Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
         Assertions.assertEquals(4, moves.size(), moves.getString());
     }
 
@@ -70,14 +70,14 @@ public class MoveGenerationTest {
     //        String test = "6pr/8/7p/8/8/7P/8/6PR w - - 0 1";
 
     BoardState getTestBoard(String position) {
-        return new BoardState(Utils.parseFen(position));
+        return new BoardState(new BoardState(position));
     }
 
     @Test
     @Order(6)
     void PawnPromotion() {
-        BoardState boardState = new BoardState(Utils.parseFen("5q1q/6P1/8/8/8/8/8/8 w - - 0 1"));
-        Utils.printBoard(boardState);
+        BoardState boardState = new BoardState("5q1q/6P1/8/8/8/8/8/8 w - - 0 1");
+        boardState.printBoard();
         Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(12, moves.size());
         for (Move move: moves) {
@@ -88,24 +88,24 @@ public class MoveGenerationTest {
     @Test
     @Order(7)
     void busyBoard() {
-        BoardState boardState = new BoardState(Utils.parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"));
+        BoardState boardState = new BoardState("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
         boardState.playMoves("h1g1 e7c5".split(" "));
-        Utils.printBoard(boardState);
+        boardState.printBoard(boardState);
         System.out.println(Character.toLowerCase('q') == 'p');
     }
 
     @Test
     @Order(8)
     void weirdPawnBehavior() {
-        BoardState boardState = new BoardState(Utils.parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"));
+        BoardState boardState = new BoardState("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
         boardState.playMoves("e1f1 h3g2 f1g2".split(" "));
-        Utils.printBoard(boardState);
+        boardState.printBoard(boardState);
     }
 
     @Test
     @Order(9)
     void speedStartPos10000PseudoLegal() {
-        BoardState boardState = new BoardState(Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
+        BoardState boardState = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
             moveGenerator.getLegalMoves(boardState);
@@ -115,19 +115,7 @@ public class MoveGenerationTest {
     @Test
     @Order(10)
     void speedStartPos10000Legal() {
-        BoardState boardState = new BoardState(Utils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
-        int iterations = 10000;
-        for (int i = 0; i < iterations; i++) {
-            moveGenerator.getLegalMoves(boardState);
-        }
-    }
-
-    //r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10
-
-    @Test
-    @Order(10)
-    void speedMiddlegame10000PseudoLegal() {
-        BoardState boardState = new BoardState(Utils.parseFen("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10"));
+        BoardState boardState = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
             moveGenerator.getLegalMoves(boardState);
@@ -136,8 +124,18 @@ public class MoveGenerationTest {
 
     @Test
     @Order(10)
-    void speedMiddlegame10000Legal() {
-        BoardState boardState = new BoardState(Utils.parseFen("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10"));
+    void speedMiddleGame10000PseudoLegal() {
+        BoardState boardState = new BoardState("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10");
+        int iterations = 10000;
+        for (int i = 0; i < iterations; i++) {
+            moveGenerator.getLegalMoves(boardState);
+        }
+    }
+
+    @Test
+    @Order(10)
+    void speedMiddleGame10000Legal() {
+        BoardState boardState = new BoardState("r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
             moveGenerator.getLegalMoves(boardState);
@@ -147,7 +145,7 @@ public class MoveGenerationTest {
     @Test
     @Order(11)
     void speedRooksPseudo() {
-        BoardState boardState = new BoardState(Utils.parseFen("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1"));
+        BoardState boardState = new BoardState("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
             moveGenerator.getLegalMoves(boardState);
@@ -157,7 +155,7 @@ public class MoveGenerationTest {
     @Test
     @Order(12)
     void speedRooksLegal() {
-        BoardState boardState = new BoardState(Utils.parseFen("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1"));
+        BoardState boardState = new BoardState("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
             moveGenerator.getLegalMoves(boardState);
@@ -167,7 +165,7 @@ public class MoveGenerationTest {
     @Test
     @Order(13)
     void speedBishopsPseudo() {
-        BoardState boardState = new BoardState(Utils.parseFen("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1"));
+        BoardState boardState = new BoardState("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
             moveGenerator.getLegalMoves(boardState);
@@ -177,7 +175,7 @@ public class MoveGenerationTest {
     @Test
     @Order(14)
     void speedBishopsLegal() {
-        BoardState boardState = new BoardState(Utils.parseFen("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1"));
+        BoardState boardState = new BoardState("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
             moveGenerator.getLegalMoves(boardState);
@@ -187,7 +185,7 @@ public class MoveGenerationTest {
     @Test
     @Order(15)
     void blackKingMoves() {
-        BoardState boardState = new BoardState(Utils.parseFen("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1"));
+        BoardState boardState = new BoardState("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1");
         boardState.makeMove(new Move("d2d4"));
         Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(5, moves.size(), moves.getString());
@@ -313,7 +311,7 @@ public class MoveGenerationTest {
 
     @Test
     void queenMystery() {
-        BoardState boardState = new BoardState(Utils.parseFen("4k3/p1ppqp2/4p3/3PN3/1p2P3/5Q2/7P/4K3 w - - 0 1"));
+        BoardState boardState = new BoardState("4k3/p1ppqp2/4p3/3PN3/1p2P3/5Q2/7P/4K3 w - - 0 1");
         boardState.makeMove(new Move("h2h3"));
         boardState.makeMove(new Move("e7c5"));
         Moves moves = moveGenerator.getLegalMoves(boardState);
@@ -323,7 +321,7 @@ public class MoveGenerationTest {
     @Test
     void randomKnight() {
         String position = "5k2/8/8/8/8/8/4Nn1P/R2QK2R w KQ - 1 8";
-        Assertions.assertEquals(35, moveGenerator.getLegalMoves(Utils.parseFen(position)).size());
+        Assertions.assertEquals(35, moveGenerator.getLegalMoves(new BoardState(position)).size());
     }
 
     private int recursion(int depth, BoardState boardState, int start) {

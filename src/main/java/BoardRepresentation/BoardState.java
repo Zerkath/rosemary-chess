@@ -2,15 +2,24 @@ package BoardRepresentation;
 
 import DataTypes.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BoardState {
+
+    private final static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private final StringBuilder strBuilder = new StringBuilder();
+
     public Board board = new Board();
     public BoardState previous;
+    public Move previousMove;
+    public Piece capturedPiece;
     public PlayerTurn turn;
 
     public int turnNumber = 1;
     public int halfMove = 0;
 
-    public int [] pieces;
+    public Map<Piece, Integer> pieceMap = new HashMap<>();
 
     public Coordinate enPassant;
     public BoardState() {}
@@ -19,15 +28,18 @@ public class BoardState {
         setBoardState(state);
     }
 
-    public void setBoardState(BoardState state) {
+    public BoardState(String fen) {
+        setBoardState(parseFen(fen));
+    }
 
+    public void setBoardState(BoardState state) {
         this.board = new Board(state.board);
         this.halfMove = state.halfMove;
         this.turn = state.turn;
         this.enPassant = state.enPassant;
         this.turnNumber = state.turnNumber;
         this.previous = state.previous;
-//        this.pieces = countPieces();
+        this.pieceMap = state.pieceMap;
     }
 
     public void setCastling(char [] castling) {
@@ -62,7 +74,7 @@ public class BoardState {
      * @param rowData a row of FEN
      * @param row which row to place the fen
      */
-    public void addRow(String rowData, int row) {
+    private void addRow(String rowData, int row) {
         int column = 0;
         for (Character ch : rowData.toCharArray()) {
             if(Character.isDigit(ch)) {
@@ -72,7 +84,9 @@ public class BoardState {
                     column++;
                 }
             } else {
-                board.replaceCoordinate(new Coordinate(row, column), ch);
+                Piece piece = new Piece(ch);
+                board.replaceCoordinate(new Coordinate(row, column), piece);
+                incrementPiece(piece);
                 column++;
             }
         }
@@ -82,10 +96,6 @@ public class BoardState {
         for (String move : moves) {
             this.makeMove(new Move(move));
         }
-    }
-
-    public void unMakeMove() {
-        setBoardState(previous);
     }
 
     private void addEnPassantMove(boolean white, Piece piece, int dCol, int dRow) {
@@ -133,15 +143,25 @@ public class BoardState {
         }
     }
 
+    public void unMakeMove() {
+        incrementPiece(capturedPiece);
+        setBoardState(previous);
+    }
 
+    // todo increment or decrement piece counts
     public void makeMove(Move move) {
 
         previous = new BoardState(this);
+        capturedPiece = board.getCoordinate(move.destination);
+        previousMove = move;
+        if(capturedPiece != null) { // decrease mapped value
+            decrementPiece(capturedPiece);
+        }
 
         int dRow = move.destination.row;
         int dCol = move.destination.column;
         Piece selected = board.getCoordinate(move.origin);
-        boolean isBeingPromoted = move.promotion != '-';
+        boolean isBeingPromoted = move.promotion != null;
         boolean isWhite = selected.getColour() == Colour.WHITE;
 
         checkForCastlingRights(move);
@@ -210,9 +230,10 @@ public class BoardState {
 
         Piece piece = selected;
         if(isBeingPromoted) {
-            piece = new Piece(move.promotion);
+            decrementPiece(piece);
+            piece = move.promotion;
+            incrementPiece(piece);
         }
-
         board.replaceCoordinate(move.destination, piece);
 
         if(this.turn == PlayerTurn.BLACK) {
@@ -223,36 +244,149 @@ public class BoardState {
         }
     }
 
-    public int[] countPieces() {
-
-        int [] results = new int[15];
-        for (int row = 0; row < 8; row++) {
-            Row d_row = board.getRow(row);
-            for (int column = 0; column < 8; column++) {
-                Piece piece = d_row.getColumn(column);
-                if(piece != null) {
-                    if(piece.isWhite()) {
-                        results[0]++;
-                    } else {
-                        results[1]++;
-                    }
-                    int offSet = piece.isWhite() ? 0 : 1;
-                    switch(piece.getType()) {
-                        case PAWN: results[3 + offSet]++; break;
-                        case BISHOP: results[5 + offSet]++; break;
-                        case ROOK: results[7 + offSet]++; break;
-                        case KNIGHT: results[9 + offSet]++; break;
-                        case QUEEN: results[11 + offSet]++; break;
-                        case KING: results[13 + offSet]++; break;
-                    }
-                }
-            }
+    private void decrementPiece(Piece piece) {
+        if(piece == null) return;
+        if(pieceMap.containsKey(piece)) {
+            int value = pieceMap.get(piece);
+            if(value <= 1) pieceMap.remove(piece);
+            else pieceMap.put(piece, value-1);
         }
-        results[2] = results[0] + results[1];
-        return results;
     }
 
-    public void updatePieceCount() {
-        this.pieces = countPieces();
+    private void incrementPiece(Piece piece) {
+        if(piece == null) return;
+        if(pieceMap.containsKey(piece)) {
+            pieceMap.put(piece, pieceMap.get(piece)+1);
+        } else pieceMap.put(piece, 1);
+    }
+
+    public String toFenString() {
+        return getFenString(this);
+    }
+
+    public String getFenString(BoardState boardState) {
+        strBuilder.setLength(0);
+        Board board = boardState.board;
+
+        for (int row = 0; row < 8; row++) {
+            int empty = 0;
+            for (int column = 0; column < 8; column++) {
+                Piece piece = board.getCoordinate(row, column);
+                if(piece == null) {
+                    empty++;
+                } else if(empty != 0) {
+                    strBuilder.append(empty);
+                    empty = 0;
+                    strBuilder.append(piece.toChar());
+                } else strBuilder.append(piece.toChar());
+            }
+            if(empty != 0) strBuilder.append(empty);
+            if(row != 7) strBuilder.append("/");
+        }
+
+        strBuilder.append(boardState.turn == PlayerTurn.BLACK ? " b" : " w");
+
+        String WhiteCastlingString = "";
+        switch (board.getWhiteCastling()) {
+            case KING: WhiteCastlingString = "K"; break;
+            case QUEEN: WhiteCastlingString = "Q"; break;
+            case BOTH: WhiteCastlingString = "KQ"; break;
+        }
+
+        String BlackCastlingString = "";
+        switch (board.getBlackCastling()) {
+            case KING: BlackCastlingString = "k"; break;
+            case QUEEN: BlackCastlingString = "q"; break;
+            case BOTH: BlackCastlingString = "kq"; break;
+        }
+
+        if(WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
+            strBuilder.append(" - ");
+        } else {
+            strBuilder.append(" ")
+                    .append(WhiteCastlingString)
+                    .append(BlackCastlingString)
+                    .append(" ");
+        }
+
+        strBuilder.append(boardState.enPassant != null ? boardState.enPassant : "-");
+
+        strBuilder.append(" ")
+                .append(boardState.halfMove)
+                .append(" ")
+                .append(boardState.turnNumber);
+
+        return strBuilder.toString();
+    }
+
+    public BoardState parseFen(String fen) {
+
+        /*
+        split data indexes
+        0 = fen board data
+        1 = white or black turn
+        2 = castling rights
+        3 = en passant move
+        4 = half-move clock (how many turns since last capture or pawn move 50 move rule)
+        5 = full-move number starts at 1 incremented after blacks move or at the start of white move
+        */
+        String [] split = fen.split(" ");
+
+        BoardState boardState = new BoardState();
+
+        if(split.length != 6) return new BoardState(parseFen(default_fen)); //todo give out errors
+        String [] rows = split[0].split("/");
+        if(rows.length != 8) return new BoardState(parseFen(default_fen));
+
+        if(split[1].equals("w")) {
+            boardState.turn = PlayerTurn.WHITE;
+        } else if (split[1].equals("b")) {
+            boardState.turn = PlayerTurn.BLACK;
+        }
+
+        boardState.setCastling(split[2].toCharArray()); //set castling rights
+        boardState.turnNumber = Integer.parseInt(split[5]);
+
+        boardState.enPassant = split[3].length() == 2 ? new Coordinate(split[3]) : null;
+
+        for (int row = 0; row < rows.length; row++) {
+            boardState.addRow(rows[row], row);
+        }
+
+        return boardState;
+    }
+
+    public void printBoard(BoardState board) {
+        System.out.println(getFenString(board));
+        System.out.println(toVisualBoardString(board.board));
+    }
+
+    public void printBoard() {
+        printBoard(this);
+    }
+
+    public String toVisualBoardString(Board board) {
+        strBuilder.setLength(0);
+        String divider = "=|-----|-----|-----|-----|-----|-----|-----|-----|=\n";
+        strBuilder.append("    0     1     2     3     4     5     6     7\n");
+        for(int row = 0; row < 8; row++) {
+            strBuilder.append(divider).append(row);
+            for(int column = 0; column < 8; column++) {
+                Piece piece = board.getCoordinate(row, column);
+                if(piece != null) {
+                    strBuilder.append("|  ").append(piece.toChar());
+                } else {
+                    strBuilder.append("|   ");
+                }
+                if(column != 7) strBuilder.append("  ");
+                else strBuilder.append("  |");
+            }
+            strBuilder.append(8-row);
+            strBuilder.append("\n");
+        }
+        strBuilder.append(divider);
+        strBuilder.append("    a     b     c     d     e     f     g     h\n");
+
+        return strBuilder.toString();
     }
 }
