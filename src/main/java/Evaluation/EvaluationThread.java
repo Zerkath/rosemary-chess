@@ -1,7 +1,6 @@
 package Evaluation;
 
 import BoardRepresentation.BoardState;
-import CommonTools.Utils;
 import DataTypes.Move;
 import DataTypes.Moves;
 import DataTypes.Piece;
@@ -46,7 +45,6 @@ public class EvaluationThread implements Runnable {
         if (depth == 0 || Thread.currentThread().isInterrupted()) {
             return evalCalculator.calculateMaterial(boardState);
         }
-
 
         Move bestMove = null;
 

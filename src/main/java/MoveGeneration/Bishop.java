@@ -11,63 +11,60 @@ public class Bishop implements PieceGenerator {
 
         Moves moves = new Moves();
         Piece orig = board.getCoordinate(origin);
+        boolean isWhite = orig.isWhite();
         int row = origin.row;
         int col = origin.column;
 
         //Bishop moves down and right
         for(int i = 1; row + i <= 7 && col + i <= 7; i++) { //Runs as long as destination is within board limits
             Coordinate destination = new Coordinate(row + i, col + i);
-            if(board.isOpposingColourOrEmpty(destination, orig)) {
-                moves.add(new Move(origin, destination));
+            Piece target = board.getCoordinate(destination);
 
-                if(board.getCoordinate(destination) != null) {
-                    break;
-                }
-            } else {
-                break;
+            if(target == null) {
+                moves.add(origin, destination);
+                continue;
             }
+            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            break;
         }
 
         //Bishop moves down and left
         for(int i = 1; row + i <= 7 && col - i >= 0; i++) {
             Coordinate destination = new Coordinate(row + i, col - i);
-            if(board.isOpposingColourOrEmpty(destination, orig)) {
-                moves.add(new Move(origin, destination));
+            Piece target = board.getCoordinate(destination);
 
-                if(board.getCoordinate(destination) != null) {
-                    break;
-                }
-            } else {
-                break;
+            if(target == null) {
+                moves.add(origin, destination);
+                continue;
             }
+            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            break;
         }
 
         //Bishop moves up and right
         for(int i = 1; row - i >= 0 && col + i <= 7; i++) {
             Coordinate destination = new Coordinate(row - i, col + i);
-            if(board.isOpposingColourOrEmpty(destination, orig)) {
-                moves.add(new Move(origin, destination));
+            Piece target = board.getCoordinate(destination);
 
-                if(board.getCoordinate(destination) != null) {
-                    break;
-                }
-            } else {
-                break;
+            if(target == null) {
+                moves.add(origin, destination);
+                continue;
             }
+            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            break;
         }
 
         //Bishop moves up and left
         for(int i = 1; row - i >= 0 && col - i >= 0; i++) {
             Coordinate destination = new Coordinate(row - i, col - i);
-            if(board.isOpposingColourOrEmpty(destination, orig)) {
-                moves.add(new Move(origin, destination));
+            Piece target = board.getCoordinate(destination);
 
-                if(board.getCoordinate(destination) != null) {
-                    break;
-                }
-            } else {
-                break;
+            if(target == null) {
+                moves.add(origin, destination);
+                continue;
             }
+            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            break;
         }
         return moves;
     }
