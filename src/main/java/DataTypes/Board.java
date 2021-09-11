@@ -47,10 +47,6 @@ public class Board {
         getRow(coordinate.row).replaceColumn(coordinate.column, piece);
     }
 
-    public void replaceCoordinate(Coordinate coordinate, char piece) {
-        replaceCoordinate(coordinate, new Piece(piece));
-    }
-
     private void replaceKing(Coordinate coordinate, Piece piece) {
         if(piece.getColour() == Colour.WHITE) {
             setWhiteKing(coordinate);
@@ -115,6 +111,7 @@ public class Board {
         return !isEmpty(this.getCoordinate(coordinate)) && isOpposingColour(coordinate, origin);
     }
 
+    //todo deprecate this method change logic so no out of bounds happens this probably isn't efficient
     public boolean isCoordinateInBounds(Coordinate coordinate) {
         return (coordinate.column >= 0 &&
                 coordinate.row >= 0 &&

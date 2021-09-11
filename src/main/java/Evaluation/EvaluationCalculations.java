@@ -3,20 +3,18 @@ package Evaluation;
 import BoardRepresentation.BoardState;
 import DataTypes.*;
 
+import java.util.Map;
+
 public class EvaluationCalculations {
 
     BoardState state;
     EvaluationValues values = new EvaluationValues();
 
     public int calculateMaterial(BoardState state) {
-        state.updatePieceCount();
         this.state = state;
-        int negation = state.turn == PlayerTurn.BLACK ? -1 : 1;
         int centralControl = piecesInMiddle();
-        int materialAdvantage = calculateMaterial();
-//        int kingSafety = kingSafety();
         int development = development();
-        return materialAdvantage + centralControl + development + (int)(5 * (1 + Math.random())); //slight random, doesnt play the same move always?
+        return centralControl + development + materialValue();
     }
 
     private int piecesInMiddle() {
@@ -73,26 +71,27 @@ public class EvaluationCalculations {
     private int development() {
         Board board = state.board;
         int value = 0;
-        Piece knight = new Piece('n');
-        Piece bishop = new Piece('b');
+        Piece knight = new Piece('N');
+        Piece bishop = new Piece('B');
         int whiteRow = 7;
         int blackRow = 0;
         //developing knight is good for black etc
-        value = getDevelopmentValue(board, value, knight, bishop, whiteRow);
+        value += getDevelopmentValue(board, knight, bishop, whiteRow);
 
-        knight.setColour(Colour.WHITE);
-        bishop.setColour(Colour.WHITE);
+        knight.setColour(Colour.BLACK);
+        bishop.setColour(Colour.BLACK);
 
-        value = getDevelopmentValue(board, value, knight, bishop, blackRow);
+        value += -getDevelopmentValue(board, knight, bishop, blackRow);
 
         return value;
     }
 
-    private int getDevelopmentValue(Board board, int value, Piece knight, Piece bishop, int blackRow) {
-        if(isPieceAtSquare(blackRow, 1, knight, board)) value += 15;
-        if(isPieceAtSquare(blackRow, 2, bishop, board)) value += 15;
-        if(isPieceAtSquare(blackRow, 5, bishop, board)) value += 15;
-        if(isPieceAtSquare(blackRow, 6, knight, board)) value += 15;
+    private int getDevelopmentValue(Board board, Piece knight, Piece bishop, int row) {
+        int value = 0;
+        if(isPieceAtSquare(row, 1, knight, board)) value += 15;
+        if(isPieceAtSquare(row, 2, bishop, board)) value += 15;
+        if(isPieceAtSquare(row, 5, bishop, board)) value += 15;
+        if(isPieceAtSquare(row, 6, knight, board)) value += 15;
         return value;
     }
 
@@ -102,19 +101,27 @@ public class EvaluationCalculations {
         return comparison.equals(piece);
     }
 
-    public int calculateMaterial() { //+ if white, -if black
+    public int pieceToValue(Piece piece) {
+        if(piece == null) return 0;
         int result = 0;
-        int[] arr = state.pieces;
-        result += arr[3] * values.ePawn;
-        result -= arr[4] * values.ePawn;
-        result += arr[5] * values.eBishop;
-        result -= arr[6] * values.eBishop;
-        result += arr[7] * values.eRook;
-        result -= arr[8] * values.eRook;
-        result += arr[9] * values.eKnight;
-        result -= arr[10] * values.eKnight;
-        result += arr[11] * values.eQueen;
-        result -= arr[12] * values.eQueen;
+        switch (piece.getType()) {
+            case PAWN: result = values.ePawn; break;
+            case ROOK: result = values.eRook; break;
+            case BISHOP: result = values.eBishop; break;
+            case QUEEN: result = values.eQueen; break;
+            case KNIGHT: result = values.eKnight; break;
+        }
+        if(!piece.isWhite()) {
+            result = -result; // negate value for black pieces
+        }
+        return result;
+    }
+
+    private int materialValue() {
+        int result = 0;
+        for (Map.Entry<Piece, Integer> entry: state.pieceMap.entrySet()) {
+            result += pieceToValue(entry.getKey()) * entry.getValue();
+        }
         return result;
     }
 }
