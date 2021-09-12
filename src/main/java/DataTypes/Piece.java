@@ -3,11 +3,11 @@ package DataTypes;
 public class Piece {
 
     private Colour colour;
-    private PieceType pieceType;
+    private PieceType type;
 
-    public Piece(Colour colour, PieceType pieceType) {
+    public Piece(Colour colour, PieceType type) {
         this.colour = colour;
-        this.pieceType = pieceType;
+        this.type = type;
     }
 
     public Piece(char piece) {
@@ -15,18 +15,23 @@ public class Piece {
 
         piece = Character.toLowerCase(piece);
         switch(piece) {
-            case 'p': pieceType = PieceType.PAWN; break;
-            case 'r': pieceType = PieceType.ROOK; break;
-            case 'q': pieceType = PieceType.QUEEN; break;
-            case 'b': pieceType = PieceType.BISHOP; break;
-            case 'k': pieceType = PieceType.KING; break;
-            case 'n': pieceType = PieceType.KNIGHT; break;
+            case 'p': type = PieceType.PAWN; break;
+            case 'r': type = PieceType.ROOK; break;
+            case 'q': type = PieceType.QUEEN; break;
+            case 'b': type = PieceType.BISHOP; break;
+            case 'k': type = PieceType.KING; break;
+            case 'n': type = PieceType.KNIGHT; break;
         }
+    }
+
+    public Piece(Piece piece) {
+        colour = piece.colour;
+        type = piece.type;
     }
 
     public char toChar() {
         char piece = ' ';
-        switch (pieceType) {
+        switch (type) {
             case KNIGHT: piece = 'n'; break;
             case BISHOP: piece = 'b'; break;
             case QUEEN: piece = 'q'; break;
@@ -38,8 +43,12 @@ public class Piece {
         return piece;
     }
 
+    public String toString() {
+        return ""+toChar();
+    }
+
     public PieceType getType() {
-        return pieceType;
+        return type;
     }
 
     public Colour getColour() {
@@ -59,7 +68,7 @@ public class Piece {
     }
 
     public boolean equals(Piece piece) {
-        return piece != null && piece.colour == this.colour && piece.pieceType == this.pieceType;
+        return piece != null && piece.colour == this.colour && piece.type == this.type;
     }
 
     /**
@@ -75,7 +84,7 @@ public class Piece {
     @Override
     public int hashCode() {
         int hash = isWhite() ? 10 : 0;
-        switch (pieceType) {
+        switch (type) {
             case PAWN: hash += 1; break;
             case KNIGHT: hash += 2; break;
             case BISHOP: hash += 3; break;

@@ -9,13 +9,13 @@ repositories {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 
 tasks.test {
     useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
+//    finalizedBy(tasks.jacocoTestReport)
 }
 
 dependencies {
@@ -29,4 +29,11 @@ tasks.jacocoTestReport {
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
     dependsOn(tasks.test)
+}
+
+tasks.withType(Jar::class) {
+    manifest {
+        attributes["Manifest-Version"] = "1.0"
+        attributes["Main-Class"] = "Main.Program"
+    }
 }
