@@ -1,10 +1,13 @@
 package DataTypes;
 
+import java.util.Arrays;
+
 public class Board {
 
     private final Row [] board = new Row[8];
     private CastlingRights whiteCastlingRights = CastlingRights.NONE;
     private CastlingRights blackCastlingRights = CastlingRights.NONE;
+    private final StringBuilder strBuilder = new StringBuilder();
     private Coordinate whiteKing;
     private Coordinate blackKing;
 
@@ -139,6 +142,31 @@ public class Board {
 
     public boolean isEmpty(Piece piece) {
         return piece == null;
+    }
+
+    public String toString() {
+        strBuilder.setLength(0);
+        String divider = "=|-----|-----|-----|-----|-----|-----|-----|-----|=\n";
+        strBuilder.append("    0     1     2     3     4     5     6     7\n");
+        for(int row = 0; row < 8; row++) {
+            strBuilder.append(divider).append(row);
+            for(int column = 0; column < 8; column++) {
+                Piece piece = this.getCoordinate(row, column);
+                if(piece != null) {
+                    strBuilder.append("|  ").append(piece.toChar());
+                } else {
+                    strBuilder.append("|   ");
+                }
+                if(column != 7) strBuilder.append("  ");
+                else strBuilder.append("  |");
+            }
+            strBuilder.append(8-row);
+            strBuilder.append("\n");
+        }
+        strBuilder.append(divider);
+        strBuilder.append("    a     b     c     d     e     f     g     h\n");
+
+        return strBuilder.toString();
     }
 }
 
