@@ -148,7 +148,6 @@ public class BoardState {
         setBoardState(previous);
     }
 
-    // todo increment or decrement piece counts
     public void makeMove(Move move) {
 
         previous = new BoardState(this);
@@ -162,7 +161,7 @@ public class BoardState {
         int dCol = move.destination.column;
         Piece selected = board.getCoordinate(move.origin);
         boolean isBeingPromoted = move.promotion != null;
-        boolean isWhite = selected.getColour() == Colour.WHITE;
+        boolean isWhite = selected.isWhite();
 
         checkForCastlingRights(move);
 
@@ -211,15 +210,18 @@ public class BoardState {
             board.setCastling(CastlingRights.NONE, isWhite);
 
             Piece rook;
+            Coordinate destination;
+            Coordinate origin;
             if (dCol == 2) {
-                rook = board.getCoordinate(dRow, 0);
-                board.replaceCoordinate(dRow, 3, rook);
-                board.clearCoordinate(dRow, 0);
+                destination = new Coordinate(dRow, 3);
+                origin = new Coordinate(dRow, 0);
             } else {
-                rook = board.getCoordinate(dRow, 7);
-                board.replaceCoordinate(dRow, 5, rook);
-                board.clearCoordinate(dRow, 7);
+                destination = new Coordinate(dRow, 5);
+                origin = new Coordinate(dRow, 7);
             }
+            rook = board.getCoordinate(origin);
+            board.replaceCoordinate(destination, rook);
+            board.clearCoordinate(origin);
         }
 
         if(selected.getType() == PieceType.KING) {
@@ -358,35 +360,10 @@ public class BoardState {
 
     public void printBoard(BoardState board) {
         System.out.println(getFenString(board));
-        System.out.println(toVisualBoardString(board.board));
+        System.out.println(board.toString());
     }
 
     public void printBoard() {
         printBoard(this);
-    }
-
-    public String toVisualBoardString(Board board) {
-        strBuilder.setLength(0);
-        String divider = "=|-----|-----|-----|-----|-----|-----|-----|-----|=\n";
-        strBuilder.append("    0     1     2     3     4     5     6     7\n");
-        for(int row = 0; row < 8; row++) {
-            strBuilder.append(divider).append(row);
-            for(int column = 0; column < 8; column++) {
-                Piece piece = board.getCoordinate(row, column);
-                if(piece != null) {
-                    strBuilder.append("|  ").append(piece.toChar());
-                } else {
-                    strBuilder.append("|   ");
-                }
-                if(column != 7) strBuilder.append("  ");
-                else strBuilder.append("  |");
-            }
-            strBuilder.append(8-row);
-            strBuilder.append("\n");
-        }
-        strBuilder.append(divider);
-        strBuilder.append("    a     b     c     d     e     f     g     h\n");
-
-        return strBuilder.toString();
     }
 }

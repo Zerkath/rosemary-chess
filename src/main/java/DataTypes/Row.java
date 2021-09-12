@@ -7,9 +7,7 @@ public class Row {
     }
 
     public Row(Row row) {
-        for (int column = 0; column < 8; column++) {
-            replaceColumn(column, row.getColumn(column));
-        }
+        System.arraycopy(row.row, 0, this.row, 0, 8);
     }
     
     public Piece getColumn(int column) {

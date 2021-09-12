@@ -7,6 +7,10 @@ import DataTypes.Piece;
 import DataTypes.PlayerTurn;
 import MoveGeneration.MoveGenerator;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 public class EvaluationThread implements Runnable {
 
     BoardState boardState;
@@ -17,6 +21,7 @@ public class EvaluationThread implements Runnable {
     EvaluationValues values = new EvaluationValues();
     EvaluationCalculations evalCalculator = new EvaluationCalculations();
     MoveGenerator moveGenerator = new MoveGenerator();
+    private final BufferedOutputStream bufferedWriter = new BufferedOutputStream(System.out);
 
     public EvaluationThread(BoardState boardState, int depth, boolean debug) {
         this.boardState = boardState;
@@ -66,7 +71,7 @@ public class EvaluationThread implements Runnable {
 
         if (depth == startingDepth) {
             if (bestMove == null) bestMove = moves.iterator().next();
-            System.out.print("bestmove " + bestMove.toString() + "\n");
+            println("bestmove " + bestMove.toString());
         }
         return alpha;
     }
@@ -105,7 +110,7 @@ public class EvaluationThread implements Runnable {
 
         if (depth == startingDepth) {
             if (bestMove == null) bestMove = moves.iterator().next();
-            System.out.print("bestmove " + bestMove.toString() + "\n");
+            println("bestmove " + bestMove.toString());
         }
         return beta;
     }
@@ -125,7 +130,7 @@ public class EvaluationThread implements Runnable {
         } else {
             outString += " score cp " + eval;
         }
-        System.out.println(outString + currMove);
+        println(outString + currMove);
     }
 
     private boolean inCheck(BoardState state) {
@@ -143,5 +148,15 @@ public class EvaluationThread implements Runnable {
         }
         state.turn = old;
         return false;
+    }
+
+    private void print(String str) {
+        try {
+            bufferedWriter.write(str.getBytes(StandardCharsets.UTF_8));
+            bufferedWriter.flush();
+        } catch (IOException ignored) {}
+    }
+    private void println(String str) {
+        print(str + "\n");
     }
 }

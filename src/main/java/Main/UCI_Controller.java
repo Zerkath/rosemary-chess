@@ -7,6 +7,9 @@ import DataTypes.Moves;
 import Evaluation.EvaluationThread;
 import MoveGeneration.MoveGenerator;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,6 +21,7 @@ public class UCI_Controller {
     public boolean debug = false;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
     MoveGenerator moveGenerator = new MoveGenerator();
+    public final BufferedOutputStream bufferedWriter = new BufferedOutputStream(System.out);
 
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -86,7 +90,7 @@ public class UCI_Controller {
             if(split.length > 2) {
                 if(split[1].equals("perft")) {
                     int depth = Integer.parseInt(split[2]);
-                    System.out.println("\nDepth " + depth + " nodes: " + runPerft(depth, depth, true));
+                    getPerft(depth);
                     return;
                 }
             }
@@ -117,7 +121,7 @@ public class UCI_Controller {
             return;
         }
         if(split[0].equals("register")) {
-            System.out.println("register later");
+            println("register later");
             return;
         }
         if(split[0].equals("ucinewgame")) {
@@ -125,7 +129,7 @@ public class UCI_Controller {
             return;
         }
         if(split[0].equals("xboard")) return;
-        System.out.println("?");
+        println("?");
     }
 
 
@@ -138,13 +142,10 @@ public class UCI_Controller {
 
     public void setToUCI() {
         uci_mode = true;
-        String name = "Rosemary";
-        System.out.println("id name " + name);
-        String authors = "Rosemary_devs";
-        System.out.println("id author " + authors);
+
+        String data = "id name Rosemary\nid author Rosemary_devs\noption name depth type spin default 6 min 1 max 7\nuciok";
 //        System.out.print("option name Threads type spin default 2 min 1 max 250\n");
-        System.out.println("option name depth type spin default 6 min 1 max 7\n");
-        System.out.println("uciok");
+        print(data);
     }
 
     public void readyResponse(BlockingQueue<String> queue) {
@@ -153,23 +154,6 @@ public class UCI_Controller {
 
     public void startEval() {
         startEval(this.depth);
-    }
-
-    public int runPerft(int depth, int start, boolean print) {
-        if(depth <= 0) {
-            return 1;
-        }
-        Moves moves = moveGenerator.getLegalMoves(boardState);
-        int numPositions = 0;
-
-        for (Move move: moves) {
-            boardState.makeMove(move);
-            int result = runPerft(depth-1, start, print);
-            if(depth == start && print) System.out.println(move + ": " + result);
-            numPositions += result;
-            boardState.unMakeMove();
-        }
-        return numPositions;
     }
 
     public void endEval() {
@@ -182,5 +166,45 @@ public class UCI_Controller {
         if(threadGroup.activeCount() < 1) {
             new Thread(threadGroup, new EvaluationThread(this.boardState, depth, debug)).start();
         }
+    }
+
+    public void getPerft(int depth) {
+        long start = System.currentTimeMillis();
+        String str = "\nDepth " + depth + " nodes: " + runPerft(depth, true);
+        print(str);
+        long end = System.currentTimeMillis();
+        print(" " + (end - start) + "ms \n");
+    }
+
+    public int runPerft(int depth, boolean print) {
+        return runPerft(depth, depth, print, this.boardState);
+    }
+
+    public int runPerft(int depth, int start, boolean print, BoardState boardState) {
+        if(depth <= 0) {
+            return 1;
+        }
+        Moves moves = moveGenerator.getLegalMoves(boardState);
+        int numPositions = 0;
+
+        for (Move move: moves) {
+            boardState.makeMove(move);
+            int result = runPerft(depth-1, start, print, boardState);
+            if(depth == start && print) println(move + ": " + result);
+            numPositions += result;
+            boardState.unMakeMove();
+        }
+        return numPositions;
+    }
+
+
+    private void print(String str) {
+        try {
+            bufferedWriter.write(str.getBytes(StandardCharsets.UTF_8));
+            bufferedWriter.flush();
+        } catch (IOException ignored) {}
+    }
+    private void println(String str) {
+        print(str + "\n");
     }
 }
