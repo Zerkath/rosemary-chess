@@ -4,15 +4,27 @@ import DataTypes.CastlingRights;
 import DataTypes.Piece;
 import org.junit.jupiter.api.*;
 
-import java.util.Map;
-
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class FenParseTest {
+
+    private final String start = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     @Test
     void startingBoard() {
-        BoardState state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        BoardState state = new BoardState(start);
         Assertions.assertEquals(CastlingRights.BOTH, state.board.getBlackCastling());
         Assertions.assertEquals(CastlingRights.BOTH, state.board.getWhiteCastling());
+    }
+
+    @Test
+    void startingBoardNotModifiedWhenStoredInternally() {
+        BoardState state = new BoardState(start);
+        Assertions.assertEquals(start, state.toFenString());
+    }
+
+    @Test
+    void getRow() {
+        BoardState state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        Assertions.assertEquals(8, state.board.getRow(7).length);
     }
 
     @Test
