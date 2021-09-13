@@ -36,16 +36,12 @@ public class King implements PieceGenerator {
 
         //castling
         if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) {
-            if(col == 4 &&
-                    (
-                        (isWhite && row == 7) ||
-                        (!isWhite && row == 0)
-                    ) &&
+            if(col == 4 && ((isWhite && row == 7) || (!isWhite && row == 0)) &&
                     !castlingStoppedByKnight(castlingKnightData) &&
                     !inCheckVertically(isWhite, board) &&
                     !inCheckDiagonally(isWhite, board)
             )  { //only check if the king is in the original position and hasn't moved
-                Row backRow = board.getRow(row);
+                Piece [] backRow = board.getRow(row);
                 Piece piece = new Piece(isWhite ? 'R' : 'r');
 
                 boolean qSide = queenSidePossible(backRow, piece, isWhite, board, castlingKnightData);
@@ -85,21 +81,21 @@ public class King implements PieceGenerator {
         return moves;
     }
 
-    private static boolean queenSidePossible(Row backRow, Piece piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
-        if(!piece.equals(backRow.getColumn(0))) return false;
-        if(backRow.getColumn(1) != null) return false;
-        if(backRow.getColumn(2) != null) return false;
-        if(backRow.getColumn(3) != null) return false;
+    private static boolean queenSidePossible(Piece [] backRow, Piece piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
+        if(!piece.equals(backRow[0])) return false;
+        if(backRow[1] != null) return false;
+        if(backRow[2] != null) return false;
+        if(backRow[3] != null) return false;
         if(backRankThreat(isWhite, board)) return false;
         if(leftCastlingStoppedByKnight(castlingKnightData)) return false;
         if(leftCastlingStoppedVertically(isWhite, board)) return false;
         return !leftCastlingStoppedDiagonally(isWhite, board);
     }
 
-    private static boolean kingSidePossible(Row backRow, Piece piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
-        if(!piece.equals(backRow.getColumn(7))) return false;
-        if(backRow.getColumn(6) != null) return false;
-        if(backRow.getColumn(5) != null) return false;
+    private static boolean kingSidePossible(Piece [] backRow, Piece piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
+        if(!piece.equals(backRow[7])) return false;
+        if(backRow[6] != null) return false;
+        if(backRow[5] != null) return false;
         if(backRankThreat(isWhite, board)) return false;
         if(rightCastlingStoppedByKnight(castlingKnightData)) return false;
         if(rightCastlingStoppedVertically(isWhite, board)) return false;
@@ -108,7 +104,7 @@ public class King implements PieceGenerator {
 
 
     private static class CastlingKnightData {
-        Row sixth, seventh;
+        Piece [] sixth, seventh;
         Piece opponentKnight;
         Piece opponentPawn;
         public CastlingKnightData(boolean isWhite, Board board) {
@@ -128,37 +124,37 @@ public class King implements PieceGenerator {
 
     private static boolean castlingStoppedByKnight(CastlingKnightData data) {
         return(
-                data.opponentKnight.equals(data.seventh.getColumn(2)) ||
-                data.opponentKnight.equals(data.seventh.getColumn(6)) ||
-                data.opponentKnight.equals(data.sixth.getColumn(3)) ||
-                data.opponentKnight.equals(data.sixth.getColumn(5)) ||
-                data.opponentKnight.equals(data.sixth.getColumn(4)) ||
-                data.opponentKnight.equals(data.seventh.getColumn(4)) ||
-                data.opponentPawn.equals(data.seventh.getColumn(3)) ||
-                data.opponentPawn.equals(data.seventh.getColumn(4)) ||
-                data.opponentPawn.equals(data.seventh.getColumn(5))
+                data.opponentKnight.equals(data.seventh[2]) ||
+                data.opponentKnight.equals(data.seventh[6]) ||
+                data.opponentKnight.equals(data.sixth[3]) ||
+                data.opponentKnight.equals(data.sixth[5]) ||
+                data.opponentKnight.equals(data.sixth[4]) ||
+                data.opponentKnight.equals(data.seventh[4]) ||
+                data.opponentPawn.equals(data.seventh[3]) ||
+                data.opponentPawn.equals(data.seventh[4]) ||
+                data.opponentPawn.equals(data.seventh[5])
         );
     }
 
     private static boolean leftCastlingStoppedByKnight(CastlingKnightData data) {
         return (
-                data.opponentKnight.equals(data.seventh.getColumn(0))) ||
-                data.opponentKnight.equals(data.seventh.getColumn(1)) ||
-                data.opponentKnight.equals(data.sixth.getColumn(1)) ||
-                data.opponentKnight.equals(data.sixth.getColumn(2)) ||
-                data.opponentKnight.equals(data.seventh.getColumn(5)) ||
-                data.opponentPawn.equals(data.seventh.getColumn(1)) ||
-                data.opponentPawn.equals(data.seventh.getColumn(2)
+                data.opponentKnight.equals(data.seventh[0])) ||
+                data.opponentKnight.equals(data.seventh[1]) ||
+                data.opponentKnight.equals(data.sixth[1]) ||
+                data.opponentKnight.equals(data.sixth[2]) ||
+                data.opponentKnight.equals(data.seventh[5]) ||
+                data.opponentPawn.equals(data.seventh[1]) ||
+                data.opponentPawn.equals(data.seventh[2]
         );
     }
 
     private static boolean rightCastlingStoppedByKnight(CastlingKnightData data) {
         return(
-                data.opponentKnight.equals(data.seventh.getColumn(3)) ||
-                data.opponentKnight.equals(data.seventh.getColumn(7)) ||
-                data.opponentKnight.equals(data.sixth.getColumn(6)) ||
-                data.opponentKnight.equals(data.sixth.getColumn(7)) ||
-                data.opponentPawn.equals(data.seventh.getColumn(6))
+                data.opponentKnight.equals(data.seventh[3]) ||
+                data.opponentKnight.equals(data.seventh[7]) ||
+                data.opponentKnight.equals(data.sixth[6]) ||
+                data.opponentKnight.equals(data.sixth[7]) ||
+                data.opponentPawn.equals(data.seventh[6])
         );
     }
 

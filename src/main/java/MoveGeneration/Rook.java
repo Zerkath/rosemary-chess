@@ -25,7 +25,7 @@ public class Rook implements PieceGenerator {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            if(isWhite != target.isWhite()) moves.add(origin, destination);
             break;
         }
 
@@ -40,7 +40,7 @@ public class Rook implements PieceGenerator {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            if(isWhite != target.isWhite()) moves.add(origin, destination);
             break;
         }
 
@@ -54,7 +54,7 @@ public class Rook implements PieceGenerator {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            if(isWhite != target.isWhite()) moves.add(origin, destination);
             break;
         }
 
@@ -68,7 +68,7 @@ public class Rook implements PieceGenerator {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite ^ target.isWhite()) moves.add(origin, destination);
+            if(isWhite != target.isWhite()) moves.add(origin, destination);
             break;
         }
 

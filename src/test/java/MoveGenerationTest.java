@@ -174,6 +174,7 @@ public class MoveGenerationTest {
 //        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
         //took 206s~ after changes
         //took 155s~ after 5/9/2021
+        //took 136s~ after 13/9/2021, wsl2 99s??
     }
 
     @Test
