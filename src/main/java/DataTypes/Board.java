@@ -4,7 +4,17 @@ import java.util.Arrays;
 
 public class Board {
 
-    private final Row [] board = new Row[8];
+    /**
+     * 0 1 2 3 4 5 6 7
+     * 8
+     * 16
+     * 24
+     * 32
+     * 40
+     * 48
+     * 56
+     */
+    private final Piece [] board = new Piece[64];
     private CastlingRights whiteCastlingRights = CastlingRights.NONE;
     private CastlingRights blackCastlingRights = CastlingRights.NONE;
     private final StringBuilder strBuilder = new StringBuilder();
@@ -12,42 +22,46 @@ public class Board {
     private Coordinate blackKing;
 
     public Board() {
-        for (int i = 0; i < 8; i++) {
-            this.board[i] = new Row();
+        for (int i = 0; i < 64; i++) {
+            this.board[i] = null;
         }
     }
 
     public Board(Board board) {
-        for (int row = 0; row < 8; row++) {
-            this.board[row] = new Row(board.getRow(row));
-        }
+        System.arraycopy(board.board, 0, this.board, 0, 64);
         this.whiteCastlingRights = board.whiteCastlingRights;
         this.blackCastlingRights = board.blackCastlingRights;
         this.whiteKing = board.whiteKing;
         this.blackKing = board.blackKing;
     }
 
-    public Row getRow(int row) {
-        return this.board[row];
-    }
-
     public Piece getCoordinate(Coordinate coordinate) {
-        return getRow(coordinate.row).getColumn(coordinate.column);
+        return getCoordinate(coordinate.row, coordinate.column);
     }
 
     public Piece getCoordinate(int row, int column) {
-        return getRow(row).getColumn(column);
+        return this.board[row*8+column];
+    }
+
+    public void clearCoordinate(int row, int column) {
+        this.board[row*8+column] = null;
+    }
+
+    public Piece [] getRow(int row) {
+        int startIndex = row*8;
+        int endIndex = startIndex+8;
+        return Arrays.copyOfRange(board, startIndex, endIndex);
     }
 
     public void replaceCoordinate(int row, int column, Piece piece) {
-        replaceCoordinate(new Coordinate(row, column), piece);
+        this.board[row*8+column] = piece;
     }
 
     public void replaceCoordinate(Coordinate coordinate, Piece piece) {
         if(piece != null && piece.getType() == PieceType.KING) {
             replaceKing(coordinate, piece);
         }
-        getRow(coordinate.row).replaceColumn(coordinate.column, piece);
+        replaceCoordinate(coordinate.row, coordinate.column, piece);
     }
 
     private void replaceKing(Coordinate coordinate, Piece piece) {
@@ -59,11 +73,7 @@ public class Board {
     }
 
     public void clearCoordinate(Coordinate coordinate) {
-        getRow(coordinate.row).clearColumn(coordinate.column);
-    }
-
-    public void clearCoordinate(int row, int column) {
-        clearCoordinate(new Coordinate(row, column));
+        clearCoordinate(coordinate.row, coordinate.column);
     }
 
     public CastlingRights getWhiteCastling() {
@@ -137,7 +147,7 @@ public class Board {
     }
 
     public boolean locationIsEmpty(int row, int column) {
-        return this.getRow(row).getColumn(column) == null;
+        return getCoordinate(row, column) == null;
     }
 
     public boolean isEmpty(Piece piece) {
