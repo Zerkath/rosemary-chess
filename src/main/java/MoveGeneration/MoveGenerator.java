@@ -24,7 +24,8 @@ public class MoveGenerator {
                 int dest = board.getCoordinate(row, column);
                 if(dest == 0) continue;
                 boolean whitesTurn = turn == PlayerTurn.WHITE;
-                if(whitesTurn && Pieces.isWhite(dest)) { //white turn and white or black turn and black
+                boolean destIsWhite = Pieces.isWhite(dest);
+                if(whitesTurn == destIsWhite) { //white turn and white or black turn and black
                     moves.addAll(getPieceMoves(new Coordinate(row, column), boardState));
                 }
             }

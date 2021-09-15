@@ -50,7 +50,7 @@ public class Bishop implements PieceGenerator {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite != Pieces.isWhite(0)) moves.add(origin, destination);
+            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
             break;
         }
 

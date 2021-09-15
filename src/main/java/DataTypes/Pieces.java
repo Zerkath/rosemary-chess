@@ -1,19 +1,19 @@
 package DataTypes;
 
 public class Pieces {
-    static public final int EMPTY   = 0x00000;
-    static public final int PAWN    = 0x00001;
-    static public final int KNIGHT  = 0x00010;
-    static public final int BISHOP  = 0x00011;
-    static public final int ROOK    = 0x00100;
-    static public final int QUEEN   = 0x00101;
-    static public final int KING    = 0x00110;
-    static public final int WHITE   = 0x01000;
-    static public final int BLACK   = 0x10000;
+    static public final int EMPTY   = 0b00000;
+    static public final int PAWN    = 0b00001;
+    static public final int KNIGHT  = 0b00010;
+    static public final int BISHOP  = 0b00011;
+    static public final int ROOK    = 0b00100;
+    static public final int QUEEN   = 0b00101;
+    static public final int KING    = 0b00110;
+    static public final int WHITE   = 0b10000;
+    static public final int BLACK   = 0b01000;
 
-    static public final int m_type  = 0x00111;
-    static public final int m_white = 0x01000;
-    static public final int m_black = 0x10000;
+    static public final int m_type  = 0b00111;
+    static public final int m_white = 0b10000;
+    static public final int m_black = 0b01000;
     static public final int m_colour= m_white | m_black;
 
     static public char getChar(int piece) {
@@ -27,7 +27,7 @@ public class Pieces {
             case QUEEN: result = 'q'; break;
             case KING: result = 'k'; break;
         }
-        if(isWhite(piece)) result -= 32;
+        result = isWhite(piece) ? Character.toUpperCase(result) : result;
         return result;
     }
 
