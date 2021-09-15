@@ -18,16 +18,18 @@ public class King implements PieceGenerator {
 
         Moves moves = new Moves();
 
-        Piece orig = board.getCoordinate(origin);
-        boolean isWhite = orig.isWhite();
+        int originalPiece = board.getCoordinate(origin);
+        boolean isWhite = Pieces.isWhite(originalPiece);
         int row = origin.row;
         int col = origin.column;
 
+
+        //generating moves around king //todo update
         for (int row_i = row-1; row_i <= row+1; row_i++) {
             for (int column_i = col-1; column_i <= col+1; column_i++) {
                 if(row_i != row || column_i != col) {
                     Coordinate destination = new Coordinate(row_i, column_i);
-                    if(board.isOpposingColourOrEmpty(destination, orig)) moves.add(new Move(origin, destination));
+                    if(board.isOpposingColourOrEmpty(destination, originalPiece)) moves.add(new Move(origin, destination));
                 }
             }
         }
@@ -41,8 +43,10 @@ public class King implements PieceGenerator {
                     !inCheckVertically(isWhite, board) &&
                     !inCheckDiagonally(isWhite, board)
             )  { //only check if the king is in the original position and hasn't moved
-                Piece [] backRow = board.getRow(row);
-                Piece piece = new Piece(isWhite ? 'R' : 'r');
+                int [] backRow = board.getRow(row);
+                int piece = isWhite ?
+                        Pieces.ROOK | Pieces.WHITE :
+                        Pieces.ROOK | Pieces.BLACK;
 
                 boolean qSide = queenSidePossible(backRow, piece, isWhite, board, castlingKnightData);
 
@@ -81,21 +85,21 @@ public class King implements PieceGenerator {
         return moves;
     }
 
-    private static boolean queenSidePossible(Piece [] backRow, Piece piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
-        if(!piece.equals(backRow[0])) return false;
-        if(backRow[1] != null) return false;
-        if(backRow[2] != null) return false;
-        if(backRow[3] != null) return false;
+    private static boolean queenSidePossible(int [] backRow, int piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
+        if(piece != backRow[0]) return false;
+        if(backRow[1] != 0) return false;
+        if(backRow[2] != 0) return false;
+        if(backRow[3] != 0) return false;
         if(backRankThreat(isWhite, board)) return false;
         if(leftCastlingStoppedByKnight(castlingKnightData)) return false;
         if(leftCastlingStoppedVertically(isWhite, board)) return false;
         return !leftCastlingStoppedDiagonally(isWhite, board);
     }
 
-    private static boolean kingSidePossible(Piece [] backRow, Piece piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
-        if(!piece.equals(backRow[7])) return false;
-        if(backRow[6] != null) return false;
-        if(backRow[5] != null) return false;
+    private static boolean kingSidePossible(int [] backRow, int piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
+        if(piece != backRow[7]) return false;
+        if(backRow[6] != 0) return false;
+        if(backRow[5] != 0) return false;
         if(backRankThreat(isWhite, board)) return false;
         if(rightCastlingStoppedByKnight(castlingKnightData)) return false;
         if(rightCastlingStoppedVertically(isWhite, board)) return false;
@@ -104,82 +108,85 @@ public class King implements PieceGenerator {
 
 
     private static class CastlingKnightData {
-        Piece [] sixth, seventh;
-        Piece opponentKnight;
-        Piece opponentPawn;
+        int [] sixth, seventh;
+        int opponentKnight;
+        int opponentPawn;
         public CastlingKnightData(boolean isWhite, Board board) {
+            int offset;
             if(isWhite) {
-                opponentKnight = new Piece('n');
-                opponentPawn = new Piece('p');
+                offset = Pieces.BLACK;
                 sixth = board.getRow(5);
                 seventh = board.getRow(6);
             } else {
-                opponentKnight = new Piece('N');
-                opponentPawn = new Piece('P');
+                offset = Pieces.WHITE;
                 sixth = board.getRow(2);
                 seventh = board.getRow(1);
             }
+            opponentPawn = Pieces.PAWN | offset;
+            opponentKnight = Pieces.KNIGHT | offset;
         }
     }
 
     private static boolean castlingStoppedByKnight(CastlingKnightData data) {
         return(
-                data.opponentKnight.equals(data.seventh[2]) ||
-                data.opponentKnight.equals(data.seventh[6]) ||
-                data.opponentKnight.equals(data.sixth[3]) ||
-                data.opponentKnight.equals(data.sixth[5]) ||
-                data.opponentKnight.equals(data.sixth[4]) ||
-                data.opponentKnight.equals(data.seventh[4]) ||
-                data.opponentPawn.equals(data.seventh[3]) ||
-                data.opponentPawn.equals(data.seventh[4]) ||
-                data.opponentPawn.equals(data.seventh[5])
+                data.opponentKnight == data.seventh[2]||
+                data.opponentKnight == data.seventh[6] ||
+                data.opponentKnight == data.sixth[3] ||
+                data.opponentKnight == data.sixth[5] ||
+                data.opponentKnight == data.sixth[4] ||
+                data.opponentKnight == data.seventh[4] ||
+                data.opponentPawn == data.seventh[3] ||
+                data.opponentPawn == data.seventh[4] ||
+                data.opponentPawn == data.seventh[5]
         );
     }
 
     private static boolean leftCastlingStoppedByKnight(CastlingKnightData data) {
         return (
-                data.opponentKnight.equals(data.seventh[0])) ||
-                data.opponentKnight.equals(data.seventh[1]) ||
-                data.opponentKnight.equals(data.sixth[1]) ||
-                data.opponentKnight.equals(data.sixth[2]) ||
-                data.opponentKnight.equals(data.seventh[5]) ||
-                data.opponentPawn.equals(data.seventh[1]) ||
-                data.opponentPawn.equals(data.seventh[2]
+                data.opponentKnight == data.seventh[0] ||
+                data.opponentKnight == data.seventh[1] ||
+                data.opponentKnight == data.sixth[1] ||
+                data.opponentKnight == data.sixth[2] ||
+                data.opponentKnight == data.seventh[5] ||
+                data.opponentPawn == data.seventh[1] ||
+                data.opponentPawn == data.seventh[2]
         );
     }
 
     private static boolean rightCastlingStoppedByKnight(CastlingKnightData data) {
         return(
-                data.opponentKnight.equals(data.seventh[3]) ||
-                data.opponentKnight.equals(data.seventh[7]) ||
-                data.opponentKnight.equals(data.sixth[6]) ||
-                data.opponentKnight.equals(data.sixth[7]) ||
-                data.opponentPawn.equals(data.seventh[6])
+                data.opponentKnight == data.seventh[3] ||
+                data.opponentKnight == data.seventh[7] ||
+                data.opponentKnight == data.sixth[6] ||
+                data.opponentKnight == data.sixth[7] ||
+                data.opponentPawn == data.seventh[6]
         );
     }
 
     private static boolean backRankThreat(boolean isWhite, Board board) {
         int backRank;
-        Piece opponentRook, opponentQueen;
+        int offset;
+        int opponentRook, opponentQueen;
 
         if(isWhite) {
-            opponentRook = new Piece('r');
-            opponentQueen = new Piece('q');
+            offset = Pieces.BLACK;
             backRank = 7;
         } else {
-            opponentRook = new Piece('R');
-            opponentQueen = new Piece('Q');
+            offset = Pieces.WHITE;
             backRank = 0;
         }
+        opponentRook = Pieces.ROOK | offset;
+        opponentQueen = Pieces.QUEEN | offset;
+
         for (int i = 3; i >= 0; i--) {
-            Piece piece = board.getCoordinate(new Coordinate(backRank, i));
-            if (opponentQueen.equals(piece) || opponentRook.equals(piece)) return true;
-            if(piece != null) break;
+            int piece = board.getCoordinate(new Coordinate(backRank, i));
+            if (opponentQueen == piece || opponentRook == piece) return true;
+            if(piece != 0) break;
         }
         for (int i = 5; i <= 7; i++) {
-            Piece piece = board.getCoordinate(new Coordinate(backRank, i));
-            if (opponentQueen.equals(piece) || opponentRook.equals(piece)) return true;
-            if(piece != null) break;
+            int piece = board.getCoordinate(new Coordinate(backRank, i));
+            if (opponentQueen == piece || opponentRook == piece) return true;
+            if(piece != 0) break;
         }
         return false;
     }
@@ -198,28 +205,29 @@ public class King implements PieceGenerator {
 
     private static boolean isThreatenedVertically(boolean isWhite, Board board, int startIndex, int endIndex) {
         int backRank, iteration;
-        Piece opponentRook, opponentQueen;
+        int opponentRook, opponentQueen;
+        int offset;
         int oppBackRank;
 
         if(isWhite) {
-            opponentRook = new Piece('r');
-            opponentQueen = new Piece('q');
+            offset = Pieces.BLACK;
             backRank = 6;
             iteration = -1;
             oppBackRank = -1;
         } else {
-            opponentRook = new Piece('R');
-            opponentQueen = new Piece('Q');
+            offset = Pieces.WHITE;
             backRank = 1;
             iteration = 1;
             oppBackRank = 8;
         }
+        opponentRook = Pieces.ROOK | offset;
+        opponentQueen = Pieces.QUEEN | offset;
 
         for (int j = startIndex; j <= endIndex; j++) {
             for(int i = backRank; i != oppBackRank; i += iteration) {
-                Piece piece = board.getCoordinate(new Coordinate(i, j));
-                if(opponentRook.equals(piece) || opponentQueen.equals(piece)) return true;
-                if(piece != null) break;
+                int piece = board.getCoordinate(new Coordinate(i, j));
+                if(opponentRook == piece || opponentQueen == piece) return true;
+                if(piece != 0) break;
             }
         }
 
@@ -241,28 +249,30 @@ public class King implements PieceGenerator {
     private static boolean isThreatenedDiagonally(boolean isWhite, Board board, int startIndex, int endIndex) {
 
         int horIndex, verStart, verIteration, verIndex;
-        Piece opponentBishop, opponentQueen;
+        int offset;
+        int opponentBishop, opponentQueen;
 
         if(isWhite) {
+            offset = Pieces.BLACK;
             verIteration = -1;
             verStart = 6;
-            opponentBishop = new Piece('b');
-            opponentQueen = new Piece('q');
         } else {
+            offset = Pieces.WHITE;
             verIteration = 1;
             verStart = 1;
-            opponentBishop = new Piece('B');
-            opponentQueen = new Piece('Q');
         }
+
+        opponentBishop = Pieces.BISHOP | offset;
+        opponentQueen = Pieces.QUEEN | offset;
 
         for(int i = startIndex; i <= endIndex; i++) {
             horIndex = i - 1;
             verIndex = verStart;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
-                Piece piece = board.getCoordinate(verIndex, horIndex);
+                int piece = board.getCoordinate(verIndex, horIndex);
 
-                if(opponentBishop.equals(piece) || opponentQueen.equals(piece)) return true;
-                if(piece != null) break;
+                if(opponentBishop == piece || opponentQueen == piece) return true;
+                if(piece != 0) break;
 
                 horIndex--;
                 verIndex += verIteration;
@@ -270,10 +280,10 @@ public class King implements PieceGenerator {
             horIndex = i + 1;
             verIndex = verStart;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
-                Piece piece = board.getCoordinate(verIndex, horIndex);
+                int piece = board.getCoordinate(verIndex, horIndex);
 
-                if(opponentBishop.equals(piece) || opponentQueen.equals(piece)) return true;
-                if(piece != null) break;
+                if(opponentBishop == piece || opponentQueen == piece) return true;
+                if(piece != 0) break;
 
                 horIndex++;
                 verIndex += verIteration;
@@ -294,12 +304,12 @@ public class King implements PieceGenerator {
         Moves moves;
         Coordinate origin = white ? board.getWhiteKing() : board.getBlackKing();
         if(origin == null) return true;
-        Colour colour = white ? Colour.BLACK : Colour.WHITE;
-        Piece opponentRook = new Piece(colour, PieceType.ROOK);
-        Piece opponentQueen = new Piece(colour, PieceType.QUEEN);
-        Piece opponentBishop = new Piece(colour, PieceType.BISHOP);
-        Piece opponentKnight = new Piece(colour, PieceType.KNIGHT);
-        Piece opponentPawn = new Piece(colour, PieceType.PAWN);
+        int colour = white ? Pieces.BLACK : Pieces.WHITE;
+        int opponentRook = Pieces.ROOK | colour;
+        int opponentQueen = Pieces.QUEEN | colour;
+        int opponentBishop = Pieces.BISHOP | colour;
+        int opponentKnight = Pieces.KNIGHT | colour;
+        int opponentPawn = Pieces.PAWN | colour;
 
         if (
                 pieceHasCheck(rook, boardState, opponentRook, opponentQueen, origin) ||
@@ -308,9 +318,9 @@ public class King implements PieceGenerator {
 
         moves = knight.getMoves(origin, boardState);
         for (Move move: moves) {
-            Piece piece = board.getCoordinate(move.destination);
-            if(piece == null) continue;
-            if(opponentKnight.equals(piece)) {
+            int piece = board.getCoordinate(move.destination);
+            if(piece == 0) continue;
+            if(opponentKnight == piece) {
                 return false;
             }
         }
@@ -319,26 +329,26 @@ public class King implements PieceGenerator {
             int col = origin.column;
             int row = origin.row;
             if(white) {
-                if(col != 7 && row > 0 && opponentPawn.equals(board.getCoordinate(row - 1, col + 1))) {
+                if(col != 7 && row > 0 && opponentPawn == board.getCoordinate(row - 1, col + 1)) {
                     return false;
                 }
-                return col == 0 || row <= 0 || !opponentPawn.equals(board.getCoordinate(row - 1, col - 1));
+                return col == 0 || row <= 0 || opponentPawn != board.getCoordinate(row - 1, col - 1);
             } else {
-                if(col != 7 && row < 7 && opponentPawn.equals(board.getCoordinate(row + 1, col + 1))) {
+                if(col != 7 && row < 7 && opponentPawn == board.getCoordinate(row + 1, col + 1)) {
                     return false;
                 }
-                return col == 0 || row >= 7 || !opponentPawn.equals(board.getCoordinate(row + 1, col - 1));
+                return col == 0 || row >= 7 || opponentPawn != board.getCoordinate(row + 1, col - 1);
             }
         }
         return true;
     }
 
-    private boolean pieceHasCheck(PieceGenerator pieceGenerator, BoardState boardState, Piece checkingPiece, Piece opponentQueen, Coordinate origin) {
+    private boolean pieceHasCheck(PieceGenerator pieceGenerator, BoardState boardState, int checkingPiece, int opponentQueen, Coordinate origin) {
         Moves moves = pieceGenerator.getMoves(origin, boardState);
         for (Move move: moves) {
-            Piece piece = boardState.board.getCoordinate(move.destination);
-            if(piece == null) continue;
-            if(checkingPiece.equals(piece) || opponentQueen.equals(piece)) {
+            int piece = boardState.board.getCoordinate(move.destination);
+            if(piece == 0) continue;
+            if(checkingPiece == piece || opponentQueen == piece) {
                 return true;
             }
         }
