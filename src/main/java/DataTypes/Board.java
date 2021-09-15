@@ -111,9 +111,11 @@ public class Board {
         if(destination.column < 0 || destination.column > 7) return false;
 
         boolean isWhite = Pieces.isWhite(originalPiece);
-        int opponent = getCoordinate(destination);
+        int dest = getCoordinate(destination);
+        if(dest == Pieces.EMPTY) return true;
+        boolean opponent = Pieces.isWhite(dest);
 
-        return isWhite != Pieces.isWhite(opponent);
+        return isWhite != opponent;
     }
 
     public boolean pawnCapturePossible(Coordinate coordinate, int origin) {
