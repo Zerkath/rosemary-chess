@@ -11,7 +11,7 @@ public class Knight implements PieceGenerator {
 
         Moves moves = new Moves();
 
-        Piece orig = board.getCoordinate(origin);
+        int originalPiece = board.getCoordinate(origin);
         int row = origin.row;
         int col = origin.column;
 
@@ -19,16 +19,16 @@ public class Knight implements PieceGenerator {
         int [] rows = new int []{row-2, row+2};
         for (int d_column: columns) {
             Coordinate destination = new Coordinate(row + 1, d_column);
-            if(board.isOpposingColourOrEmpty(destination, orig)) moves.add(new Move(origin, destination));
+            if(board.isOpposingColourOrEmpty(destination, originalPiece)) moves.add(new Move(origin, destination));
             destination = new Coordinate(row - 1, d_column);
-            if(board.isOpposingColourOrEmpty(destination, orig)) moves.add(new Move(origin, destination));
+            if(board.isOpposingColourOrEmpty(destination, originalPiece)) moves.add(new Move(origin, destination));
         }
 
         for (int d_row: rows) {
             Coordinate destination = new Coordinate(d_row, col + 1);
-            if(board.isOpposingColourOrEmpty(destination, orig)) moves.add(new Move(origin, destination));
+            if(board.isOpposingColourOrEmpty(destination, originalPiece)) moves.add(new Move(origin, destination));
             destination = new Coordinate(d_row, col - 1);
-            if(board.isOpposingColourOrEmpty(destination, orig)) moves.add(new Move(origin, destination));
+            if(board.isOpposingColourOrEmpty(destination, originalPiece)) moves.add(new Move(origin, destination));
         }
 
         return moves;
