@@ -1,7 +1,7 @@
 import BoardRepresentation.BoardState;
 import DataTypes.CastlingRights;
 
-import DataTypes.Piece;
+import DataTypes.Pieces;
 import org.junit.jupiter.api.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -56,13 +56,13 @@ public class FenParseTest {
 
         BoardState state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         state.printBoard();
-        Assertions.assertEquals(8, state.pieceMap.get(new Piece('p')));
-        Assertions.assertEquals(8, state.pieceMap.get(new Piece('P')));
-        Assertions.assertEquals(2, state.pieceMap.get(new Piece('r')));
-        Assertions.assertEquals(2, state.pieceMap.get(new Piece('R')));
-        Assertions.assertEquals(1, state.pieceMap.get(new Piece('q')));
-        Assertions.assertEquals(1, state.pieceMap.get(new Piece('Q')));
-        Assertions.assertEquals(1, state.pieceMap.get(new Piece('k')));
+        Assertions.assertEquals(8, state.pieceMap.get(Pieces.getNum('p')));
+        Assertions.assertEquals(8, state.pieceMap.get(Pieces.getNum('P')));
+        Assertions.assertEquals(2, state.pieceMap.get(Pieces.getNum('r')));
+        Assertions.assertEquals(2, state.pieceMap.get(Pieces.getNum('R')));
+        Assertions.assertEquals(1, state.pieceMap.get(Pieces.getNum('q')));
+        Assertions.assertEquals(1, state.pieceMap.get(Pieces.getNum('Q')));
+        Assertions.assertEquals(1, state.pieceMap.get(Pieces.getNum('k')));
     }
 //    @Test
 //    void noBlackPieces() {

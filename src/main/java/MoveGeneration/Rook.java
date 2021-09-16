@@ -10,8 +10,8 @@ public class Rook implements PieceGenerator {
         Board board = boardState.board;
 
         Moves moves = new Moves();
-        Piece orig = board.getCoordinate(origin);
-        boolean isWhite = orig.isWhite();
+        int originalPiece = board.getCoordinate(origin);
+        boolean isWhite = Pieces.isWhite(originalPiece);
         int row = origin.row;
         int col = origin.column;
 
@@ -19,13 +19,13 @@ public class Rook implements PieceGenerator {
         for(int i = 1; col - i >= 0; i++) { //Runs as long as destination is within board limits
             Coordinate destination = new Coordinate(row, col - i);
 
-            Piece target = board.getCoordinate(destination);
+            int target = board.getCoordinate(destination);
 
-            if(target == null) {
+            if(target == 0) {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite != target.isWhite()) moves.add(origin, destination);
+            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
             break;
         }
 
@@ -34,13 +34,13 @@ public class Rook implements PieceGenerator {
         for(int i = 1; row - i >= 0; i++) {
             Coordinate destination = new Coordinate(row - i, col);
 
-            Piece target = board.getCoordinate(destination);
+            int target = board.getCoordinate(destination);
 
-            if(target == null) {
+            if(target == 0) {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite != target.isWhite()) moves.add(origin, destination);
+            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
             break;
         }
 
@@ -48,13 +48,13 @@ public class Rook implements PieceGenerator {
         for(int i = 1; col + i <= 7; i++) {
             Coordinate destination = new Coordinate(row, col + i);
 
-            Piece target = board.getCoordinate(destination);
+            int target = board.getCoordinate(destination);
 
-            if(target == null) {
+            if(target == 0) {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite != target.isWhite()) moves.add(origin, destination);
+            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
             break;
         }
 
@@ -62,13 +62,13 @@ public class Rook implements PieceGenerator {
         for(int i = 1; row + i <= 7; i++) {
             Coordinate destination = new Coordinate(row + i, col);
 
-            Piece target = board.getCoordinate(destination);
+            int target = board.getCoordinate(destination);
 
-            if(target == null) {
+            if(target == 0) {
                 moves.add(origin, destination);
                 continue;
             }
-            if(isWhite != target.isWhite()) moves.add(origin, destination);
+            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
             break;
         }
 

@@ -3,7 +3,7 @@ package Evaluation;
 import BoardRepresentation.BoardState;
 import DataTypes.Move;
 import DataTypes.Moves;
-import DataTypes.Piece;
+import DataTypes.Pieces;
 import DataTypes.PlayerTurn;
 import MoveGeneration.MoveGenerator;
 
@@ -139,9 +139,9 @@ public class EvaluationThread implements Runnable {
         state.turn = state.turn == PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
         Moves opponent = moveGenerator.getLegalMoves(state);
         for (Move move : opponent) {
-            Piece piece = state.board.getCoordinate(move.destination);
-            if(piece == null) continue;
-            if ((isWhite && piece.equals(new Piece('K'))) || (!isWhite && piece.equals(new Piece('k')))) {
+            int piece = state.board.getCoordinate(move.destination);
+            if(piece == 0) continue;
+            if ((isWhite && piece == (Pieces.KING | Pieces.WHITE)) || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {
                 state.turn = old;
                 return true;
             }

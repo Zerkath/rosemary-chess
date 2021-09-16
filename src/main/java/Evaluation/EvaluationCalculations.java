@@ -13,8 +13,7 @@ public class EvaluationCalculations {
     public int calculateMaterial(BoardState state) {
         this.state = state;
         int centralControl = piecesInMiddle();
-        int development = development();
-        return centralControl + development + materialValue();
+        return centralControl + materialValue();
     }
 
     private int piecesInMiddle() {
@@ -22,13 +21,9 @@ public class EvaluationCalculations {
         int value = 0;
         for (int row = 2; row < 6; row++) {
             for (int column = 2; column < 6; column++) {
-                Piece piece = board.getCoordinate(row, column);
-                if (piece != null) {
-                    if (piece.getColour() == Colour.BLACK) {
-                        value -= 20;
-                    } else {
-                        value += 20;
-                    }
+                int piece = board.getCoordinate(row, column);
+                if (piece != 0) {
+                    value += Pieces.isWhite(piece) ? + 20: -20;
                 }
             }
         }
@@ -68,50 +63,50 @@ public class EvaluationCalculations {
 //        return value;
 //    }
 
-    private int development() {
-        Board board = state.board;
-        int value = 0;
-        Piece knight = new Piece('N');
-        Piece bishop = new Piece('B');
-        int whiteRow = 7;
-        int blackRow = 0;
-        //developing knight is good for black etc
-        value += getDevelopmentValue(board, knight, bishop, whiteRow);
+//    private int development() {
+//        Board board = state.board;
+//        int value = 0;
+//        int knight = new Piece('N');
+//        int bishop = new Piece('B');
+//        int whiteRow = 7;
+//        int blackRow = 0;
+//        //developing knight is good for black etc
+//        value += getDevelopmentValue(board, knight, bishop, whiteRow);
+//
+//        knight.setColour(Colour.BLACK);
+//        bishop.setColour(Colour.BLACK);
+//
+//        value += -getDevelopmentValue(board, knight, bishop, blackRow);
+//
+//        return value;
+//    }
+//
+//    private int getDevelopmentValue(Board board, Piece knight, Piece bishop, int row) {
+//        int value = 0;
+//        if(isPieceAtSquare(row, 1, knight, board)) value += 15;
+//        if(isPieceAtSquare(row, 2, bishop, board)) value += 15;
+//        if(isPieceAtSquare(row, 5, bishop, board)) value += 15;
+//        if(isPieceAtSquare(row, 6, knight, board)) value += 15;
+//        return value;
+//    }
 
-        knight.setColour(Colour.BLACK);
-        bishop.setColour(Colour.BLACK);
-
-        value += -getDevelopmentValue(board, knight, bishop, blackRow);
-
-        return value;
+    private boolean isPieceAtSquare(int row, int column, int piece, Board board) {
+        int comparison = board.getCoordinate(row, column);
+        if(comparison == 0) return false;
+        return comparison == piece;
     }
 
-    private int getDevelopmentValue(Board board, Piece knight, Piece bishop, int row) {
-        int value = 0;
-        if(isPieceAtSquare(row, 1, knight, board)) value += 15;
-        if(isPieceAtSquare(row, 2, bishop, board)) value += 15;
-        if(isPieceAtSquare(row, 5, bishop, board)) value += 15;
-        if(isPieceAtSquare(row, 6, knight, board)) value += 15;
-        return value;
-    }
-
-    private boolean isPieceAtSquare(int row, int column, Piece piece, Board board) {
-        Piece comparison = board.getCoordinate(row, column);
-        if(comparison == null) return false;
-        return comparison.equals(piece);
-    }
-
-    public int pieceToValue(Piece piece) {
-        if(piece == null) return 0;
+    public int pieceToValue(int piece) {
+        if(piece == 0) return 0;
         int result = 0;
-        switch (piece.getType()) {
-            case PAWN: result = values.ePawn; break;
-            case ROOK: result = values.eRook; break;
-            case BISHOP: result = values.eBishop; break;
-            case QUEEN: result = values.eQueen; break;
-            case KNIGHT: result = values.eKnight; break;
+        switch (Pieces.getType(piece)) {
+            case Pieces.PAWN: result = values.ePawn; break;
+            case Pieces.ROOK: result = values.eRook; break;
+            case Pieces.BISHOP: result = values.eBishop; break;
+            case Pieces.QUEEN: result = values.eQueen; break;
+            case Pieces.KNIGHT: result = values.eKnight; break;
         }
-        if(!piece.isWhite()) {
+        if(!Pieces.isWhite(piece)) {
             result = -result; // negate value for black pieces
         }
         return result;
@@ -119,7 +114,7 @@ public class EvaluationCalculations {
 
     private int materialValue() {
         int result = 0;
-        for (Map.Entry<Piece, Integer> entry: state.pieceMap.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry: state.pieceMap.entrySet()) {
             result += pieceToValue(entry.getKey()) * entry.getValue();
         }
         return result;

@@ -60,7 +60,7 @@ public class UCI_Test {
     }
 
     @Test
-    void blackQueensideRookCaptured() {
+    void blackQueenSideRookCaptured() {
         String pgn = "position startpos moves g2g3 b7b6 f1g2 d7d6 g2a8";//bishop capture
         uci.handleMessage(pgn);
         Assertions.assertEquals("Bnbqkbnr/p1p1pppp/1p1p4/8/8/6P1/PPPPPP1P/RNBQK1NR b KQk - 0 3", uci.getFen());
