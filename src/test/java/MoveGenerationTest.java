@@ -172,10 +172,18 @@ public class MoveGenerationTest {
         Assertions.assertEquals(197281, depth[3]);
         Assertions.assertEquals(4865609, depth[4]);
 //        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
-        //took 206s~ after changes
         //took 155s~ after 5/9/2021
         //took 136s~ after 13/9/2021, wsl2 99s??
+        //took 73s~ after 15/9/2021
     }
+
+    @Test
+    void movesToDepth6() {
+        long start = System.currentTimeMillis();
+        Assertions.assertEquals(119060324, uci.runPerft(6, 6, true, getTestBoard()));
+        System.out.println("Depth: 6 Nodes: 119060324 Time: " + (System.currentTimeMillis()-start) + "ms");
+    }
+
 
     @Test
     @Order(101)

@@ -13,13 +13,13 @@ public class BoardState {
     public Board board = new Board();
     public BoardState previous;
     public Move previousMove;
-    public Piece capturedPiece;
+    public int capturedPiece;
     public PlayerTurn turn;
 
     public int turnNumber = 1;
     public int halfMove = 0;
 
-    public Map<Piece, Integer> pieceMap = new HashMap<>();
+    public Map<Integer, Integer> pieceMap = new HashMap<>();
 
     public Coordinate enPassant;
     public BoardState() {}
@@ -84,7 +84,7 @@ public class BoardState {
                     column++;
                 }
             } else {
-                Piece piece = new Piece(ch);
+                int piece = Pieces.getNum(ch);
                 board.replaceCoordinate(new Coordinate(row, column), piece);
                 incrementPiece(piece);
                 column++;
@@ -98,11 +98,12 @@ public class BoardState {
         }
     }
 
-    private void addEnPassantMove(boolean white, Piece piece, int dCol, int dRow) {
-        if(white && !piece.isWhite()) {
+    private void addEnPassantMove(boolean white, int piece, int dCol, int dRow) {
+        boolean pieceIsWhite = Pieces.isWhite(piece);
+        if(white && !pieceIsWhite) {
             enPassant = new Coordinate(dRow+1, dCol);
         }
-        if(!white && piece.isWhite()) {
+        if(!white && pieceIsWhite) {
             enPassant = new Coordinate(dRow-1, dCol);
         }
     }
@@ -153,25 +154,25 @@ public class BoardState {
         previous = new BoardState(this);
         capturedPiece = board.getCoordinate(move.destination);
         previousMove = move;
-        if(capturedPiece != null) { // decrease mapped value
+        if(capturedPiece != 0) { // decrease mapped value
             decrementPiece(capturedPiece);
         }
 
         int dRow = move.destination.row;
         int dCol = move.destination.column;
-        Piece selected = board.getCoordinate(move.origin);
-        boolean isBeingPromoted = move.promotion != null;
-        boolean isWhite = selected.isWhite();
+        int selected = board.getCoordinate(move.origin);
+        boolean isBeingPromoted = move.promotion != 0;
+        boolean isWhite = Pieces.isWhite(selected);
 
         checkForCastlingRights(move);
 
-        if(selected.getType() == PieceType.PAWN || board.getCoordinate(move.destination) != null) {
+        if(Pieces.getType(selected) == Pieces.PAWN || board.getCoordinate(move.destination) != 0) {
             halfMove = 0;
         } else {
             halfMove++;
         }
 
-        if(selected.getType() == PieceType.PAWN &&
+        if(Pieces.getType(selected) == Pieces.PAWN &&
                 enPassant != null &&
                 enPassant.row == move.destination.row &&
                 enPassant.column == move.destination.column
@@ -182,10 +183,10 @@ public class BoardState {
 
         enPassant = null;
         //add En passant
-        if(selected.getType() == PieceType.PAWN &&
+        if(Pieces.getType(selected) == Pieces.PAWN &&
                 ((move.origin.row == 6 && move.destination.row == 4) || (move.origin.row == 1 && move.destination.row == 3))) {
-            Piece right = null;
-            Piece left = null;
+            int right = 0;
+            int left = 0;
             if(dCol == 0) right = board.getCoordinate(dRow, dCol+1);
             if(dCol == 7) left  = board.getCoordinate(dRow, dCol-1);
             if(dCol > 0 && dCol < 7) {
@@ -193,23 +194,23 @@ public class BoardState {
                 left  = board.getCoordinate(dRow, dCol-1);
             }
 
-            if(right != null && right.getType() == PieceType.PAWN) {
+            if(Pieces.getType(right) == Pieces.PAWN) {
                 addEnPassantMove(isWhite, right, dCol, dRow);
             }
 
-            if(left != null && left.getType() == PieceType.PAWN) {
+            if(Pieces.getType(left) == Pieces.PAWN) {
                 addEnPassantMove(isWhite, left, dCol, dRow);
             }
         }
 
         //Castling
-        if(selected.getType() == PieceType.KING &&
+        if(Pieces.getType(selected) == Pieces.KING &&
                 move.origin.column == 4 &&
                 ((move.origin.row == 0 && dRow == 0)  || move.origin.row == 7 && dRow == 7) && (dCol == 2 || dCol == 6)) {
 
             board.setCastling(CastlingRights.NONE, isWhite);
 
-            Piece rook;
+            int rook;
             Coordinate destination;
             Coordinate origin;
             if (dCol == 2) {
@@ -224,13 +225,13 @@ public class BoardState {
             board.clearCoordinate(origin);
         }
 
-        if(selected.getType() == PieceType.KING) {
+        if(Pieces.getType(selected) == Pieces.KING) {
             board.setCastling(CastlingRights.NONE, isWhite);
         }
 
         board.clearCoordinate(move.origin);
 
-        Piece piece = selected;
+        int piece = selected;
         if(isBeingPromoted) {
             decrementPiece(piece);
             piece = move.promotion;
@@ -246,8 +247,8 @@ public class BoardState {
         }
     }
 
-    private void decrementPiece(Piece piece) {
-        if(piece == null) return;
+    private void decrementPiece(int piece) {
+        if(piece == 0) return;
         if(pieceMap.containsKey(piece)) {
             int value = pieceMap.get(piece);
             if(value <= 1) pieceMap.remove(piece);
@@ -255,8 +256,8 @@ public class BoardState {
         }
     }
 
-    private void incrementPiece(Piece piece) {
-        if(piece == null) return;
+    private void incrementPiece(int piece) {
+        if(piece == 0) return;
         if(pieceMap.containsKey(piece)) {
             pieceMap.put(piece, pieceMap.get(piece)+1);
         } else pieceMap.put(piece, 1);
@@ -273,14 +274,14 @@ public class BoardState {
         for (int row = 0; row < 8; row++) {
             int empty = 0;
             for (int column = 0; column < 8; column++) {
-                Piece piece = board.getCoordinate(row, column);
-                if(piece == null) {
+                int piece = board.getCoordinate(row, column);
+                if(piece == 0) {
                     empty++;
                 } else if(empty != 0) {
                     strBuilder.append(empty);
                     empty = 0;
-                    strBuilder.append(piece.toChar());
-                } else strBuilder.append(piece.toChar());
+                    strBuilder.append(Pieces.getChar(piece));
+                } else strBuilder.append(Pieces.getChar(piece));
             }
             if(empty != 0) strBuilder.append(empty);
             if(row != 7) strBuilder.append("/");
@@ -360,7 +361,7 @@ public class BoardState {
 
     public void printBoard(BoardState board) {
         System.out.println(getFenString(board));
-        System.out.println(board.toString());
+        System.out.println(board);
     }
 
     public void printBoard() {

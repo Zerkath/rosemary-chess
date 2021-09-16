@@ -1,6 +1,7 @@
 
 import DataTypes.Coordinate;
 import DataTypes.Move;
+import DataTypes.Pieces;
 import org.junit.jupiter.api.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UtilsTest {
@@ -25,7 +26,7 @@ public class UtilsTest {
 
     @Test
     void promotionCommand() {
-        Move expected = new Move(new Move(new Coordinate(1, 7), new Coordinate(0, 7)), 'N');
+        Move expected = new Move(new Move(new Coordinate(1, 7), new Coordinate(0, 7)), (Pieces.KNIGHT | Pieces.WHITE));
         Assertions.assertEquals(expected.promotion, new Move("h7h8N").promotion);
     }
 }
