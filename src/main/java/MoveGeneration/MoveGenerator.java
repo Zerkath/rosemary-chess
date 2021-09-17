@@ -3,6 +3,8 @@ package MoveGeneration;
 import BoardRepresentation.BoardState;
 import DataTypes.*;
 
+import java.util.Iterator;
+
 public class MoveGenerator {
 
     Rook rook = new Rook();
@@ -26,7 +28,7 @@ public class MoveGenerator {
                 boolean whitesTurn = turn == PlayerTurn.WHITE;
                 boolean destIsWhite = Pieces.isWhite(dest);
                 if(whitesTurn == destIsWhite) { //white turn and white or black turn and black
-                    moves.addAll(getPieceMoves(new Coordinate(row, column), boardState));
+                    getPieceMoves(new Coordinate(row, column), boardState, moves);
                 }
             }
         }
@@ -34,28 +36,28 @@ public class MoveGenerator {
     }
 
     public Moves getLegalMoves(BoardState boardState) {
-        Moves moves = new Moves();
         Moves pseudoLegal = getAllMoves(boardState);
-
-        for (Move pLegalMove: pseudoLegal) {
-            boardState.makeMove(pLegalMove);
-            if(king.kingNotInCheck(boardState)) moves.add(pLegalMove);
+        Iterator<Move> moveIterator = pseudoLegal.iterator();
+        Move move;
+        while(moveIterator.hasNext()) {
+            move = moveIterator.next();
+            boardState.makeMove(move);
+            if(!king.kingNotInCheck(boardState)) moveIterator.remove();
             boardState.unMakeMove();
         }
-        return moves;
+        return pseudoLegal;
     }
 
-    public Moves getPieceMoves(Coordinate coordinate, BoardState boardState) {
+    public void getPieceMoves(Coordinate coordinate, BoardState boardState, Moves moves) {
         int piece = boardState.board.getCoordinate(coordinate);
-        if(piece == 0) return null;
+        if(piece == 0) return;
         switch (Pieces.getType(piece)) {
-            case Pieces.PAWN: return pawn.getMoves(coordinate, boardState);
-            case Pieces.BISHOP: return bishop.getMoves(coordinate, boardState);
-            case Pieces.KNIGHT: return knight.getMoves(coordinate, boardState);
-            case Pieces.ROOK: return rook.getMoves(coordinate, boardState);
-            case Pieces.QUEEN: return queen.getMoves(coordinate, boardState);
-            case Pieces.KING: return king.getMoves(coordinate, boardState);
+            case Pieces.PAWN: pawn.getMoves(coordinate, boardState, moves); break;
+            case Pieces.BISHOP: bishop.getMoves(coordinate, boardState, moves); break;
+            case Pieces.KNIGHT: knight.getMoves(coordinate, boardState, moves); break;
+            case Pieces.ROOK: rook.getMoves(coordinate, boardState, moves); break;
+            case Pieces.QUEEN: queen.getMoves(coordinate, boardState, moves); break;
+            case Pieces.KING: king.getMoves(coordinate, boardState, moves); break;
         }
-        return null;
     }
 }
