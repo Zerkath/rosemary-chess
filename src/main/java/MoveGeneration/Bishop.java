@@ -5,11 +5,10 @@ import DataTypes.*;
 
 public class Bishop implements PieceGenerator {
 
-    public Moves getMoves(Coordinate origin, BoardState boardState) {
+    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
 
-        Moves moves = new Moves();
         int originalPiece = board.getCoordinate(origin);
         boolean isWhite = Pieces.isWhite(originalPiece);
         int row = origin.row;
@@ -66,6 +65,5 @@ public class Bishop implements PieceGenerator {
             if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
             break;
         }
-        return moves;
     }
 }

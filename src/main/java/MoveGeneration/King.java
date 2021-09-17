@@ -9,14 +9,12 @@ public class King implements PieceGenerator {
     Bishop bishop = new Bishop();
     Knight knight = new Knight();
 
-    public Moves getMoves(Coordinate origin, BoardState boardState) {
+    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
         PlayerTurn turn = boardState.turn;
         CastlingRights whiteCastling = board.getWhiteCastling();
         CastlingRights blackCastling = board.getBlackCastling();
-
-        Moves moves = new Moves();
 
         int originalPiece = board.getCoordinate(origin);
         boolean isWhite = Pieces.isWhite(originalPiece);
@@ -81,8 +79,6 @@ public class King implements PieceGenerator {
                 }
             }
         }
-
-        return moves;
     }
 
     private static boolean queenSidePossible(int [] backRow, int piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
@@ -316,8 +312,9 @@ public class King implements PieceGenerator {
                 pieceHasCheck(bishop, boardState, opponentBishop, opponentQueen, origin)
         ) return false;
 
-        moves = knight.getMoves(origin, boardState);
-        for (Move move: moves) {
+        Moves knightMoves = new Moves();
+        knight.getMoves(origin, boardState, knightMoves);
+        for (Move move: knightMoves) {
             int piece = board.getCoordinate(move.destination);
             if(piece == 0) continue;
             if(opponentKnight == piece) {
@@ -344,7 +341,8 @@ public class King implements PieceGenerator {
     }
 
     private boolean pieceHasCheck(PieceGenerator pieceGenerator, BoardState boardState, int checkingPiece, int opponentQueen, Coordinate origin) {
-        Moves moves = pieceGenerator.getMoves(origin, boardState);
+        Moves moves = new Moves();
+        pieceGenerator.getMoves(origin, boardState, moves);
         for (Move move: moves) {
             int piece = boardState.board.getCoordinate(move.destination);
             if(piece == 0) continue;

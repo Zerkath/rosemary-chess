@@ -8,13 +8,8 @@ public class Queen implements PieceGenerator {
     Rook rook = new Rook();
     Bishop bishop = new Bishop();
 
-    public Moves getMoves(Coordinate origin, BoardState boardState) {
-
-        Moves moves = new Moves();
-
-        moves.addAll(rook.getMoves(origin, boardState));
-        moves.addAll(bishop.getMoves(origin, boardState));
-
-        return moves;
+    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+        rook.getMoves(origin, boardState, moves);
+        bishop.getMoves(origin, boardState, moves);
     }
 }
