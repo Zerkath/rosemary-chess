@@ -5,11 +5,9 @@ import DataTypes.*;
 
 public class Knight implements PieceGenerator {
 
-    public Moves getMoves(Coordinate origin, BoardState boardState) {
+    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
-
-        Moves moves = new Moves();
 
         int originalPiece = board.getCoordinate(origin);
         int row = origin.row;
@@ -30,7 +28,5 @@ public class Knight implements PieceGenerator {
             destination = new Coordinate(d_row, col - 1);
             if(board.isOpposingColourOrEmpty(destination, originalPiece)) moves.add(new Move(origin, destination));
         }
-
-        return moves;
     }
 }

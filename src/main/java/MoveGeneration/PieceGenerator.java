@@ -5,5 +5,5 @@ import DataTypes.Coordinate;
 import DataTypes.Moves;
 
 public interface PieceGenerator {
-    Moves getMoves(Coordinate origin, BoardState boardState);
+    void getMoves(Coordinate origin, BoardState boardState, Moves moves);
 }
