@@ -12,8 +12,6 @@ public class BoardState {
 
     public Board board = new Board();
     public BoardState previous;
-    public Move previousMove;
-    public int capturedPiece;
     public PlayerTurn turn;
 
     public int turnNumber = 1;
@@ -34,12 +32,11 @@ public class BoardState {
 
     public void setBoardState(BoardState state) {
         this.board = new Board(state.board);
-        this.halfMove = state.halfMove;
-        this.turn = state.turn;
-        this.enPassant = state.enPassant;
-        this.turnNumber = state.turnNumber;
         this.previous = state.previous;
-        this.pieceMap = state.pieceMap;
+        this.turn = state.turn;
+        this.turnNumber = state.turnNumber;
+        this.halfMove = state.halfMove;
+        this.enPassant = state.enPassant;
     }
 
     public void setCastling(char [] castling) {
@@ -145,18 +142,11 @@ public class BoardState {
     }
 
     public void unMakeMove() {
-        incrementPiece(capturedPiece);
         setBoardState(previous);
     }
 
     public void makeMove(Move move) {
-
         previous = new BoardState(this);
-        capturedPiece = board.getCoordinate(move.destination);
-        previousMove = move;
-        if(capturedPiece != 0) { // decrease mapped value
-            decrementPiece(capturedPiece);
-        }
 
         int dRow = move.destination.row;
         int dCol = move.destination.column;
@@ -233,9 +223,7 @@ public class BoardState {
 
         int piece = selected;
         if(isBeingPromoted) {
-            decrementPiece(piece);
             piece = move.promotion;
-            incrementPiece(piece);
         }
         board.replaceCoordinate(move.destination, piece);
 
@@ -247,20 +235,16 @@ public class BoardState {
         }
     }
 
-    private void decrementPiece(int piece) {
-        if(piece == 0) return;
-        if(pieceMap.containsKey(piece)) {
-            int value = pieceMap.get(piece);
-            if(value <= 1) pieceMap.remove(piece);
-            else pieceMap.put(piece, value-1);
-        }
-    }
-
     private void incrementPiece(int piece) {
         if(piece == 0) return;
-        if(pieceMap.containsKey(piece)) {
-            pieceMap.put(piece, pieceMap.get(piece)+1);
-        } else pieceMap.put(piece, 1);
+        pieceMap.merge(piece, 1, Integer::sum);
+    }
+
+    public void updatePieceCount() {
+        pieceMap.clear();
+        for (int piece: board.getBoard()) {
+            incrementPiece(piece);
+        }
     }
 
     public String toFenString() {

@@ -56,6 +56,7 @@ public class FenParseTest {
 
         BoardState state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         state.printBoard();
+        state.updatePieceCount();
         Assertions.assertEquals(8, state.pieceMap.get(Pieces.getNum('p')));
         Assertions.assertEquals(8, state.pieceMap.get(Pieces.getNum('P')));
         Assertions.assertEquals(2, state.pieceMap.get(Pieces.getNum('r')));
