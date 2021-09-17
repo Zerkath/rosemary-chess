@@ -49,7 +49,7 @@ public class UCI_Controller {
         public void run() {
             while(!queue.isEmpty()) {
                 try {
-                    wait(100);
+                    wait(500);
                 } catch (InterruptedException ignored) {}
             }
             System.out.println("readyok");
@@ -143,7 +143,7 @@ public class UCI_Controller {
     public void setToUCI() {
         uci_mode = true;
 
-        String data = "id name Rosemary\nid author Rosemary_devs\noption name depth type spin default 6 min 1 max 7\nuciok";
+        String data = "id name Rosemary\nid author Rosemary_devs\n\noption name depth type spin default 6 min 1 max 7\nuciok\n";
 //        System.out.print("option name Threads type spin default 2 min 1 max 250\n");
         print(data);
     }
@@ -173,7 +173,7 @@ public class UCI_Controller {
         String str = "\nDepth " + depth + " nodes: " + runPerft(depth, true);
         print(str);
         long end = System.currentTimeMillis();
-        print(" " + (end - start) + "ms \n");
+        println(" " + (end - start) + "ms");
     }
 
     public int runPerft(int depth, boolean print) {

@@ -25,6 +25,10 @@ public class Board {
         this.blackKing = board.blackKing;
     }
 
+    public int [] getBoard() {
+        return this.board;
+    }
+
     public int getCoordinate(Coordinate coordinate) {
         return getCoordinate(coordinate.row, coordinate.column);
     }
