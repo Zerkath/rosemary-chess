@@ -9,6 +9,7 @@ public class Program {
 
     }
     public void process() {
+        System.out.println("Rosemary by the Rosemary_devs");
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         BlockingQueue<String> queue = new LinkedBlockingQueue<>();
         InputHandler handler = new InputHandler(queue);
@@ -26,6 +27,7 @@ public class Program {
             try {
                 input = in.readLine();
             } catch (Exception ignored) {}
+
             if(input != null) queue.offer(input);
         }
 
@@ -45,7 +47,7 @@ class InputHandler extends Thread {
     public void run() {
 
         while(active) {
-            String input = null;
+            String input;
             try {
                 input = queue.poll(5000, TimeUnit.MILLISECONDS);
 

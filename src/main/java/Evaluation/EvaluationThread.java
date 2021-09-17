@@ -34,7 +34,9 @@ public class EvaluationThread implements Runnable {
     @Override
     public void run() {
         int eval;
-        eval = boardState.turn == PlayerTurn.WHITE ? alphaBetaMax(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth) : alphaBetaMin(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+        eval = boardState.turn == PlayerTurn.WHITE ?
+                alphaBetaMax(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth) :
+                alphaBetaMin(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
     }
 
     int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) { //white
@@ -70,7 +72,7 @@ public class EvaluationThread implements Runnable {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == null) bestMove = moves.iterator().next();
+            if (bestMove == null) bestMove = moves.getFirst();
             println("bestmove " + bestMove.toString());
         }
         return alpha;
@@ -109,7 +111,7 @@ public class EvaluationThread implements Runnable {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == null) bestMove = moves.iterator().next();
+            if (bestMove == null) bestMove = moves.getFirst();
             println("bestmove " + bestMove.toString());
         }
         return beta;
