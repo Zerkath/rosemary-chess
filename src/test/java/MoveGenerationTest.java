@@ -178,14 +178,6 @@ public class MoveGenerationTest {
     }
 
     @Test
-    void movesToDepth6() {
-        long start = System.currentTimeMillis();
-        Assertions.assertEquals(119060324, uci.runPerft(6, 6, true, getTestBoard()));
-        System.out.println("Depth: 6 Nodes: 119060324 Time: " + (System.currentTimeMillis()-start) + "ms");
-    }
-
-
-    @Test
     @Order(101)
     void movesFromPosition1() {
         int [] depth = new int[3];

@@ -22,11 +22,10 @@ public class Pawn implements PieceGenerator {
         return moves;
     }
 
-    public Moves getMoves(Coordinate origin, BoardState boardState) {
+    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
 
-        Moves moves = new Moves();
         int original_piece = board.getCoordinate(origin);
         boolean isWhite = Pieces.isWhite(original_piece);
         boolean promotion = false;
@@ -53,7 +52,7 @@ public class Pawn implements PieceGenerator {
             }
         }
 
-        if(nextRow < 0 || nextRow > 7) return moves; // if nextRow == -1 / 8
+        if(nextRow < 0 || nextRow > 7) return; // if nextRow == -1 / 8
 
         boolean leftEdge = col == 0;
         boolean rightEdge = col == 7;
@@ -102,6 +101,5 @@ public class Pawn implements PieceGenerator {
                 moves.add(new Move(origin, destination));
             }
         }
-        return moves;
     }
 }
