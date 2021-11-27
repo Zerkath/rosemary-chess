@@ -7,13 +7,6 @@ import java.util.Iterator;
 
 public class MoveGenerator {
 
-    Rook rook = new Rook();
-    Bishop bishop = new Bishop();
-    Queen queen = new Queen();
-    Knight knight = new Knight();
-    Pawn pawn = new Pawn();
-    King king = new King();
-
     private Moves getAllMoves(BoardState boardState) {
 
         Moves moves = new Moves();
@@ -28,7 +21,7 @@ public class MoveGenerator {
                 boolean whitesTurn = turn == PlayerTurn.WHITE;
                 boolean destIsWhite = Pieces.isWhite(dest);
                 if(whitesTurn == destIsWhite) { //white turn and white or black turn and black
-                    getPieceMoves(new Coordinate(row, column), boardState, moves);
+                    getAllMoves(new Coordinate(row, column), boardState, moves);
                 }
             }
         }
@@ -37,27 +30,28 @@ public class MoveGenerator {
 
     public Moves getLegalMoves(BoardState boardState) {
         Moves pseudoLegal = getAllMoves(boardState);
-        Iterator<Move> moveIterator = pseudoLegal.iterator();
+
+        Iterator<Move> pseudoIterator = pseudoLegal.iterator();
         Move move;
-        while(moveIterator.hasNext()) {
-            move = moveIterator.next();
+        while(pseudoIterator.hasNext()) {
+            move = pseudoIterator.next();
             boardState.makeMove(move);
-            if(!king.kingNotInCheck(boardState)) moveIterator.remove();
+            if(King.kingInCheck(boardState)) pseudoIterator.remove();
             boardState.unMakeMove();
         }
         return pseudoLegal;
     }
 
-    public void getPieceMoves(Coordinate coordinate, BoardState boardState, Moves moves) {
+    public void getAllMoves(Coordinate coordinate, BoardState boardState, Moves moves) {
         int piece = boardState.board.getCoordinate(coordinate);
         if(piece == 0) return;
         switch (Pieces.getType(piece)) {
-            case Pieces.PAWN: pawn.getMoves(coordinate, boardState, moves); break;
-            case Pieces.BISHOP: bishop.getMoves(coordinate, boardState, moves); break;
-            case Pieces.KNIGHT: knight.getMoves(coordinate, boardState, moves); break;
-            case Pieces.ROOK: rook.getMoves(coordinate, boardState, moves); break;
-            case Pieces.QUEEN: queen.getMoves(coordinate, boardState, moves); break;
-            case Pieces.KING: king.getMoves(coordinate, boardState, moves); break;
+            case Pieces.PAWN: Pawn.getMoves(coordinate, boardState, moves); break;
+            case Pieces.BISHOP: Bishop.getMoves(coordinate, boardState, moves); break;
+            case Pieces.KNIGHT: Knight.getMoves(coordinate, boardState, moves); break;
+            case Pieces.ROOK: Rook.getMoves(coordinate, boardState, moves); break;
+            case Pieces.QUEEN: Queen.getMoves(coordinate, boardState, moves); break;
+            case Pieces.KING: King.getMoves(coordinate, boardState, moves); break;
         }
     }
 }

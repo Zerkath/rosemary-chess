@@ -3,9 +3,9 @@ package MoveGeneration;
 import BoardRepresentation.BoardState;
 import DataTypes.*;
 
-public class Knight implements PieceGenerator {
+public class Knight {
 
-    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+    public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
 

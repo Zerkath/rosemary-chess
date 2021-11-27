@@ -3,13 +3,10 @@ package MoveGeneration;
 import BoardRepresentation.BoardState;
 import DataTypes.*;
 
-public class King implements PieceGenerator {
+import java.util.HashSet;
 
-    Rook rook = new Rook();
-    Bishop bishop = new Bishop();
-    Knight knight = new Knight();
-
-    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+public class King {
+    public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
         PlayerTurn turn = boardState.turn;
@@ -292,62 +289,48 @@ public class King implements PieceGenerator {
      * returns true if the king isn't in check
      * @return true if the state is legal
      */
-    public boolean kingNotInCheck(BoardState boardState) {
+    public static boolean kingInCheck(BoardState boardState) {
         //its inverse turn
         boolean white = boardState.turn == PlayerTurn.BLACK;
         Board board = boardState.board;
         //let's try the most likely moves to cause check (bishop and rook)
-        Moves moves;
         Coordinate origin = white ? board.getWhiteKing() : board.getBlackKing();
-        if(origin == null) return true;
+        if(origin == null) return false;
         int colour = white ? Pieces.BLACK : Pieces.WHITE;
-        int opponentRook = Pieces.ROOK | colour;
-        int opponentQueen = Pieces.QUEEN | colour;
-        int opponentBishop = Pieces.BISHOP | colour;
         int opponentKnight = Pieces.KNIGHT | colour;
         int opponentPawn = Pieces.PAWN | colour;
 
-        if (
-                pieceHasCheck(rook, boardState, opponentRook, opponentQueen, origin) ||
-                pieceHasCheck(bishop, boardState, opponentBishop, opponentQueen, origin)
-        ) return false;
+        if (pieceHasCheck(boardState, white, Pieces.ROOK, origin) || pieceHasCheck(boardState, white, Pieces.BISHOP, origin)) return true;
 
         Moves knightMoves = new Moves();
-        knight.getMoves(origin, boardState, knightMoves);
+        Knight.getMoves(origin, boardState, knightMoves);
         for (Move move: knightMoves) {
             int piece = board.getCoordinate(move.destination);
             if(piece == 0) continue;
             if(opponentKnight == piece) {
-                return false;
+                return true;
             }
         }
-        //check for pawns
-        if(origin.row <= 7 && origin.row >= 0 && origin.column >= 0 && origin.column <= 7) {
-            int col = origin.column;
-            int row = origin.row;
-            if(white) {
-                if(col != 7 && row > 0 && opponentPawn == board.getCoordinate(row - 1, col + 1)) {
-                    return false;
-                }
-                return col == 0 || row <= 0 || opponentPawn != board.getCoordinate(row - 1, col - 1);
-            } else {
-                if(col != 7 && row < 7 && opponentPawn == board.getCoordinate(row + 1, col + 1)) {
-                    return false;
-                }
-                return col == 0 || row >= 7 || opponentPawn != board.getCoordinate(row + 1, col - 1);
-            }
+        Moves pawnMoves = new Moves();
+        Pawn.getMoves(origin, boardState, pawnMoves);
+        for (Move move: pawnMoves) {
+            if(boardState.board.getCoordinate(move.destination) == opponentPawn) return true;
         }
-        return true;
+        return false; // no checks return false
     }
 
-    private boolean pieceHasCheck(PieceGenerator pieceGenerator, BoardState boardState, int checkingPiece, int opponentQueen, Coordinate origin) {
+    private static boolean pieceHasCheck(BoardState boardState, boolean colour, int type, Coordinate origin) {
         Moves moves = new Moves();
-        pieceGenerator.getMoves(origin, boardState, moves);
+        switch (type) {
+            case Pieces.BISHOP: Bishop.getMoves(origin, boardState, moves); break;
+            case Pieces.ROOK: Rook.getMoves(origin, boardState, moves); break;
+        }
         for (Move move: moves) {
             int piece = boardState.board.getCoordinate(move.destination);
             if(piece == 0) continue;
-            if(checkingPiece == piece || opponentQueen == piece) {
-                return true;
+            if(Pieces.isWhite(piece) != colour) {
+                int destType = Pieces.getType(piece);
+                if(destType == type || destType == Pieces.QUEEN) return true;
             }
         }
         return false;
