@@ -1,6 +1,10 @@
+import BoardRepresentation.BoardState;
+
+import Main.UCI_Controller;
 import org.junit.jupiter.api.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UCI_Test {
+
     UCI_Controller uci = new UCI_Controller();
 
     @Test
@@ -56,7 +60,7 @@ public class UCI_Test {
     }
 
     @Test
-    void blackQueensideRookCaptured() {
+    void blackQueenSideRookCaptured() {
         String pgn = "position startpos moves g2g3 b7b6 f1g2 d7d6 g2a8";//bishop capture
         uci.handleMessage(pgn);
         Assertions.assertEquals("Bnbqkbnr/p1p1pppp/1p1p4/8/8/6P1/PPPPPP1P/RNBQK1NR b KQk - 0 3", uci.getFen());
@@ -80,8 +84,33 @@ public class UCI_Test {
     void gameStuck() {
         String pgn = "position startpos moves d2d4 f7f6 g2g4 e7e6 d4d5 e6d5 d1d5 f8b4 c2c3 b4c3 b2c3 d8e7 g1f3 d7d6 f1h3 b7b5 e1g1 c8e6 d5a8 h7h5 g4g5 e6g4 h3g4 h5g4 f3d4 f6f5 a8b8 e8f7 c1f4 h8h4 b1d2 e7e5 f4e5 d6e5 d4f5 h4h2 g1h2 g4g3 h2g3 a7a5 d2e4 c7c5 b8c7 f7e6 c7d6 e6f5 f2f3 g8f6 g5f6 c5c4 f6g7";
         uci.handleMessage(pgn);
-        BoardState boardState = Utils.parseFen(uci.getFen());
-        Utils.printBoard(boardState);
+        BoardState boardState = new BoardState(uci.getFen());
+        boardState.printBoard();
         uci.handleMessage("go");
+    }
+
+    @Test
+    void testPerft() {
+        uci.handleMessage("position startpos moves");
+        Assertions.assertEquals(400, uci.runPerft(2, false));
+    }
+
+    @Test
+    void testPerftPrint() {
+        uci.handleMessage("position startpos moves");
+        Assertions.assertEquals(400, uci.runPerft(2, true));
+    }
+
+    @Test
+    void settingToUCI() {
+        uci.setToUCI();
+    }
+
+    @Test
+    void endingEvaluationDuringEvaluation() {
+        uci.setToDefault();
+        uci.startEval(10);
+        uci.endEval();
+        uci.setToDefault();
     }
 }
