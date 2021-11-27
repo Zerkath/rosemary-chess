@@ -5,13 +5,12 @@ import DataTypes.Move;
 import DataTypes.Moves;
 import DataTypes.Pieces;
 import DataTypes.PlayerTurn;
+import Main.OutputUtils;
 import MoveGeneration.MoveGenerator;
 
 import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
-public class EvaluationThread implements Runnable {
+public class EvaluationThread extends OutputUtils implements Runnable  {
 
     BoardState boardState;
     int startingDepth;
@@ -21,9 +20,9 @@ public class EvaluationThread implements Runnable {
     EvaluationValues values = new EvaluationValues();
     EvaluationCalculations evalCalculator = new EvaluationCalculations();
     MoveGenerator moveGenerator = new MoveGenerator();
-    private final BufferedOutputStream bufferedWriter = new BufferedOutputStream(System.out);
 
-    public EvaluationThread(BoardState boardState, int depth, boolean debug) {
+    public EvaluationThread(BoardState boardState, int depth, boolean debug, BufferedOutputStream writer) {
+        super(writer);
         this.boardState = boardState;
         this.startingDepth = depth;
         this.depth = depth;
@@ -72,7 +71,7 @@ public class EvaluationThread implements Runnable {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == null) bestMove = moves.getFirst();
+            if (bestMove == null) bestMove = moves.peek();
             println("bestmove " + bestMove.toString());
         }
         return alpha;
@@ -111,7 +110,7 @@ public class EvaluationThread implements Runnable {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == null) bestMove = moves.getFirst();
+            if (bestMove == null) bestMove = moves.peek();
             println("bestmove " + bestMove.toString());
         }
         return beta;
@@ -150,15 +149,5 @@ public class EvaluationThread implements Runnable {
         }
         state.turn = old;
         return false;
-    }
-
-    private void print(String str) {
-        try {
-            bufferedWriter.write(str.getBytes(StandardCharsets.UTF_8));
-            bufferedWriter.flush();
-        } catch (IOException ignored) {}
-    }
-    private void println(String str) {
-        print(str + "\n");
     }
 }

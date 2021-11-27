@@ -3,72 +3,34 @@ package MoveGeneration;
 import BoardRepresentation.BoardState;
 import DataTypes.*;
 
-public class Rook implements PieceGenerator {
+import static MoveGeneration.Commons.pieceMoveNotPossible;
 
-    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+public class Rook {
+
+    public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
 
-        int originalPiece = board.getCoordinate(origin);
-        boolean isWhite = Pieces.isWhite(originalPiece);
-        int row = origin.row;
-        int col = origin.column;
+        boolean isWhite = Pieces.isWhite(board.getCoordinate(origin));
 
         //Rook moves to left
-        for(int i = 1; col - i >= 0; i++) { //Runs as long as destination is within board limits
-            Coordinate destination = new Coordinate(row, col - i);
-
-            int target = board.getCoordinate(destination);
-
-            if(target == 0) {
-                moves.add(origin, destination);
-                continue;
-            }
-            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
-            break;
+        for(int i = 1; origin.column - i >= 0; i++) { //Runs as long as destination is within board limits
+            if(pieceMoveNotPossible(0, -i, board, moves, origin, isWhite)) break;
         }
 
-
         //Rook moves upwards
-        for(int i = 1; row - i >= 0; i++) {
-            Coordinate destination = new Coordinate(row - i, col);
-
-            int target = board.getCoordinate(destination);
-
-            if(target == 0) {
-                moves.add(origin, destination);
-                continue;
-            }
-            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
-            break;
+        for(int i = 1; origin.row - i >= 0; i++) {
+            if(pieceMoveNotPossible(-i, 0, board, moves, origin, isWhite)) break;
         }
 
         //Rook moves to right
-        for(int i = 1; col + i <= 7; i++) {
-            Coordinate destination = new Coordinate(row, col + i);
-
-            int target = board.getCoordinate(destination);
-
-            if(target == 0) {
-                moves.add(origin, destination);
-                continue;
-            }
-            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
-            break;
+        for(int i = 1; origin.column + i <= 7; i++) {
+            if(pieceMoveNotPossible(0, i, board, moves, origin, isWhite)) break;
         }
 
         //Rook moves downwards
-        for(int i = 1; row + i <= 7; i++) {
-            Coordinate destination = new Coordinate(row + i, col);
-
-            int target = board.getCoordinate(destination);
-
-            if(target == 0) {
-                moves.add(origin, destination);
-                continue;
-            }
-            if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
-            break;
+        for(int i = 1; origin.row + i <= 7; i++) {
+            if(pieceMoveNotPossible(i, 0, board, moves, origin, isWhite)) break;
         }
     }
 }

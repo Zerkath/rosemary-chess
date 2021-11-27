@@ -5,24 +5,37 @@ import DataTypes.*;
 
 import java.util.Arrays;
 
-public class Pawn implements PieceGenerator {
+public class Pawn {
 
-    private Moves pawnPromotions(Move move, boolean isWhite) {
-        Moves moves = new Moves();
+    private static void pawnPromotions(Move move, boolean isWhite, Moves moves) {
         int offset = isWhite ? Pieces.WHITE : Pieces.BLACK;
-
-        moves.addAll(
-                Arrays.asList(
-                        new Move(move, Pieces.QUEEN | offset),
-                        new Move(move, Pieces.KNIGHT | offset),
-                        new Move(move, Pieces.ROOK | offset),
-                        new Move(move, Pieces.BISHOP | offset)
-                )
-        );
-        return moves;
+        moves.add(new Move(move, Pieces.QUEEN | offset));
+        moves.add(new Move(move, Pieces.KNIGHT | offset));
+        moves.add(new Move(move, Pieces.ROOK | offset));
+        moves.add(new Move(move, Pieces.BISHOP | offset));
     }
 
-    public void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+    private static void pawnCaptures(int nextRow, boolean promotion, Coordinate origin, Moves moves, Board board) {
+        int original_piece = board.getCoordinate(origin);
+        int col = origin.column;
+        boolean isWhite = Pieces.isWhite(original_piece);
+        boolean leftEdge = col == 0;
+        boolean rightEdge = col == 7;
+
+        Coordinate destination1 = new Coordinate(nextRow, col-1);
+        if(!leftEdge && board.pawnCapturePossible(destination1, original_piece)) {
+            Move nextMove = new Move(origin, destination1);
+            if(promotion) pawnPromotions(nextMove, isWhite, moves); else moves.add(nextMove);
+        }
+
+        Coordinate destination2 = new Coordinate(nextRow, col+1);
+        if(!rightEdge && board.pawnCapturePossible(destination2, original_piece)) {
+            Move nextMove = new Move(origin, destination2);
+            if(promotion) pawnPromotions(nextMove, isWhite, moves); else moves.add(nextMove);
+        }
+    }
+
+    public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
 
@@ -40,58 +53,31 @@ public class Pawn implements PieceGenerator {
             nextRow -= 1;
             doubleJump -= 2;
             enPassantRow = 3;
-            if(nextRow == 0) {
-                promotion = true;
-            }
+            if(nextRow == 0) promotion = true;
         } else {
             nextRow += 1;
             doubleJump += 2;
             enPassantRow = 4;
-            if(nextRow == 7) {
-                promotion = true;
-            }
+            if(nextRow == 7) promotion = true;
         }
 
         if(nextRow < 0 || nextRow > 7) return; // if nextRow == -1 / 8
 
-        boolean leftEdge = col == 0;
-        boolean rightEdge = col == 7;
-
         //forward
         if(board.getCoordinate(nextRow, col) == Pieces.EMPTY) {
             Move nextMove = new Move(origin, new Coordinate(nextRow, col));
-            if(promotion) {
-                moves.addAll(pawnPromotions(nextMove, isWhite));
-            } else {
-                moves.add(nextMove);
-            }
+            if(promotion) pawnPromotions(nextMove, isWhite, moves); else moves.add(nextMove);
 
             if((isWhite && row == 6 || (!isWhite && row == 1))
-                    && board.getCoordinate(doubleJump, col) == Pieces.EMPTY) {
+                    && board.getCoordinate(doubleJump, col) == Pieces.EMPTY
+            ) {
                 //if at starting square and nothing in front
                 Coordinate destination = new Coordinate(doubleJump, col);
                 moves.add(new Move(origin, destination));
             }
         }
 
-        //captures
-        if(!leftEdge && board.pawnCapturePossible(new Coordinate(nextRow, col-1), original_piece)) {
-            Move nextMove = new Move(origin, new Coordinate(nextRow, col-1));
-            if(promotion) {
-                moves.addAll(pawnPromotions(nextMove, isWhite));
-            } else {
-                moves.add(nextMove);
-            }
-        }
-
-        if(!rightEdge && board.pawnCapturePossible(new Coordinate(nextRow, col+1), original_piece)) {
-            Move nextMove = new Move(origin, new Coordinate(nextRow, col+1));
-            if(promotion) {
-                moves.addAll(pawnPromotions(nextMove, isWhite));
-            } else {
-                moves.add(nextMove);
-            }
-        }
+        pawnCaptures(nextRow, promotion, origin, moves, board);
 
         if(boardState.enPassant != null && row == enPassantRow) {
 
