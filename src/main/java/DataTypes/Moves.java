@@ -1,8 +1,9 @@
 package DataTypes;
 
-import java.util.LinkedList;
+import java.util.Stack;
 
-public class Moves extends LinkedList<Move> {
+public class Moves extends Stack<Move> {
+
     public String getString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Move move : this) {
