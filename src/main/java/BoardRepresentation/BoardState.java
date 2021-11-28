@@ -7,8 +7,6 @@ import java.util.Map;
 
 public class BoardState {
 
-    private final StringBuilder strBuilder = new StringBuilder();
-
     public Board board = new Board();
     public BoardState previous;
     public boolean isWhiteTurn;
