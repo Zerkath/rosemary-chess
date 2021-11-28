@@ -4,7 +4,6 @@ import BoardRepresentation.BoardState;
 import DataTypes.Move;
 import DataTypes.Moves;
 import DataTypes.Pieces;
-import DataTypes.PlayerTurn;
 import Main.OutputUtils;
 import MoveGeneration.MoveGenerator;
 
@@ -14,7 +13,7 @@ public class EvaluationThread extends OutputUtils implements Runnable  {
 
     BoardState boardState;
     int startingDepth;
-    PlayerTurn playerTurn;
+    boolean playerTurnWhite;
     boolean debug;
     int depth;
     EvaluationValues values = new EvaluationValues();
@@ -27,13 +26,13 @@ public class EvaluationThread extends OutputUtils implements Runnable  {
         this.startingDepth = depth;
         this.depth = depth;
         this.debug = debug;
-        this.playerTurn = boardState.turn;
+        this.playerTurnWhite = boardState.isWhiteTurn;
     }
 
     @Override
     public void run() {
         int eval;
-        eval = boardState.turn == PlayerTurn.WHITE ?
+        eval = boardState.isWhiteTurn ?
                 alphaBetaMax(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth) :
                 alphaBetaMin(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
     }
@@ -135,19 +134,19 @@ public class EvaluationThread extends OutputUtils implements Runnable  {
     }
 
     private boolean inCheck(BoardState state) {
-        PlayerTurn old = state.turn;
-        boolean isWhite = state.turn == PlayerTurn.WHITE;
-        state.turn = state.turn == PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
+        boolean old = state.isWhiteTurn;
+        boolean isWhite = state.isWhiteTurn;
+        state.isWhiteTurn = !state.isWhiteTurn; // flip turn temporarily for checking a check
         Moves opponent = moveGenerator.getLegalMoves(state);
         for (Move move : opponent) {
             int piece = state.board.getCoordinate(move.destination);
             if(piece == 0) continue;
             if ((isWhite && piece == (Pieces.KING | Pieces.WHITE)) || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {
-                state.turn = old;
+                state.isWhiteTurn = old;
                 return true;
             }
         }
-        state.turn = old;
+        state.isWhiteTurn = old;
         return false;
     }
 }

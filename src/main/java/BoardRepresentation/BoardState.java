@@ -12,7 +12,7 @@ public class BoardState {
 
     public Board board = new Board();
     public BoardState previous;
-    public PlayerTurn turn;
+    public boolean isWhiteTurn;
 
     public int turnNumber = 1;
     public int halfMove = 0;
@@ -33,7 +33,7 @@ public class BoardState {
     public void setBoardState(BoardState state) {
         this.board = new Board(state.board);
         this.previous = state.previous;
-        this.turn = state.turn;
+        this.isWhiteTurn = state.isWhiteTurn;
         this.turnNumber = state.turnNumber;
         this.halfMove = state.halfMove;
         this.enPassant = state.enPassant;
@@ -227,12 +227,9 @@ public class BoardState {
         }
         board.replaceCoordinate(move.destination, piece);
 
-        if(this.turn == PlayerTurn.BLACK) {
-            turnNumber++;
-            this.turn = PlayerTurn.WHITE;
-        } else {
-            this.turn = PlayerTurn.BLACK;
-        }
+        if(!this.isWhiteTurn) turnNumber++;
+
+        this.isWhiteTurn = !this.isWhiteTurn;
     }
 
     private void incrementPiece(int piece) {
@@ -271,7 +268,7 @@ public class BoardState {
             if(row != 7) strBuilder.append("/");
         }
 
-        strBuilder.append(boardState.turn == PlayerTurn.BLACK ? " b" : " w");
+        strBuilder.append(boardState.isWhiteTurn ? " w" : " b");
 
         String WhiteCastlingString = "";
         switch (board.getWhiteCastling()) {
@@ -325,11 +322,8 @@ public class BoardState {
         String [] rows = split[0].split("/");
         if(rows.length != 8) return new BoardState(parseFen(default_fen));
 
-        if(split[1].equals("w")) {
-            boardState.turn = PlayerTurn.WHITE;
-        } else if (split[1].equals("b")) {
-            boardState.turn = PlayerTurn.BLACK;
-        }
+
+        boardState.isWhiteTurn = split[1].equals("w");
 
         boardState.setCastling(split[2].toCharArray()); //set castling rights
         boardState.turnNumber = Integer.parseInt(split[5]);
