@@ -5,6 +5,7 @@ import DataTypes.Coordinate;
 import DataTypes.Pieces;
 
 public class FenUtils {
+
     private final static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     public static BoardState parseFen(String fen) {
