@@ -1,6 +1,7 @@
 package Main;
 
 import BoardRepresentation.BoardState;
+import BoardRepresentation.FenUtils;
 import DataTypes.Move;
 import DataTypes.Moves;
 
@@ -28,7 +29,7 @@ public class UCI_Controller extends OutputUtils {
     }
 
     public void setToDefault() {
-        boardState = new BoardState(boardState.parseFen(defaultBoard));
+        boardState = new BoardState(FenUtils.parseFen(defaultBoard));
     }
 
     public void handleMessage(String message) {
@@ -132,7 +133,7 @@ public class UCI_Controller extends OutputUtils {
 
 
     public void setFen(String fen) {
-        boardState = new BoardState(boardState.parseFen(fen));
+        boardState = new BoardState(FenUtils.parseFen(fen));
     }
     public String getFen() {
         return boardState.toFenString();
