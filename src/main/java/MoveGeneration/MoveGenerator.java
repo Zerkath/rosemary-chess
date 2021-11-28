@@ -11,16 +11,15 @@ public class MoveGenerator {
 
         Moves moves = new Moves();
         Board board = boardState.board;
-        PlayerTurn turn = boardState.turn;
+        boolean isWhiteTurn = boardState.isWhiteTurn;
 
         //Iterates over board to play moves, dest denotes the piece currently being looked at
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 8; column++) {
                 int dest = board.getCoordinate(row, column);
                 if(dest == 0) continue;
-                boolean whitesTurn = turn == PlayerTurn.WHITE;
                 boolean destIsWhite = Pieces.isWhite(dest);
-                if(whitesTurn == destIsWhite) { //white turn and white or black turn and black
+                if(isWhiteTurn == destIsWhite) { //white turn and white or black turn and black
                     getAllMoves(new Coordinate(row, column), boardState, moves);
                 }
             }

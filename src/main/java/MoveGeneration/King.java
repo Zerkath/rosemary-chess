@@ -3,13 +3,11 @@ package MoveGeneration;
 import BoardRepresentation.BoardState;
 import DataTypes.*;
 
-import java.util.HashSet;
-
 public class King {
     public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
-        PlayerTurn turn = boardState.turn;
+        boolean isWhiteTurn = boardState.isWhiteTurn;
         CastlingRights whiteCastling = board.getWhiteCastling();
         CastlingRights blackCastling = board.getBlackCastling();
 
@@ -49,11 +47,11 @@ public class King {
 
                 CastlingRights current = null;
 
-                if(isWhite && turn == PlayerTurn.WHITE) {
+                if(isWhite && isWhiteTurn) {
                     current = whiteCastling;
                 }
 
-                if(!isWhite && turn == PlayerTurn.BLACK) {
+                if(!isWhite && !isWhiteTurn) {
                     current = blackCastling;
                 }
 
@@ -291,7 +289,7 @@ public class King {
      */
     public static boolean kingInCheck(BoardState boardState) {
         //its inverse turn
-        boolean white = boardState.turn == PlayerTurn.BLACK;
+        boolean white = !boardState.isWhiteTurn;
         Board board = boardState.board;
         //let's try the most likely moves to cause check (bishop and rook)
         Coordinate origin = white ? board.getWhiteKing() : board.getBlackKing();
