@@ -12,9 +12,7 @@ public class Board {
     private Coordinate blackKing;
 
     public Board() {
-        for (int i = 0; i < 64; i++) {
-            this.board[i] = 0;
-        }
+        for (int i = 0; i < 64; i++) this.board[i] = 0;
     }
 
     public Board(Board board) {
@@ -52,18 +50,12 @@ public class Board {
     }
 
     public void replaceCoordinate(Coordinate coordinate, int piece) {
-        if(piece != 0 && Pieces.getType(piece) == Pieces.KING) {
-            replaceKing(coordinate, piece);
-        }
+        if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
         replaceCoordinate(coordinate.row, coordinate.column, piece);
     }
 
     private void replaceKing(Coordinate coordinate, int piece) {
-        if(Pieces.isWhite(piece)) {
-            setWhiteKing(coordinate);
-        } else {
-            setBlackKing(coordinate);
-        }
+        if (Pieces.isWhite(piece)) setWhiteKing(coordinate); else setBlackKing(coordinate);
     }
 
     public void clearCoordinate(Coordinate coordinate) {
@@ -87,11 +79,7 @@ public class Board {
     }
 
     public void setCastling(CastlingRights rights, boolean white) {
-        if(white) {
-            setWhiteCastlingRights(rights);
-        } else {
-            setBlackCastlingRights(rights);
-        }
+        if (white) setWhiteCastlingRights(rights); else setBlackCastlingRights(rights);
     }
 
     public Coordinate getWhiteKing() {
@@ -116,7 +104,7 @@ public class Board {
 
         boolean isWhite = Pieces.isWhite(originalPiece);
         int dest = getCoordinate(destination);
-        if(dest == Pieces.EMPTY) return true;
+        if (dest == Pieces.EMPTY) return true;
         boolean opponent = Pieces.isWhite(dest);
 
         return isWhite != opponent;

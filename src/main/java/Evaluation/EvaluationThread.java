@@ -70,7 +70,7 @@ public class EvaluationThread extends OutputUtils implements Runnable  {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == null) bestMove = moves.peek();
+            if (bestMove == null) bestMove = moves.getFirst();
             println("bestmove " + bestMove.toString());
         }
         return alpha;
@@ -109,7 +109,7 @@ public class EvaluationThread extends OutputUtils implements Runnable  {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == null) bestMove = moves.peek();
+            if (bestMove == null) bestMove = moves.getFirst();
             println("bestmove " + bestMove.toString());
         }
         return beta;
