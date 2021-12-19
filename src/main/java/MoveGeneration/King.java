@@ -34,7 +34,8 @@ public class King {
                     ((isWhite && row == 7) || (!isWhite && row == 0)) &&
                     !castlingStoppedByKnightOrPawn(data) &&
                     !inCheckVertically(data) &&
-                    !inCheckDiagonally(data)
+                    !inCheckDiagonally(data) &&
+                    !backRankThreat(data)
             )  { //only check if the king is in the original position and hasn't moved
 
                 int piece = isWhite ?
@@ -126,7 +127,6 @@ public class King {
 
     private static boolean queenSidePossible(CastlingData data) {
         if(data.ownRook != data.backRow[0] || data.backRow[1] != 0 || data.backRow[2] != 0 || data.backRow[3] != 0) return false;
-        if(backRankThreat(data)) return false;
         if(queenSideCastlingStoppedByKnight(data)) return false;
         if(queenSideCastlingStoppedVertically(data)) return false;
         return !queenSideCastlingStoppedDiagonally(data);
@@ -134,7 +134,6 @@ public class King {
 
     private static boolean kingSidePossible(CastlingData data) {
         if(data.ownRook != data.backRow[7] || data.backRow[6] != 0 || data.backRow[5] != 0) return false;
-        if(backRankThreat(data)) return false;
         if(kingSideCastlingStoppedByKnight(data)) return false;
         if(kingSideCastlingStoppedVertically(data)) return false;
         return !kingSideCastlingStoppedDiagonally(data);
