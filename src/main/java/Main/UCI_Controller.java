@@ -102,10 +102,6 @@ public class UCI_Controller extends OutputUtils {
         }
         if(split[0].equals("setoption")) {
             if(split.length >= 4) {
-//                if(split[2].equals("Threads")) {
-//                    this.threadCount = Integer.parseInt(split[4]);
-//                    return;
-//                }
                 if(split[2].equals("depth")) {
                     this.depth = Integer.parseInt(split[4]);
                     return;
