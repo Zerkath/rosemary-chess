@@ -11,16 +11,15 @@ public class MoveGenerator {
 
         Moves moves = new Moves();
         Board board = boardState.board;
-        PlayerTurn turn = boardState.turn;
+        boolean isWhiteTurn = boardState.isWhiteTurn;
 
         //Iterates over board to play moves, dest denotes the piece currently being looked at
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 8; column++) {
                 int dest = board.getCoordinate(row, column);
                 if(dest == 0) continue;
-                boolean whitesTurn = turn == PlayerTurn.WHITE;
                 boolean destIsWhite = Pieces.isWhite(dest);
-                if(whitesTurn == destIsWhite) { //white turn and white or black turn and black
+                if(isWhiteTurn == destIsWhite) { //white turn and white or black turn and black
                     getAllMoves(new Coordinate(row, column), boardState, moves);
                 }
             }
@@ -46,12 +45,12 @@ public class MoveGenerator {
         int piece = boardState.board.getCoordinate(coordinate);
         if(piece == 0) return;
         switch (Pieces.getType(piece)) {
-            case Pieces.PAWN: Pawn.getMoves(coordinate, boardState, moves); break;
-            case Pieces.BISHOP: Bishop.getMoves(coordinate, boardState, moves); break;
-            case Pieces.KNIGHT: Knight.getMoves(coordinate, boardState, moves); break;
-            case Pieces.ROOK: Rook.getMoves(coordinate, boardState, moves); break;
-            case Pieces.QUEEN: Queen.getMoves(coordinate, boardState, moves); break;
-            case Pieces.KING: King.getMoves(coordinate, boardState, moves); break;
+            case Pieces.PAWN -> Pawn.getMoves(coordinate, boardState, moves);
+            case Pieces.BISHOP -> Bishop.getMoves(coordinate, boardState, moves);
+            case Pieces.KNIGHT -> Knight.getMoves(coordinate, boardState, moves);
+            case Pieces.ROOK -> Rook.getMoves(coordinate, boardState, moves);
+            case Pieces.QUEEN -> Queen.getMoves(coordinate, boardState, moves);
+            case Pieces.KING -> King.getMoves(coordinate, boardState, moves);
         }
     }
 }

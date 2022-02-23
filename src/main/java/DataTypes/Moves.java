@@ -1,14 +1,12 @@
 package DataTypes;
 
-import java.util.Stack;
+import java.util.LinkedList;
 
-public class Moves extends Stack<Move> {
+public class Moves extends LinkedList<Move> {
 
     public String getString() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (Move move : this) {
-            stringBuilder.append(move.toString()).append(": 1").append('\n');
-        }
+        for (Move move : this) stringBuilder.append(move.toString()).append(": 1").append('\n');
         return stringBuilder.toString();
     }
     public void add(Coordinate origin, Coordinate destination) {
