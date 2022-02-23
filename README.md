@@ -24,6 +24,15 @@ The project already has a gradle wrapper installed, only requires that you have 
 ./gradlew build
 ```
 
+### Testing
+
+```
+# run test with
+./gradlew test
+
+# Jacoco test results in
+/build/jacocoHtml/index.html
+```
 
 ## Other info
 The program communicates with chess GUI's using UCI protocol.
