@@ -1,19 +1,34 @@
 # Rosemary Chess Engine
-This engine was made during Artificial Intelligence and Robotics course in Karelia University of Applied Sciences.
-
-The purpose of the project was to learn about use cases of artificial intelligence. Programming was usually done in pairs, commits don't directly show the effort of contributors.
+Started out as a project for Artificial Intelligence and Robotics course work in Karelia University of Applied Sciences. During the course most of the programming was done as pair programming, commits do not reflect the contribution of participants.
 
 ## Technology
-The project was made using Java 11, other versions might work too.
-
-Testing is done with Junit 5.
+- Java version 17+ (originally 11)
+- Junit 
+- Gradle
 
 To work with GUI's the jar needed to be turned into a exe, this was done using http://launch4j.sourceforge.net/
+
+
+## How to get started
+
+### Installation
+Only a installation of jdk 17+ needed.
+
+You can install a version of java on linux / macos via sdkman https://sdkman.io/
+
+### Running
+
+The project already has a gradle wrapper installed, only requires that you have a valid installation of java
+
+```
+./gradlew build
+```
+
 
 ## Other info
 The program communicates with chess GUI's using UCI protocol.
 
 http://wbec-ridderkerk.nl/html/UCIProtocol.html
 
-## Used resources
-https://www.chessprogramming.org/Main_Page
+## Misc sources
+Bible of making a chess engine: https://www.chessprogramming.org/Main_Page
