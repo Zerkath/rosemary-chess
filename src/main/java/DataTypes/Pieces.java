@@ -18,15 +18,15 @@ public class Pieces {
 
     static public char getChar(int piece) {
 
-        char result = ' ';
-        switch (getType(piece)) {
-            case PAWN: result = 'p'; break;
-            case KNIGHT: result = 'n'; break;
-            case BISHOP: result = 'b'; break;
-            case ROOK: result = 'r'; break;
-            case QUEEN: result = 'q'; break;
-            case KING: result = 'k'; break;
-        }
+        char result = switch (getType(piece)) {
+            case PAWN -> 'p';
+            case KNIGHT -> 'n';
+            case BISHOP -> 'b';
+            case ROOK -> 'r';
+            case QUEEN -> 'q';
+            case KING -> 'k';
+            default -> ' ';
+        };
         result = isWhite(piece) ? Character.toUpperCase(result) : result;
         return result;
     }
@@ -34,15 +34,15 @@ public class Pieces {
     static public int getNum(char piece) {
         int result = Character.isUpperCase(piece) ? WHITE : BLACK;
         piece = Character.toLowerCase(piece);
-        switch(piece) {
-            case 'p': return result | PAWN;
-            case 'n': return result | KNIGHT;
-            case 'b': return result | BISHOP;
-            case 'r': return result | ROOK;
-            case 'q': return result | QUEEN;
-            case 'k': return result | KING;
-            default: return 0;
-        }
+        return switch (piece) {
+            case 'p' -> result | PAWN;
+            case 'n' -> result | KNIGHT;
+            case 'b' -> result | BISHOP;
+            case 'r' -> result | ROOK;
+            case 'q' -> result | QUEEN;
+            case 'k' -> result | KING;
+            default -> 0;
+        };
     }
 
     static public int getType(int piece) {
