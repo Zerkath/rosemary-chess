@@ -3,13 +3,11 @@ package MoveGeneration;
 import BoardRepresentation.BoardState;
 import DataTypes.*;
 
-import java.util.HashSet;
-
 public class King {
     public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
-        PlayerTurn turn = boardState.turn;
+        boolean isWhiteTurn = boardState.isWhiteTurn;
         CastlingRights whiteCastling = board.getWhiteCastling();
         CastlingRights blackCastling = board.getBlackCastling();
 
@@ -29,197 +27,163 @@ public class King {
             }
         }
 
-        CastlingKnightData castlingKnightData = new CastlingKnightData(isWhite, board);
-
         //castling
         if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) {
-            if(col == 4 && ((isWhite && row == 7) || (!isWhite && row == 0)) &&
-                    !castlingStoppedByKnight(castlingKnightData) &&
-                    !inCheckVertically(isWhite, board) &&
-                    !inCheckDiagonally(isWhite, board)
+            CastlingData data = new CastlingData(isWhite, row, board);
+            if(col == 4 &&
+                    ((isWhite && row == 7) || (!isWhite && row == 0)) &&
+                    !castlingStoppedByKnightOrPawn(data) &&
+                    !inCheckVertically(data) &&
+                    !inCheckDiagonally(data) &&
+                    !backRankThreat(data)
             )  { //only check if the king is in the original position and hasn't moved
-                int [] backRow = board.getRow(row);
+
                 int piece = isWhite ?
                         Pieces.ROOK | Pieces.WHITE :
                         Pieces.ROOK | Pieces.BLACK;
 
-                boolean qSide = queenSidePossible(backRow, piece, isWhite, board, castlingKnightData);
+                boolean qSide = queenSidePossible(data);
 
-                boolean kSide = kingSidePossible(backRow, piece, isWhite, board, castlingKnightData);
+                boolean kSide = kingSidePossible(data);
 
                 CastlingRights current = null;
 
-                if(isWhite && turn == PlayerTurn.WHITE) {
+                if(isWhite && isWhiteTurn) {
                     current = whiteCastling;
                 }
 
-                if(!isWhite && turn == PlayerTurn.BLACK) {
+                if(!isWhite && !isWhiteTurn) {
                     current = blackCastling;
                 }
 
                 if(current != null) {
                     switch (current) {
-                        case BOTH: {
-                            if(qSide) moves.add(new Move(origin, new Coordinate(row, 2)));
-                            if(kSide) moves.add(new Move(origin, new Coordinate(row, 6))); //king side
-                            break;
+                        case BOTH -> {
+                            if (qSide) moves.add(new Move(origin, new Coordinate(row, 2)));
+                            if (kSide) moves.add(new Move(origin, new Coordinate(row, 6)));
                         }
-                        case KING: {
-                            if(kSide) moves.add(new Move(origin, new Coordinate(row, 6)));
-                            break;
-                        }
-                        case QUEEN: {
-                            if(qSide) moves.add(new Move(origin, new Coordinate(row, 2)));
-                            break;
-                        }
+                        case KING -> { if (kSide) moves.add(new Move(origin, new Coordinate(row, 6))); }
+                        case QUEEN -> { if (qSide) moves.add(new Move(origin, new Coordinate(row, 2))); }
                     }
                 }
             }
         }
     }
 
-    private static boolean queenSidePossible(int [] backRow, int piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
-        if(piece != backRow[0]) return false;
-        if(backRow[1] != 0) return false;
-        if(backRow[2] != 0) return false;
-        if(backRow[3] != 0) return false;
-        if(backRankThreat(isWhite, board)) return false;
-        if(leftCastlingStoppedByKnight(castlingKnightData)) return false;
-        if(leftCastlingStoppedVertically(isWhite, board)) return false;
-        return !leftCastlingStoppedDiagonally(isWhite, board);
-    }
+    private static class CastlingData {
 
-    private static boolean kingSidePossible(int [] backRow, int piece, boolean isWhite, Board board, CastlingKnightData castlingKnightData) {
-        if(piece != backRow[7]) return false;
-        if(backRow[6] != 0) return false;
-        if(backRow[5] != 0) return false;
-        if(backRankThreat(isWhite, board)) return false;
-        if(rightCastlingStoppedByKnight(castlingKnightData)) return false;
-        if(rightCastlingStoppedVertically(isWhite, board)) return false;
-        return !rightCastlingStoppedDiagonally(isWhite, board);
-    }
+        boolean isWhite;
+        int opponentColour;
+        int ownRook;
+        int pawn, knight, rook, bishop, queen;
+        int row;
+        int [] backRow, seventh, sixth;
+        Board board;
 
+        public CastlingData(boolean isWhite, int row, Board board) {
+            this.isWhite = isWhite;
+            this.board = board;
+            this.row = row;
+            opponentColour = isWhite ? Pieces.BLACK : Pieces.WHITE;
+            ownRook = Pieces.ROOK | (isWhite ? Pieces.WHITE: Pieces.BLACK);
+            pawn = Pieces.PAWN | opponentColour;
+            knight = Pieces.KNIGHT | opponentColour;
+            rook = Pieces.ROOK | opponentColour;
+            bishop = Pieces.BISHOP | opponentColour;
+            queen = Pieces.QUEEN | opponentColour;
 
-    private static class CastlingKnightData {
-        int [] sixth, seventh;
-        int opponentKnight;
-        int opponentPawn;
-        public CastlingKnightData(boolean isWhite, Board board) {
-            int offset;
-            if(isWhite) {
-                offset = Pieces.BLACK;
-                sixth = board.getRow(5);
-                seventh = board.getRow(6);
-            } else {
-                offset = Pieces.WHITE;
-                sixth = board.getRow(2);
-                seventh = board.getRow(1);
-            }
-            opponentPawn = Pieces.PAWN | offset;
-            opponentKnight = Pieces.KNIGHT | offset;
+            backRow = board.getRow(row);
+            seventh = board.getRow(row == 7 ? 6 : 1);
+            sixth = board.getRow(row == 7 ? 5 : 2);
         }
     }
 
-    private static boolean castlingStoppedByKnight(CastlingKnightData data) {
-        return(
-                data.opponentKnight == data.seventh[2]||
-                data.opponentKnight == data.seventh[6] ||
-                data.opponentKnight == data.sixth[3] ||
-                data.opponentKnight == data.sixth[5] ||
-                data.opponentKnight == data.sixth[4] ||
-                data.opponentKnight == data.seventh[4] ||
-                data.opponentPawn == data.seventh[3] ||
-                data.opponentPawn == data.seventh[4] ||
-                data.opponentPawn == data.seventh[5]
-        );
+    private static boolean castlingStoppedByKnightOrPawn(CastlingData data) {
+        for (int i = 3; i <= 5; i++) if(data.sixth[i] == data.knight || data.seventh[i] == data.pawn) return true;
+        return data.seventh[2] == data.knight || data.seventh[6] == data.knight;
     }
 
-    private static boolean leftCastlingStoppedByKnight(CastlingKnightData data) {
-        return (
-                data.opponentKnight == data.seventh[0] ||
-                data.opponentKnight == data.seventh[1] ||
-                data.opponentKnight == data.sixth[1] ||
-                data.opponentKnight == data.sixth[2] ||
-                data.opponentKnight == data.seventh[5] ||
-                data.opponentPawn == data.seventh[1] ||
-                data.opponentPawn == data.seventh[2]
-        );
-    }
+    private static boolean queenSideCastlingStoppedByKnight(CastlingData data) {
+        int knight = data.knight;
+        int pawn = data.pawn;
 
-    private static boolean rightCastlingStoppedByKnight(CastlingKnightData data) {
-        return(
-                data.opponentKnight == data.seventh[3] ||
-                data.opponentKnight == data.seventh[7] ||
-                data.opponentKnight == data.sixth[6] ||
-                data.opponentKnight == data.sixth[7] ||
-                data.opponentPawn == data.seventh[6]
-        );
-    }
-
-    private static boolean backRankThreat(boolean isWhite, Board board) {
-        int backRank;
-        int offset;
-        int opponentRook, opponentQueen;
-
-        if(isWhite) {
-            offset = Pieces.BLACK;
-            backRank = 7;
-        } else {
-            offset = Pieces.WHITE;
-            backRank = 0;
+        if(data.seventh[0] == knight || data.seventh[1] == pawn || data.seventh[2] == pawn || data.seventh[4] == knight || data.seventh[5] == knight) {
+            return true;
         }
-        opponentRook = Pieces.ROOK | offset;
-        opponentQueen = Pieces.QUEEN | offset;
+
+        return data.sixth[1] == knight || data.sixth[2] == knight;
+    }
+
+    private static boolean kingSideCastlingStoppedByKnight(CastlingData data) {
+        int knight = data.knight;
+        int pawn = data.pawn;
+
+        if(data.seventh[7] == knight || data.seventh[6] == pawn || data.seventh[3] == knight) {
+            return true;
+        }
+
+        return data.sixth[7] == knight || data.sixth[6] == knight;
+    }
+
+    private static boolean queenSidePossible(CastlingData data) {
+        if(data.ownRook != data.backRow[0] || data.backRow[1] != 0 || data.backRow[2] != 0 || data.backRow[3] != 0) return false;
+        if(queenSideCastlingStoppedByKnight(data)) return false;
+        if(queenSideCastlingStoppedVertically(data)) return false;
+        return !queenSideCastlingStoppedDiagonally(data);
+    }
+
+    private static boolean kingSidePossible(CastlingData data) {
+        if(data.ownRook != data.backRow[7] || data.backRow[6] != 0 || data.backRow[5] != 0) return false;
+        if(kingSideCastlingStoppedByKnight(data)) return false;
+        if(kingSideCastlingStoppedVertically(data)) return false;
+        return !kingSideCastlingStoppedDiagonally(data);
+    }
+
+    private static boolean backRankThreat(CastlingData data) {
 
         for (int i = 3; i >= 0; i--) {
-            int piece = board.getCoordinate(new Coordinate(backRank, i));
-            if (opponentQueen == piece || opponentRook == piece) return true;
+            int piece = data.backRow[i];
+            if (data.queen == piece || data.rook == piece) return true;
             if(piece != 0) break;
         }
         for (int i = 5; i <= 7; i++) {
-            int piece = board.getCoordinate(new Coordinate(backRank, i));
-            if (opponentQueen == piece || opponentRook == piece) return true;
+            int piece = data.backRow[i];
+            if (data.queen == piece || data.rook == piece) return true;
             if(piece != 0) break;
         }
         return false;
     }
 
-    private static boolean leftCastlingStoppedVertically(boolean isWhite, Board board) {
-        return isThreatenedVertically(isWhite, board, 2, 3);
+    private static boolean queenSideCastlingStoppedVertically(CastlingData data) {
+        return isThreatenedVertically(data, 2, 3);
     }
 
-    private static boolean rightCastlingStoppedVertically(boolean isWhite, Board board) {
-        return isThreatenedVertically(isWhite, board, 5, 6);
+    private static boolean kingSideCastlingStoppedVertically(CastlingData data) {
+        return isThreatenedVertically(data, 5, 6);
     }
 
-    private static boolean inCheckVertically(boolean isWhite, Board board) {
-        return isThreatenedVertically(isWhite, board, 4, 4);
+    private static boolean inCheckVertically(CastlingData data) {
+        return isThreatenedVertically(data, 4, 4);
     }
 
-    private static boolean isThreatenedVertically(boolean isWhite, Board board, int startIndex, int endIndex) {
+    private static boolean isThreatenedVertically(CastlingData data, int startIndex, int endIndex) {
         int backRank, iteration;
-        int opponentRook, opponentQueen;
-        int offset;
         int oppBackRank;
 
-        if(isWhite) {
-            offset = Pieces.BLACK;
+        if(data.isWhite) {
             backRank = 6;
             iteration = -1;
             oppBackRank = -1;
         } else {
-            offset = Pieces.WHITE;
             backRank = 1;
             iteration = 1;
             oppBackRank = 8;
         }
-        opponentRook = Pieces.ROOK | offset;
-        opponentQueen = Pieces.QUEEN | offset;
 
         for (int j = startIndex; j <= endIndex; j++) {
             for(int i = backRank; i != oppBackRank; i += iteration) {
-                int piece = board.getCoordinate(new Coordinate(i, j));
-                if(opponentRook == piece || opponentQueen == piece) return true;
+                int piece = data.board.getCoordinate(new Coordinate(i, j));
+                if(data.rook == piece || data.queen == piece) return true;
                 if(piece != 0) break;
             }
         }
@@ -227,44 +191,38 @@ public class King {
         return false;
     }
 
-    private static boolean leftCastlingStoppedDiagonally(boolean isWhite, Board board) {
-        return isThreatenedDiagonally(isWhite, board, 2, 3);
+    private static boolean queenSideCastlingStoppedDiagonally(CastlingData data) {
+        return isThreatenedDiagonally(data, 2, 3);
     }
 
-    private static boolean rightCastlingStoppedDiagonally(boolean isWhite, Board board) {
-        return isThreatenedDiagonally(isWhite, board, 5, 6);
+    private static boolean kingSideCastlingStoppedDiagonally(CastlingData data) {
+        return isThreatenedDiagonally(data, 5, 6);
     }
 
-    private static boolean inCheckDiagonally(boolean isWhite, Board board) {
-        return isThreatenedDiagonally(isWhite, board, 4, 4);
+    private static boolean inCheckDiagonally(CastlingData data) {
+        if(data.seventh[3] == data.pawn || data.seventh[5] == data.pawn) return true;
+        return isThreatenedDiagonally(data, 4, 4);
     }
 
-    private static boolean isThreatenedDiagonally(boolean isWhite, Board board, int startIndex, int endIndex) {
+    private static boolean isThreatenedDiagonally(CastlingData data, int startIndex, int endIndex) {
 
         int horIndex, verStart, verIteration, verIndex;
-        int offset;
-        int opponentBishop, opponentQueen;
 
-        if(isWhite) {
-            offset = Pieces.BLACK;
+        if(data.isWhite) {
             verIteration = -1;
             verStart = 6;
         } else {
-            offset = Pieces.WHITE;
             verIteration = 1;
             verStart = 1;
         }
-
-        opponentBishop = Pieces.BISHOP | offset;
-        opponentQueen = Pieces.QUEEN | offset;
 
         for(int i = startIndex; i <= endIndex; i++) {
             horIndex = i - 1;
             verIndex = verStart;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
-                int piece = board.getCoordinate(verIndex, horIndex);
+                int piece = data.board.getCoordinate(verIndex, horIndex);
 
-                if(opponentBishop == piece || opponentQueen == piece) return true;
+                if(data.bishop == piece || data.queen == piece) return true;
                 if(piece != 0) break;
 
                 horIndex--;
@@ -273,9 +231,9 @@ public class King {
             horIndex = i + 1;
             verIndex = verStart;
             while(horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
-                int piece = board.getCoordinate(verIndex, horIndex);
+                int piece = data.board.getCoordinate(verIndex, horIndex);
 
-                if(opponentBishop == piece || opponentQueen == piece) return true;
+                if(data.bishop == piece || data.queen == piece) return true;
                 if(piece != 0) break;
 
                 horIndex++;
@@ -291,7 +249,7 @@ public class King {
      */
     public static boolean kingInCheck(BoardState boardState) {
         //its inverse turn
-        boolean white = boardState.turn == PlayerTurn.BLACK;
+        boolean white = !boardState.isWhiteTurn;
         Board board = boardState.board;
         //let's try the most likely moves to cause check (bishop and rook)
         Coordinate origin = white ? board.getWhiteKing() : board.getBlackKing();
@@ -322,8 +280,8 @@ public class King {
     private static boolean pieceHasCheck(BoardState boardState, boolean colour, int type, Coordinate origin) {
         Moves moves = new Moves();
         switch (type) {
-            case Pieces.BISHOP: Bishop.getMoves(origin, boardState, moves); break;
-            case Pieces.ROOK: Rook.getMoves(origin, boardState, moves); break;
+            case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, moves);
+            case Pieces.ROOK -> Rook.getMoves(origin, boardState, moves);
         }
         for (Move move: moves) {
             int piece = boardState.board.getCoordinate(move.destination);
