@@ -33,4 +33,16 @@ public class Move {
         }
         return sMove;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Move)) return false;
+        Move otherMove = (Move)other;
+        return origin.equals(otherMove.origin) && destination.equals(otherMove.destination) && promotion == otherMove.promotion;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
 }
