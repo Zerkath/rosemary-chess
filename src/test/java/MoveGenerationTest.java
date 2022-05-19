@@ -1,9 +1,16 @@
 import BoardRepresentation.BoardState;
+import DataTypes.Coordinate;
 import DataTypes.Move;
 import DataTypes.Moves;
 
 import Main.UCI_Controller;
 import MoveGeneration.MoveGenerator;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -286,5 +293,33 @@ public class MoveGenerationTest {
     void randomKnight() {
         String position = "5k2/8/8/8/8/8/4Nn1P/R2QK2R w KQ - 1 8";
         Assertions.assertEquals(35, moveGenerator.getLegalMoves(new BoardState(position)).size());
+    }
+    
+    @Test
+    void kingRestrictedByOtherKing() {
+        String fenString = "8/8/8/p2N4/n1k1K3/8/5P2/8 b - - 3 52";
+        BoardState boardState = new BoardState(fenString);
+        MoveGenerator mv = new MoveGenerator();
+        Moves expectedMoves = new Moves("c4c5 c4b5 c4b3 a4b2 a4b6 a4c3 a4c5");
+
+        Moves moves = mv.getLegalMoves(boardState);
+
+        Assertions.assertEquals(expectedMoves.size(), moves.size(), "\n"+getNonExpectedMoves(expectedMoves, moves).toString()+"\n");
+    }
+
+    private Moves getNonExpectedMoves(Moves expected, Moves actual) {
+        Moves result = new Moves();
+        HashSet<Move> expectedSet = new HashSet<>();
+        expectedSet.addAll(expected);
+        for(Move move: actual) {
+            System.out.println("Was not in set " + move.hashCode());
+
+            if(!expectedSet.contains(move)) {
+                result.add(move);
+            } else {
+                System.out.println(move.toString() + "expected");
+            }
+        }
+        return result;
     }
 }
