@@ -2,8 +2,9 @@ package MoveGeneration;
 
 import BoardRepresentation.BoardState;
 import DataTypes.*;
-
+import java.util.LinkedList;
 public class King {
+
     public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
@@ -15,8 +16,7 @@ public class King {
         boolean isWhite = Pieces.isWhite(originalPiece);
         int row = origin.row;
         int col = origin.column;
-
-
+        
         //generating moves around king //todo update
         for (int row_i = row-1; row_i <= row+1; row_i++) {
             for (int column_i = col-1; column_i <= col+1; column_i++) {
@@ -26,8 +26,7 @@ public class King {
                 }
             }
         }
-
-        //castling
+        // castling
         if((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) {
             CastlingData data = new CastlingData(isWhite, row, board);
             if(col == 4 &&
@@ -253,10 +252,13 @@ public class King {
         Board board = boardState.board;
         //let's try the most likely moves to cause check (bishop and rook)
         Coordinate origin = white ? board.getWhiteKing() : board.getBlackKing();
+
+        if(distanceWithinBoundary(board.getWhiteKing(), board.getBlackKing(), 1)) return true;
+
         if(origin == null) return false;
-        int colour = white ? Pieces.BLACK : Pieces.WHITE;
-        int opponentKnight = Pieces.KNIGHT | colour;
-        int opponentPawn = Pieces.PAWN | colour;
+        int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
+        int opponentKnight = Pieces.KNIGHT | opponentColor;
+        int opponentPawn = Pieces.PAWN | opponentColor;
 
         if (pieceHasCheck(boardState, white, Pieces.ROOK, origin) || pieceHasCheck(boardState, white, Pieces.BISHOP, origin)) return true;
 
@@ -275,6 +277,15 @@ public class King {
             if(boardState.board.getCoordinate(move.destination) == opponentPawn) return true;
         }
         return false; // no checks return false
+    }
+
+
+    private static boolean distanceWithinBoundary(Coordinate a, Coordinate b, int boundary) {
+        if(a == null || a == null) return false; 
+        int absCol = Math.abs(a.column - b.column);
+        int absRow = Math.abs(a.row - b.row);
+
+        return absCol <= boundary && absRow <= boundary;
     }
 
     private static boolean pieceHasCheck(BoardState boardState, boolean colour, int type, Coordinate origin) {
