@@ -3,8 +3,6 @@ package MoveGeneration;
 import BoardRepresentation.BoardState;
 import DataTypes.*;
 
-import java.util.Arrays;
-
 public class Pawn {
 
     private static void pawnPromotions(Move move, boolean isWhite, Moves moves) {

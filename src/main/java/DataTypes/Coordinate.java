@@ -33,4 +33,16 @@ public class Coordinate {
     private int toRowInt(char c) {
         return 8 - Integer.parseInt(String.valueOf(c));
     }
+
+    @Override
+    public boolean equals(Object coord) {
+        if (!(coord instanceof Coordinate)) return false;
+        Coordinate c = (Coordinate) coord; // cast for types
+        return c.column == this.column && c.row == this.row;
+    }
+
+    @Override
+    public int hashCode() {
+        return column * 7 + row * 17;
+    }
 }
