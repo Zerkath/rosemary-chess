@@ -9,6 +9,10 @@ Started out as a project for Artificial Intelligence and Robotics course work in
 To work with GUI's the jar needed to be turned into a exe, this was done using http://launch4j.sourceforge.net/
 
 
+## Conventional commits
+
+New commits after 30/05/2022 are going to be done with conventional commits formatting
+
 ## How to get started
 
 ### Installation
