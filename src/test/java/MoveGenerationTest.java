@@ -1,15 +1,11 @@
 import BoardRepresentation.BoardState;
-import DataTypes.Coordinate;
 import DataTypes.Move;
 import DataTypes.Moves;
 
 import Main.UCI_Controller;
 import MoveGeneration.MoveGenerator;
 
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import org.junit.jupiter.api.*;
 
