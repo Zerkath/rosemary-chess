@@ -161,19 +161,31 @@ public class UCI_Controller extends OutputUtils {
     }
 
     public void getPerft(int depth) {
+        long[] result = runPerft(depth, true);
+        String str = "\nDepth " + depth + " nodes: " + result[0]; 
+        println(str + " " + result[1] + "ms");
+    }
+
+    public long[] runPerft(int depth, boolean print) {
+        return getPerftScore(depth, print, this.boardState);
+    }
+
+    public long[] runPerft(int depth, boolean print, BoardState v_boardState) {
+        return getPerftScore(depth, print, v_boardState);
+    }
+
+    /**
+     * Runs perft at set depth & return an array of how many nodes were found & how long the operation took in MS
+     * @param depth ply depth
+     * @param print whether to print to standard out, useful for debugging
+     * @return long array where index 0 is for number of moves found & index 1 ms the operation took
+     */
+    private long[] getPerftScore(int depth, boolean print, BoardState bState) {
         long start = System.currentTimeMillis();
-        String str = "\nDepth " + depth + " nodes: " + runPerft(depth, true);
+        int perftMoves = perft(depth, depth, print, bState); 
         long end = System.currentTimeMillis();
-        println(str + " " + (end - start) + "ms");
-    }
-
-    public int runPerft(int depth, boolean print) {
-        return perft(depth, depth, print, this.boardState);
-    }
-
-    public int runPerft(int depth, boolean print, BoardState boardState) {
-        return perft(depth, depth, print, boardState);
-    }
+        return new long[]{perftMoves, end - start};
+    } 
 
     private int perft(int depth, int start, boolean print, BoardState boardState) {
         if(depth <= 0) return 1;
