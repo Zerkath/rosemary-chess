@@ -72,7 +72,7 @@ public class MoveGenerationTest {
         return getTestBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
 
-    //        String test = "6pr/8/7p/8/8/7P/8/6PR w - - 0 1";
+    // String test = "6pr/8/7p/8/8/7P/8/6PR w - - 0 1";
 
     BoardState getTestBoard(String position) {
         return new BoardState(new BoardState(position));
@@ -85,7 +85,7 @@ public class MoveGenerationTest {
         boardState.printBoard();
         Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(12, moves.size());
-        for (Move move: moves) {
+        for (Move move : moves) {
             System.out.println(move.toString());
         }
     }
@@ -106,7 +106,6 @@ public class MoveGenerationTest {
         boardState.playMoves("e1f1 h3g2 f1g2".split(" "));
         boardState.printBoard(boardState);
     }
-
 
     @Test
     @Order(10)
@@ -161,53 +160,67 @@ public class MoveGenerationTest {
     @Order(200)
     void movesToDepth() {
 
-        int [] depth = new int[5];
+        int[] depth = new int[5];
+        int[] expected = {
+                20,
+                400,
+                8902,
+                197281,
+                4865609,
+                119060324
+        };
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i+1, true, getTestBoard());
+            depth[i] = uci.runPerft(i + 1, true, getTestBoard());
             long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
         }
 
-        Assertions.assertEquals(20, depth[0]);
-        Assertions.assertEquals(400, depth[1]);
-        Assertions.assertEquals(8902, depth[2]);
-        Assertions.assertEquals(197281, depth[3]);
-        Assertions.assertEquals(4865609, depth[4]);
-//        Assertions.assertEquals(119060324, depth[5]); //too slow to reach took 278 seconds to complete on 23/05 e55b433
-        //took 155s~ after 5/9/2021
-        //took 136s~ after 13/9/2021, wsl2 99s??
-        //took 73s~ after 15/9/2021
+        for (int i = 0; i < depth.length; i++) {
+            Assertions.assertEquals(expected[i], depth[i]);
+        }
+        // run only this test
+        // ./gradlew test --tests '*MoveGenerationTest.movesToDepth'
+
+        // depth '6' too slow to reach took 278 seconds to complete on 23/05 e55b433
+        // took 155s~ after 5/9/2021
+        // took 136s~ after 13/9/2021, wsl2 99s??
+        // took 73s~ after 15/9/2021
+        // took 51s~ on 18/12/2022 ! new cpu
+        //
+        // this test is broken with async,
+        // but with manual run in built app this takes 23s while old solution took 43s
     }
 
     @Test
     @Order(101)
     void movesFromPosition1() {
-        int [] depth = new int[3];
+        int[] depth = new int[3];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i+1, true, getTestBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"));
+            depth[i] = uci.runPerft(i + 1, true,
+                    getTestBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"));
             long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
 
         }
 
         Assertions.assertEquals(48, depth[0]);
         Assertions.assertEquals(2039, depth[1]);
         Assertions.assertEquals(97862, depth[2]);
-//        Assertions.assertEquals(4085603, depth[3]);
-//        Assertions.assertEquals(193690690, depth[4]);
+        // Assertions.assertEquals(4085603, depth[3]);
+        // Assertions.assertEquals(193690690, depth[4]);
     }
 
     @Test
     @Order(102)
     void movesFromPosition2() {
-        int [] depth = new int[5];
+        int[] depth = new int[5];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i+1, true, getTestBoard("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"));
+            depth[i] = uci.runPerft(i + 1, true, getTestBoard("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"));
             long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
 
         }
 
@@ -216,64 +229,67 @@ public class MoveGenerationTest {
         Assertions.assertEquals(2812, depth[2]);
         Assertions.assertEquals(43238, depth[3]);
         Assertions.assertEquals(674624, depth[4]);
-//        Assertions.assertEquals(11030083, depth[5]);
+        // Assertions.assertEquals(11030083, depth[5]);
     }
 
     @Test
     @Order(103)
     void movesFromPosition3() {
-        int [] depth = new int[3];
+        int[] depth = new int[3];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i+1, true, getTestBoard("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"));
+            depth[i] = uci.runPerft(i + 1, true,
+                    getTestBoard("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"));
             long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
 
         }
 
         Assertions.assertEquals(6, depth[0]);
         Assertions.assertEquals(264, depth[1]);
         Assertions.assertEquals(9467, depth[2]);
-//        Assertions.assertEquals(422333, depth[3]);
-//        Assertions.assertEquals(15833292, depth[4]);
+        // Assertions.assertEquals(422333, depth[3]);
+        // Assertions.assertEquals(15833292, depth[4]);
     }
 
     @Test
     @Order(104)
     void movesFromPosition3mirrored() {
-        int [] depth = new int[3];
+        int[] depth = new int[3];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i+1, true, getTestBoard("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1"));
+            depth[i] = uci.runPerft(i + 1, true,
+                    getTestBoard("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1"));
             long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
 
         }
 
         Assertions.assertEquals(6, depth[0]);
         Assertions.assertEquals(264, depth[1]);
         Assertions.assertEquals(9467, depth[2]);
-//        Assertions.assertEquals(422333, depth[3]);
-//        Assertions.assertEquals(15833292, depth[4]);
+        // Assertions.assertEquals(422333, depth[3]);
+        // Assertions.assertEquals(15833292, depth[4]);
     }
 
     @Test
     @Order(105)
     void movesFromPosition4() {
-        int [] depth = new int[3];
+        int[] depth = new int[3];
         for (int i = 0; i < depth.length; i++) {
             long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i+1, true, getTestBoard("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8"));
+            depth[i] = uci.runPerft(i + 1, true,
+                    getTestBoard("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8"));
             long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + (end-start) + "ms\n");
+            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
 
         }
 
         Assertions.assertEquals(44, depth[0]);
         Assertions.assertEquals(1486, depth[1]);
         Assertions.assertEquals(62379, depth[2]);
-//        Assertions.assertEquals(2103487, depth[3]);
-//        Assertions.assertEquals(89941194, depth[4]);
+        // Assertions.assertEquals(2103487, depth[3]);
+        // Assertions.assertEquals(89941194, depth[4]);
     }
 
     @Test
@@ -290,7 +306,7 @@ public class MoveGenerationTest {
         String position = "5k2/8/8/8/8/8/4Nn1P/R2QK2R w KQ - 1 8";
         Assertions.assertEquals(35, moveGenerator.getLegalMoves(new BoardState(position)).size());
     }
-    
+
     @Test
     void kingRestrictedByOtherKing() {
         String fenString = "8/8/8/p2N4/n1k1K3/8/5P2/8 b - - 3 52";
@@ -300,17 +316,18 @@ public class MoveGenerationTest {
 
         Moves moves = mv.getLegalMoves(boardState);
 
-        Assertions.assertEquals(expectedMoves.size(), moves.size(), "\n"+getNonExpectedMoves(expectedMoves, moves).toString()+"\n");
+        Assertions.assertEquals(expectedMoves.size(), moves.size(),
+                "\n" + getNonExpectedMoves(expectedMoves, moves).toString() + "\n");
     }
 
     private Moves getNonExpectedMoves(Moves expected, Moves actual) {
         Moves result = new Moves();
         HashSet<Move> expectedSet = new HashSet<>();
         expectedSet.addAll(expected);
-        for(Move move: actual) {
+        for (Move move : actual) {
             System.out.println("Was not in set " + move.hashCode());
 
-            if(!expectedSet.contains(move)) {
+            if (!expectedSet.contains(move)) {
                 result.add(move);
             } else {
                 System.out.println(move.toString() + "expected");
