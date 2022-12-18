@@ -281,7 +281,7 @@ public class King {
 
 
     private static boolean distanceWithinBoundary(Coordinate a, Coordinate b, int boundary) {
-        if(a == null || a == null) return false; 
+        if(a == null || b == null) return false; 
         int absCol = Math.abs(a.column - b.column);
         int absRow = Math.abs(a.row - b.row);
 
