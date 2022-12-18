@@ -160,8 +160,8 @@ public class MoveGenerationTest {
     @Order(200)
     void movesToDepth() {
 
-        int[] depth = new int[5];
-        int[] expected = {
+        long[] depth = new long[5];
+        long[] expected = {
                 20,
                 400,
                 8902,
@@ -170,15 +170,15 @@ public class MoveGenerationTest {
                 119060324
         };
         for (int i = 0; i < depth.length; i++) {
-            long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i + 1, true, getTestBoard());
-            long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
+            long[] result = uci.runPerft(i+1, true, getTestBoard());
+            depth[i] = result[0];
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + result[1] + "ms\n");
         }
 
         for (int i = 0; i < depth.length; i++) {
             Assertions.assertEquals(expected[i], depth[i]);
         }
+
         // run only this test
         // ./gradlew test --tests '*MoveGenerationTest.movesToDepth'
 
@@ -195,13 +195,11 @@ public class MoveGenerationTest {
     @Test
     @Order(101)
     void movesFromPosition1() {
-        int[] depth = new int[3];
+        long [] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
-            long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i + 1, true,
-                    getTestBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"));
-            long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
+            long [] result = uci.runPerft(i+1, true, getTestBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"));
+            depth[i] = result[0]; 
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + result[1] + "ms movesFromPosition1 \n");
 
         }
 
@@ -215,13 +213,11 @@ public class MoveGenerationTest {
     @Test
     @Order(102)
     void movesFromPosition2() {
-        int[] depth = new int[5];
+        long [] depth = new long[5];
         for (int i = 0; i < depth.length; i++) {
-            long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i + 1, true, getTestBoard("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"));
-            long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
-
+            long [] result = uci.runPerft(i+1, true, getTestBoard("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"));
+            depth[i] = result[0];
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + result[1] + "ms movesFromPosition2\n");
         }
 
         Assertions.assertEquals(14, depth[0]);
@@ -235,14 +231,11 @@ public class MoveGenerationTest {
     @Test
     @Order(103)
     void movesFromPosition3() {
-        int[] depth = new int[3];
+        long [] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
-            long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i + 1, true,
-                    getTestBoard("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"));
-            long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
-
+            long [] result = uci.runPerft(i+1, true, getTestBoard("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1"));
+            depth[i] = result[0]; 
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + result[1] + "ms movesFromPosition3\n");
         }
 
         Assertions.assertEquals(6, depth[0]);
@@ -255,14 +248,11 @@ public class MoveGenerationTest {
     @Test
     @Order(104)
     void movesFromPosition3mirrored() {
-        int[] depth = new int[3];
+        long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
-            long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i + 1, true,
-                    getTestBoard("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1"));
-            long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
-
+            long [] result = uci.runPerft(i+1, true, getTestBoard("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1"));
+            depth[i] = result[0];
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + result[1] + "ms movesFromPosition3 mirrored\n");
         }
 
         Assertions.assertEquals(6, depth[0]);
@@ -275,13 +265,11 @@ public class MoveGenerationTest {
     @Test
     @Order(105)
     void movesFromPosition4() {
-        int[] depth = new int[3];
+        long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
-            long start = System.currentTimeMillis();
-            depth[i] = uci.runPerft(i + 1, true,
-                    getTestBoard("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8"));
-            long end = System.currentTimeMillis();
-            System.out.println("Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + (end - start) + "ms\n");
+            long[] result = uci.runPerft(i+1, true, getTestBoard("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8"));
+            depth[i] = result[0];
+            System.out.println("Depth: " + (i+1) +  " Nodes: " + depth[i] + " Time: " + result[1] + "ms movesFromPosition4\n");
 
         }
 
