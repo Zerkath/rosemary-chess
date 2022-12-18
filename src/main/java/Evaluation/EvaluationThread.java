@@ -7,6 +7,13 @@ import DataTypes.Pieces;
 import Main.OutputUtils;
 import MoveGeneration.MoveGenerator;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
 import java.io.BufferedOutputStream;
 
 public class EvaluationThread extends OutputUtils implements Runnable {
@@ -17,7 +24,6 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     boolean debug;
     int depth;
     EvaluationValues values = new EvaluationValues();
-    EvaluationCalculations evalCalculator = new EvaluationCalculations();
     MoveGenerator moveGenerator = new MoveGenerator();
 
     public EvaluationThread(BoardState boardState, int depth, boolean debug, BufferedOutputStream writer) {
@@ -31,15 +37,77 @@ public class EvaluationThread extends OutputUtils implements Runnable {
 
     @Override
     public void run() {
-        int eval;
-        eval = alphaBeta(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth, boardState.isWhiteTurn);
+        boolean isWhite = boardState.isWhiteTurn;
+        List<CompletableFuture<BestMove>> moves = moveGenerator
+                .getLegalMoves(boardState)
+                .stream()
+                .filter(m -> m != null)
+                .map(move -> CompletableFuture.supplyAsync(() -> new BestMove(alphaBeta(
+                        boardState.makeNonModifyingMove(move),
+                        Integer.MIN_VALUE,
+                        Integer.MAX_VALUE,
+                        depth - 1,
+                        !isWhite,
+                        new EvaluationCalculations()), move)))
+                .collect(Collectors.toList());
+
+        CompletableFuture<Void> futures = CompletableFuture
+                .allOf(moves.toArray(new CompletableFuture[moves.size()]));
+
+        CompletableFuture<List<BestMove>> result = futures.thenApply(future -> {
+            return moves
+                    .stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+        });
+
+        try {
+            List<BestMove> lbm = result.get();
+            Collections.sort(lbm, new Comparator<BestMove>() {
+                @Override
+                public int compare(BestMove bmA, BestMove bmB) {
+                    return bmA.score - bmB.score;
+                }
+            });
+
+            if (isWhite)
+                Collections.reverse(lbm);
+
+            for (BestMove bm : lbm) {
+                if (bm.move != null) {
+                    println("bestmove " + bm.move.toString());
+                    return;
+                }
+            }
+        } catch (Throwable e) {
+            // im a sharp edge :)
+            println(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
     }
 
-    private int alphaBeta(BoardState boardState, int alpha, int beta, int depth, boolean isWhite) { // black
+    private class BestMove {
+        int score;
+        Move move;
+
+        BestMove(int score, Move move) {
+            this.score = score;
+            this.move = move;
+        }
+    }
+
+    private int alphaBeta(
+            BoardState boardState,
+            int alpha,
+            int beta,
+            int depth,
+            boolean isWhite,
+            EvaluationCalculations evalCalculator) {
 
         Moves moves = moveGenerator.getLegalMoves(boardState);
         if (moves.isEmpty()) // no moves this turn in checkmate or draw
-            return noMoves(boardState, false, depth);
+            return noMoves(boardState, isWhite, depth);
 
         if (depth == 0 || Thread.currentThread().isInterrupted())
             return evalCalculator.calculateMaterial(boardState);
@@ -48,10 +116,13 @@ public class EvaluationThread extends OutputUtils implements Runnable {
 
         for (Move move : moves) {
             boardState.makeMove(move);
-            int eval = alphaBeta(boardState, alpha, beta, depth - 1, !isWhite);
+
+            int eval = alphaBeta(boardState, alpha, beta, depth - 1, !isWhite, evalCalculator);
+
             boardState.unMakeMove();
+
             if (depth == startingDepth)
-                printInfoUCI(depth, eval, move, false);
+                printInfoUCI(depth, eval, move, isWhite);
             if (isWhite) {
                 if (eval >= beta)
                     return beta;
@@ -73,9 +144,9 @@ public class EvaluationThread extends OutputUtils implements Runnable {
         if (depth == startingDepth) {
             if (bestMove == null)
                 bestMove = moves.getFirst();
-            println("bestmove " + bestMove.toString());
+            println("info: " + bestMove.toString());
         }
-        return beta;
+        return isWhite ? alpha : beta;
     }
 
     private int noMoves(BoardState bs, boolean isWhite, int depth) {
@@ -88,8 +159,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     private void printInfoUCI(int depth, int eval, Move move, boolean isWhite) {
 
         StringBuilder builder = new StringBuilder();
-        builder
-                .append("info depth")
+        builder.append("info depth")
                 .append(depth);
 
         boolean whiteHasMate = eval >= values.mateForWhite;
@@ -99,15 +169,13 @@ public class EvaluationThread extends OutputUtils implements Runnable {
         if (isMate) {
             int offset = whiteHasMate ? whiteTurn + values.mate - eval
                     : whiteTurn - values.mate - eval - (isWhite ? 1 : 0);
-            builder
-                    .append(" score mate ")
+            builder.append(" score mate ")
                     .append(offset);
         } else
-            builder
-                    .append(" score cp ")
+            builder.append(" score cp ")
                     .append(eval);
-        builder
-                .append(" currmove ")
+
+        builder.append(" currmove ")
                 .append(move.toString());
 
         println(builder.toString());
