@@ -2,7 +2,6 @@ package MoveGeneration;
 
 import BoardRepresentation.BoardState;
 import DataTypes.*;
-import java.util.LinkedList;
 public class King {
 
     public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
