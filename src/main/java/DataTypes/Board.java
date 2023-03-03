@@ -79,7 +79,7 @@ public class Board {
     }
 
     public void setCastling(CastlingRights rights, boolean white) {
-        if (white) setWhiteCastlingRights(rights); else setBlackCastlingRights(rights);
+        if(white) setWhiteCastlingRights(rights); else setBlackCastlingRights(rights);
     }
 
     public Coordinate getWhiteKing() {
@@ -99,8 +99,7 @@ public class Board {
     }
 
     public boolean isOpposingColourOrEmpty(Coordinate destination, int originalPiece) {
-        if(destination.row < 0 || destination.row > 7) return false;
-        if(destination.column < 0 || destination.column > 7) return false;
+        if (Utils.isOutOfBounds(destination)) return false;
 
         boolean isWhite = Pieces.isWhite(originalPiece);
         int dest = getCoordinate(destination);
@@ -108,6 +107,14 @@ public class Board {
         boolean opponent = Pieces.isWhite(dest);
 
         return isWhite != opponent;
+    }
+
+    /**
+     * Valid move in this context means either empty or opposing colour
+     */
+    public boolean isValidMove(Move move) {
+        return Pieces.EMPTY == getCoordinate(move.destination) ||
+            Pieces.isWhite(getCoordinate(move.origin)) != Pieces.isWhite(getCoordinate(move.destination));
     }
 
     public boolean pawnCapturePossible(Coordinate coordinate, int origin) {
