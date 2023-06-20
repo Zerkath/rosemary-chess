@@ -12,26 +12,29 @@ public class FenUtils {
     public static BoardState parseFen(String fen) {
 
         /*
-        split data indexes
-        0 = fen board data
-        1 = white or black turn
-        2 = castling rights
-        3 = en passant move
-        4 = half-move clock (how many turns since last capture or pawn move 50 move rule)
-        5 = full-move number starts at 1 incremented after blacks move or at the start of white move
-        */
-        String [] split = fen.split(" ");
+         * split data indexes
+         * 0 = fen board data
+         * 1 = white or black turn
+         * 2 = castling rights
+         * 3 = en passant move
+         * 4 = half-move clock (how many turns since last capture or pawn move 50 move
+         * rule)
+         * 5 = full-move number starts at 1 incremented after blacks move or at the
+         * start of white move
+         */
+        String[] split = fen.split(" ");
 
         BoardState boardState = new BoardState();
 
-        if(split.length != 6) return new BoardState(parseFen(default_fen)); //todo give out errors
-        String [] rows = split[0].split("/");
-        if(rows.length != 8) return new BoardState(parseFen(default_fen));
-
+        if (split.length != 6)
+            return new BoardState(parseFen(default_fen)); // todo give out errors
+        String[] rows = split[0].split("/");
+        if (rows.length != 8)
+            return new BoardState(parseFen(default_fen));
 
         boardState.isWhiteTurn = split[1].equals("w");
 
-        boardState.setCastling(split[2].toCharArray()); //set castling rights
+        boardState.setCastling(split[2].toCharArray()); // set castling rights
         boardState.turnNumber = Integer.parseInt(split[5]);
 
         boardState.enPassant = split[3].length() == 2 ? Utils.getCoordinate(split[3]) : null;
@@ -51,35 +54,38 @@ public class FenUtils {
             int empty = 0;
             for (int column = 0; column < 8; column++) {
                 int piece = board.getCoordinate(row, column);
-                if(piece == 0) {
+                if (piece == 0) {
                     empty++;
-                } else if(empty != 0) {
+                } else if (empty != 0) {
                     strBuilder.append(empty);
                     empty = 0;
                     strBuilder.append(Pieces.getChar(piece));
-                } else strBuilder.append(Pieces.getChar(piece));
+                } else
+                    strBuilder.append(Pieces.getChar(piece));
             }
-            if(empty != 0) strBuilder.append(empty);
-            if(row != 7) strBuilder.append("/");
+            if (empty != 0)
+                strBuilder.append(empty);
+            if (row != 7)
+                strBuilder.append("/");
         }
 
         strBuilder.append(boardState.isWhiteTurn ? " w" : " b");
 
-        String WhiteCastlingString = "";
-        switch (board.getWhiteCastling()) {
-            case KING: WhiteCastlingString = "K"; break;
-            case QUEEN: WhiteCastlingString = "Q"; break;
-            case BOTH: WhiteCastlingString = "KQ"; break;
-        }
+        String WhiteCastlingString = switch (board.getWhiteCastling()) {
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BOTH -> "KQ";
+            case NONE -> "";
+        };
 
-        String BlackCastlingString = "";
-        switch (board.getBlackCastling()) {
-            case KING: BlackCastlingString = "k"; break;
-            case QUEEN: BlackCastlingString = "q"; break;
-            case BOTH: BlackCastlingString = "kq"; break;
-        }
+        String BlackCastlingString = switch (board.getBlackCastling()) {
+            case KING -> "k";
+            case QUEEN -> "q";
+            case BOTH -> "kq";
+            case NONE -> "";
+        };
 
-        if(WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
+        if (WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
             strBuilder.append(" - ");
         } else {
             strBuilder.append(" ")
