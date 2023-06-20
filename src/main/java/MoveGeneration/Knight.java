@@ -16,18 +16,13 @@ public class Knight {
             int [] rows = new int []{row - 2, row + 2};
             Moves moves = new Moves();
             for (int d_column: columns) {
-                Coordinate destination = new Coordinate(row + 1, d_column);
-                
-                if (!Utils.isOutOfBounds(destination)) moves.add(new Move(origin, destination));
-                destination = new Coordinate(row - 1, d_column);
-                if (!Utils.isOutOfBounds(destination)) moves.add(new Move(origin, destination));
+                Utils.addToCollection(row + 1, d_column, origin, moves);
+                Utils.addToCollection(row - 1, d_column, origin, moves);
             }
 
             for (int d_row: rows) {
-                Coordinate destination = new Coordinate(d_row, col + 1);
-                if (!Utils.isOutOfBounds(destination)) moves.add(new Move(origin, destination));
-                destination = new Coordinate(d_row, col - 1);
-                if (!Utils.isOutOfBounds(destination)) moves.add(new Move(origin, destination));
+                Utils.addToCollection(d_row, col + 1, origin, moves);
+                Utils.addToCollection(d_row, col - 1, origin, moves);
             }
             knightMoves.put(origin, moves);
         } 
@@ -36,9 +31,6 @@ public class Knight {
     public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
         Board board = boardState.board;
-
-        int originalPiece = board.getCoordinate(origin);
-
         Moves n_moves = knightMoves.get(origin);
 
         for(Move move: n_moves) {
