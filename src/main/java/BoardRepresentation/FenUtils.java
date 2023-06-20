@@ -3,6 +3,7 @@ package BoardRepresentation;
 import DataTypes.Board;
 import DataTypes.Coordinate;
 import DataTypes.Pieces;
+import DataTypes.Utils;
 
 public class FenUtils {
 
@@ -33,7 +34,7 @@ public class FenUtils {
         boardState.setCastling(split[2].toCharArray()); //set castling rights
         boardState.turnNumber = Integer.parseInt(split[5]);
 
-        boardState.enPassant = split[3].length() == 2 ? new Coordinate(split[3]) : null;
+        boardState.enPassant = split[3].length() == 2 ? Utils.getCoordinate(split[3]) : null;
 
         for (int row = 0; row < rows.length; row++) {
             boardState.addRow(rows[row], row);

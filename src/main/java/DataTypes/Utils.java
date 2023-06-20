@@ -35,10 +35,23 @@ public class Utils {
         return allCoordinates[row * 8 + column];
     }
 
-
     public static void addToCollection(int row, int column, Coordinate origin, List<Move> moves) {
         if (isOutOfBounds(row, column))
             return;
         moves.add(new Move(origin, getCoordinate(row, column)));
+    }
+
+    public static Coordinate getCoordinate(String coordinateString) {
+        return getCoordinate(
+                toRowInt(coordinateString.charAt(1)),
+                toColumnInt(coordinateString.charAt(0)));
+    }
+
+    private static int toRowInt(char c) {
+        return 8 - Integer.parseInt(String.valueOf(c));
+    }
+
+    private static int toColumnInt(char c) {
+        return c - 'a';
     }
 }

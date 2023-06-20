@@ -74,18 +74,19 @@ public class King {
                     switch (current) {
                         case BOTH -> {
                             if (qSide)
-                                moves.add(new Move(origin, new Coordinate(row, 2)));
+                                moves.add(new Move(origin, Utils.getCoordinate(row, 2)));
                             if (kSide)
-                                moves.add(new Move(origin, new Coordinate(row, 6)));
+                                moves.add(new Move(origin, Utils.getCoordinate(row, 6)));
                         }
                         case KING -> {
                             if (kSide)
-                                moves.add(new Move(origin, new Coordinate(row, 6)));
+                                moves.add(new Move(origin, Utils.getCoordinate(row, 6)));
                         }
                         case QUEEN -> {
                             if (qSide)
-                                moves.add(new Move(origin, new Coordinate(row, 2)));
+                                moves.add(new Move(origin, Utils.getCoordinate(row, 2)));
                         }
+                        case NONE -> {}
                     }
                 }
             }
@@ -217,7 +218,7 @@ public class King {
 
         for (int j = startIndex; j <= endIndex; j++) {
             for (int i = backRank; i != oppBackRank; i += iteration) {
-                int piece = data.board.getCoordinate(new Coordinate(i, j));
+                int piece = data.board.getCoordinate(Utils.getCoordinate(i, j));
                 if (data.rook == piece || data.queen == piece)
                     return true;
                 if (piece != 0)
