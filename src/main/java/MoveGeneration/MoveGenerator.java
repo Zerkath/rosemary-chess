@@ -20,7 +20,7 @@ public class MoveGenerator {
                 if(dest == 0) continue;
                 boolean destIsWhite = Pieces.isWhite(dest);
                 if(isWhiteTurn == destIsWhite) { //white turn and white or black turn and black
-                    getAllMoves(new Coordinate(row, column), boardState, moves);
+                    getAllMoves(Utils.getCoordinate(row, column), boardState, moves);
                 }
             }
         }

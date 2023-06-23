@@ -18,8 +18,8 @@ public class Move {
     }
 
     public Move(String move) {
-        origin = new Coordinate(move.substring(0, 2));
-        destination = new Coordinate(move.substring(2, 4));
+        origin = Utils.getCoordinate(move.substring(0, 2));
+        destination = Utils.getCoordinate(move.substring(2, 4));
         promotion = 0;
         if(move.length() == 5) {
             promotion = Pieces.getNum(move.charAt(4));

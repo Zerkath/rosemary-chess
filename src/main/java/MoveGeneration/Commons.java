@@ -4,11 +4,12 @@ import DataTypes.Board;
 import DataTypes.Coordinate;
 import DataTypes.Moves;
 import DataTypes.Pieces;
+import DataTypes.Utils;
 
 public class Commons {
 
     static boolean pieceMoveNotPossible(int rowOffset, int colOffset, Board board, Moves moves, Coordinate origin, boolean isWhite) {
-        Coordinate destination = new Coordinate(origin.row + rowOffset, origin.column + colOffset);
+        Coordinate destination = Utils.getCoordinate(origin.row + rowOffset, origin.column + colOffset);
         int target = board.getCoordinate(destination);
 
         if(target == 0) {

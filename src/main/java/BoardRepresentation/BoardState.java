@@ -79,12 +79,12 @@ public class BoardState {
             if (Character.isDigit(ch)) {
                 int numOfEmpty = Character.digit(ch, 10);
                 for (int j = 0; j < numOfEmpty; j++) {
-                    board.clearCoordinate(new Coordinate(row, column));
+                    board.clearCoordinate(Utils.getCoordinate(row, column));
                     column++;
                 }
             } else {
                 int piece = Pieces.getNum(ch);
-                board.replaceCoordinate(new Coordinate(row, column), piece);
+                board.replaceCoordinate(Utils.getCoordinate(row, column), piece);
                 incrementPiece(piece);
                 column++;
             }
@@ -100,10 +100,10 @@ public class BoardState {
     private void addEnPassantMove(boolean white, int piece, int dCol, int dRow) {
         boolean pieceIsWhite = Pieces.isWhite(piece);
         if (white && !pieceIsWhite) {
-            enPassant = new Coordinate(dRow + 1, dCol);
+            enPassant = Utils.getCoordinate(dRow + 1, dCol);
         }
         if (!white && pieceIsWhite) {
-            enPassant = new Coordinate(dRow - 1, dCol);
+            enPassant = Utils.getCoordinate(dRow - 1, dCol);
         }
     }
 
@@ -218,11 +218,11 @@ public class BoardState {
             Coordinate destination;
             Coordinate origin;
             if (dCol == 2) {
-                destination = new Coordinate(dRow, 3);
-                origin = new Coordinate(dRow, 0);
+                destination = Utils.getCoordinate(dRow, 3);
+                origin = Utils.getCoordinate(dRow, 0);
             } else {
-                destination = new Coordinate(dRow, 5);
-                origin = new Coordinate(dRow, 7);
+                destination = Utils.getCoordinate(dRow, 5);
+                origin = Utils.getCoordinate(dRow, 7);
             }
             rook = board.getCoordinate(origin);
             board.replaceCoordinate(destination, rook);
