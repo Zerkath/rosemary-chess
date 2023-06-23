@@ -2,10 +2,51 @@ package MoveGeneration;
 
 import BoardRepresentation.BoardState;
 import DataTypes.*;
+import java.util.HashMap;
 
-import static MoveGeneration.Commons.pieceMoveNotPossible;
+class BishopMoves {
+    Moves downRight = new Moves();
+    Moves downLeft = new Moves();
+    Moves upRight = new Moves();
+    Moves upLeft = new Moves();
 
-public class Bishop {
+    Moves[] allMoves = new Moves[] { downRight, downLeft, upRight, upLeft };
+
+    BishopMoves() {
+    }
+}
+
+public class Bishop extends SlidingPiece {
+
+    // Moves should be generated from origin, outwards and be ordered
+    static HashMap<Coordinate, BishopMoves> bishopMoves = new HashMap<>();
+
+    static {
+        for (Coordinate origin : Utils.allCoordinates) {
+            BishopMoves moves = new BishopMoves();
+
+            // Bishop moves down and right
+            for (int i = 1; origin.row + i <= 7 && origin.column + i <= 7; i++) {
+                moves.downRight.add(getMove(i, i, origin));
+            }
+
+            // Bishop moves down and left
+            for (int i = 1; origin.row + i <= 7 && origin.column - i >= 0; i++) {
+                moves.downLeft.add(getMove(i, -i, origin));
+            }
+
+            // Bishop moves up and right
+            for (int i = 1; origin.row - i >= 0 && origin.column + i <= 7; i++) {
+                moves.upRight.add(getMove(-i, i, origin));
+            }
+
+            // Bishop moves up and left
+            for (int i = 1; origin.row - i >= 0 && origin.column - i >= 0; i++) {
+                moves.upLeft.add(getMove(-i, -i, origin));
+            }
+            bishopMoves.put(origin, moves);
+        }
+    }
 
     public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
@@ -13,24 +54,15 @@ public class Bishop {
 
         boolean isWhite = Pieces.isWhite(board.getCoordinate(origin));
 
-        //Bishop moves down and right
-        for(int i = 1; origin.row + i <= 7 && origin.column + i <= 7; i++) { //Runs as long as destination is within board limits
-            if(pieceMoveNotPossible(i, i, board, moves, origin, isWhite)) break;
-        }
+        Moves[] allMoves = bishopMoves.get(origin).allMoves;
 
-        //Bishop moves down and left
-        for(int i = 1; origin.row + i <= 7 && origin.column - i >= 0; i++) {
-            if(pieceMoveNotPossible(i, -i, board, moves, origin, isWhite)) break;
-        }
-
-        //Bishop moves up and right
-        for(int i = 1; origin.row - i >= 0 && origin.column + i <= 7; i++) {
-            if(pieceMoveNotPossible(-i, i, board, moves, origin, isWhite)) break;
-        }
-
-        //Bishop moves up and left
-        for(int i = 1; origin.row - i >= 0 && origin.column - i >= 0; i++) {
-            if(pieceMoveNotPossible(-i, -i, board, moves, origin, isWhite)) break;
+        for (Moves direction : allMoves) {
+            for (Move move : direction) {
+                TargetSquare state = getSquareState(move, board, isWhite);
+                addMove(state, move, moves);
+                if (state != TargetSquare.EMPTY)
+                    break;
+            }
         }
     }
 }
