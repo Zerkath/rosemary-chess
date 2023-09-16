@@ -94,7 +94,7 @@ public class FenUtils {
           .append(" ");
     }
 
-    strBuilder.append(boardState.enPassant != -1 ? boardState.enPassant : "-");
+    strBuilder.append(boardState.enPassant != -1 ? new Coordinate(boardState.enPassant).toString() : "-");
 
     strBuilder.append(" ")
         .append(boardState.halfMove)
