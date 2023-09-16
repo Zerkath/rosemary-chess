@@ -1,7 +1,7 @@
-import BoardRepresentation.BoardState;
-import DataTypes.CastlingRights;
+import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
+import com.github.zerkath.rosemary.DataTypes.CastlingRights;
 
-import DataTypes.Pieces;
+import com.github.zerkath.rosemary.DataTypes.Pieces;
 import org.junit.jupiter.api.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
