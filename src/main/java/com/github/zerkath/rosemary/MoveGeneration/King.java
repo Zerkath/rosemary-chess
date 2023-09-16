@@ -19,7 +19,7 @@ public class King {
             for (int row_i = row - 1; row_i <= row + 1; row_i++) {
                 for (int column_i = col - 1; column_i <= col + 1; column_i++) {
                     if (row_i != row || column_i != col) {
-                        Utils.addToCollection(row_i, column_i, origin, moves);
+                        Utils.addToCollection(Utils.getCoordinate(row_i, column_i), origin, moves);
                     }
                 }
             }

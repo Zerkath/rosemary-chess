@@ -18,14 +18,13 @@ public class Move {
   // TODO: Should cram this promotion ito the move short value
   public int promotion;
 
-  private void fromOriginAndDestination(int origin, int destination) {
+  private void fromOriginAndDestination(short origin, short destination) {
     this.p_move = (short) ((origin << 6) | destination);
   }
 
   public Move(short origin, short destination) {
     fromOriginAndDestination(origin, destination);
   }
-
 
   public Move(Move move, int promotion) {
     this.p_move = move.p_move;
@@ -34,8 +33,8 @@ public class Move {
 
   public Move(String move) {
 
-    int origin = Utils.getCoordinate(move.substring(0, 2));
-    int destination = Utils.getCoordinate(move.substring(2, 4));
+    short origin = Utils.getCoordinate(move.substring(0, 2));
+    short destination = Utils.getCoordinate(move.substring(2, 4));
 
     fromOriginAndDestination(origin, destination);
 
@@ -54,8 +53,7 @@ public class Move {
   }
 
   public String toString() {
-    // String sMove = origin.toString() + destination.toString();
-    String sMove = ""; // FIXME this is a hack
+    String sMove = Utils.moveToString(this.p_move);
     if (promotion != 0) {
       sMove += Pieces.getChar(promotion);
     }
@@ -68,10 +66,5 @@ public class Move {
       return false;
     Move otherMove = (Move) other;
     return this.p_move == otherMove.p_move && this.promotion == otherMove.promotion;
-  }
-
-  @Override
-  public int hashCode() {
-    return this.p_move + (this.promotion << 12);
   }
 }

@@ -11,7 +11,7 @@ public class Coordinate {
 
 
   private void fromRowAndCol(int row, int col) {
-    this.coord = (short) ((row << 3) | col);
+    this.coord = Utils.getCoordinate(row, col);
   }
 
   public Coordinate(short coord) {
@@ -23,8 +23,8 @@ public class Coordinate {
   }
 
   public Coordinate(String coordinateString) {
-    int column = toColumnInt(coordinateString.charAt(0));
-    int row = toRowInt(coordinateString.charAt(1));
+    int column = Utils.toColumnInt(coordinateString.charAt(0));
+    int row = Utils.toRowInt(coordinateString.charAt(1));
     fromRowAndCol(row, column);
   }
 
@@ -34,29 +34,6 @@ public class Coordinate {
 
   public short getColumn() {
     return (short)(coord & Utils.coordinateMask);
-  }
-
-  public String toString() {
-    int row = (coord >> 3);
-    int column = (coord & Utils.coordinateMask);
-
-    return toColumnChar(column) + "" + toRowChar(row);
-  }
-
-  private char toColumnChar(int i) {
-    return (char) (i + 'a');
-  }
-
-  private int toColumnInt(char c) {
-    return c - 'a';
-  }
-
-  private char toRowChar(int i) {
-    return Character.forDigit(8 - i, 10);
-  }
-
-  private int toRowInt(char c) {
-    return 8 - Integer.parseInt(String.valueOf(c));
   }
 
   @Override

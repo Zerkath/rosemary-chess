@@ -16,7 +16,7 @@ public class BoardState {
 
   public Map<Integer, Integer> pieceMap = new HashMap<>();
 
-  public short enPassant;
+  public short enPassant = -1;
 
   public BoardState() {
   }
@@ -178,10 +178,11 @@ public class BoardState {
     }
 
     Coordinate temp = new Coordinate(enPassant);
+
     if (Pieces.getType(selected) == Pieces.PAWN &&
         enPassant != -1 &&
-        temp.getRow() == new Coordinate(move.getDestination()).getRow() &&
-        temp.getColumn() == new Coordinate(move.getDestination()).getColumn()) {
+        temp.getRow() == temp_destination.getRow() &&
+        temp.getColumn() == temp_destination.getColumn()) {
       int offSet = isWhite ? 1 : -1;
       board.clearCoordinate(temp.getRow() + offSet, temp.getColumn());
     }
@@ -238,13 +239,13 @@ public class BoardState {
       board.setCastling(CastlingRights.NONE, isWhite);
     }
 
-    board.clearCoordinate(move.getOrigin());
+    board.clearCoordinate(temp_origin);
 
     int piece = selected;
     if (isBeingPromoted) {
       piece = move.promotion;
     }
-    board.replaceCoordinate(new Coordinate(move.getDestination()), piece);
+    board.replaceCoordinate(temp_destination, piece);
 
     if (!this.isWhiteTurn)
       turnNumber++;
