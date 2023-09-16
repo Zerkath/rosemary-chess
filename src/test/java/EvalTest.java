@@ -1,8 +1,8 @@
-import BoardRepresentation.BoardState;
+import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
 
-import DataTypes.Pieces;
-import Evaluation.EvaluationCalculations;
-import Main.UCI_Controller;
+import com.github.zerkath.rosemary.DataTypes.Pieces;
+import com.github.zerkath.rosemary.Evaluation.EvaluationCalculations;
+import com.github.zerkath.rosemary.Main.UCI_Controller;
 import org.junit.jupiter.api.*;
 
 import java.util.Map;
@@ -14,27 +14,27 @@ public class EvalTest {
 
     @Test
     void equalStart() {
-        BoardState boardState = new BoardRepresentation.BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        BoardState boardState = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         int eval = evaluationCalculations.calculateMaterial(boardState);
         Assertions.assertEquals(0, eval);
     }
     @Test
     void noPawns() {
-        BoardState boardState = new BoardRepresentation.BoardState("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
+        BoardState boardState = new BoardState("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
         int eval = evaluationCalculations.calculateMaterial(boardState);
         Assertions.assertEquals(0, eval);
     }
 
     @Test
     void noPawnsBlack() {
-        BoardState boardState = new BoardRepresentation.BoardState("rnbqkbnr/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        BoardState boardState = new BoardState("rnbqkbnr/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         int eval = evaluationCalculations.calculateMaterial(boardState);
         Assertions.assertEquals(800, eval);
     }
 
     @Test
     void noPawnsWhite() {
-        BoardState boardState = new BoardRepresentation.BoardState("rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
+        BoardState boardState = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
         int eval = evaluationCalculations.calculateMaterial(boardState);
         Assertions.assertEquals(-800, eval);
     }
