@@ -21,6 +21,8 @@ public class MoveGenerationTest {
     @Order(1)
     void whiteStartMoves() {
         BoardState boardState = new BoardState(d_fen);
+        boardState.printBoard();
+
         Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(20, moves.size(), moves.getString());
     }

@@ -49,7 +49,7 @@ public class Move {
   }
 
   public short getDestination() {
-    return (short) (p_move & Utils.coordinateMask);
+    return (short) (p_move & Utils.moveMask);
   }
 
   public String toString() {

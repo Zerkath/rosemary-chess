@@ -159,7 +159,6 @@ public class BoardState {
 
   public void makeMove(Move move) {
     previous = new BoardState(this);
-
     Coordinate temp_destination = new Coordinate(move.getDestination());
     Coordinate temp_origin = new Coordinate(move.getOrigin());
     int dRow = temp_destination.getRow();
@@ -271,7 +270,7 @@ public class BoardState {
 
   public void printBoard(BoardState board) {
     System.out.println(FenUtils.getFenString(board));
-    System.out.println(board);
+    System.out.println(board.board.toString());
   }
 
   public void printBoard() {
