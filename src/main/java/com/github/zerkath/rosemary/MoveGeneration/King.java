@@ -10,9 +10,10 @@ public class King {
 
     static {
 
-        for (Coordinate origin : Utils.allCoordinates) {
-            int row = origin.row;
-            int col = origin.column;
+        for (short origin = 0; origin < 64; origin++) {
+            Coordinate originCoord = new Coordinate(origin);
+            int row = originCoord.getRow();
+            int col = originCoord.getColumn();
             // generating moves around king //todo update
             Moves moves = new Moves();
             for (int row_i = row - 1; row_i <= row + 1; row_i++) {
@@ -22,7 +23,7 @@ public class King {
                     }
                 }
             }
-            unfilteredMoves.put(origin, moves);
+            unfilteredMoves.put(originCoord, moves);
         }
     }
 
@@ -33,14 +34,14 @@ public class King {
         CastlingRights whiteCastling = board.getWhiteCastling();
         CastlingRights blackCastling = board.getBlackCastling();
 
-        int originalPiece = board.getCoordinate(origin);
+        int originalPiece = board.getCoordinate(origin.coord);
         boolean isWhite = Pieces.isWhite(originalPiece);
-        int row = origin.row;
-        int col = origin.column;
+        int row = origin.getRow();
+        int col = origin.getColumn();
 
         // generating moves around king //todo update
         for (Move move : unfilteredMoves.get(origin)) {
-            if (board.isOpposingColourOrEmpty(move.destination, originalPiece))
+            if (board.isOpposingColourOrEmpty(move.getDestination(), originalPiece))
                 moves.add(move);
         }
 
@@ -74,17 +75,17 @@ public class King {
                     switch (current) {
                         case BOTH -> {
                             if (qSide)
-                                moves.add(new Move(origin, Utils.getCoordinate(row, 2)));
+                                moves.add(new Move(origin.coord, Utils.getCoordinate(row, 2)));
                             if (kSide)
-                                moves.add(new Move(origin, Utils.getCoordinate(row, 6)));
+                                moves.add(new Move(origin.coord, Utils.getCoordinate(row, 6)));
                         }
                         case KING -> {
                             if (kSide)
-                                moves.add(new Move(origin, Utils.getCoordinate(row, 6)));
+                                moves.add(new Move(origin.coord, Utils.getCoordinate(row, 6)));
                         }
                         case QUEEN -> {
                             if (qSide)
-                                moves.add(new Move(origin, Utils.getCoordinate(row, 2)));
+                                moves.add(new Move(origin.coord, Utils.getCoordinate(row, 2)));
                         }
                         case NONE -> {}
                     }
@@ -314,7 +315,7 @@ public class King {
         Moves knightMoves = new Moves();
         Knight.getMoves(origin, boardState, knightMoves);
         for (Move move : knightMoves) {
-            int piece = board.getCoordinate(move.destination);
+            int piece = board.getCoordinate(move.getDestination());
             if (piece == 0)
                 continue;
             if (opponentKnight == piece) {
@@ -324,7 +325,7 @@ public class King {
         Moves pawnMoves = new Moves();
         Pawn.getMoves(origin, boardState, pawnMoves);
         for (Move move : pawnMoves) {
-            if (boardState.board.getCoordinate(move.destination) == opponentPawn)
+            if (boardState.board.getCoordinate(move.getDestination()) == opponentPawn)
                 return true;
         }
         return false; // no checks return false
@@ -333,8 +334,8 @@ public class King {
     private static boolean distanceWithinBoundary(Coordinate a, Coordinate b, int boundary) {
         if (a == null || b == null)
             return false;
-        int absCol = Math.abs(a.column - b.column);
-        int absRow = Math.abs(a.row - b.row);
+        int absCol = Math.abs(a.getColumn() - b.getColumn());
+        int absRow = Math.abs(a.getRow()- b.getRow());
 
         return absCol <= boundary && absRow <= boundary;
     }
@@ -346,7 +347,7 @@ public class King {
             case Pieces.ROOK -> Rook.getMoves(origin, boardState, moves);
         }
         for (Move move : moves) {
-            int piece = boardState.board.getCoordinate(move.destination);
+            int piece = boardState.board.getCoordinate(move.getDestination());
             if (piece == 0)
                 continue;
             if (Pieces.isWhite(piece) != colour) {

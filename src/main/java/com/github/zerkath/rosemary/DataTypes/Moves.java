@@ -24,7 +24,7 @@ public class Moves extends LinkedList<Move> {
         return stringBuilder.toString();
     }
     public void add(Coordinate origin, Coordinate destination) {
-        this.add(new Move(origin, destination));
+        this.add(new Move(origin.coord, destination.coord));
     }
 
     /**

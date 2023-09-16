@@ -27,12 +27,16 @@ public class Board {
         return this.board;
     }
 
-    public int getCoordinate(Coordinate coordinate) {
-        return getCoordinate(coordinate.row, coordinate.column);
+    public int getCoordinate(short coordinate) {
+        return this.board[coordinate]; // TODO validation?
     }
 
     public int getCoordinate(int row, int column) {
         return this.board[row*8+column];
+    }
+
+    public void clearCoordinate(short coord) {
+        this.board[coord] = 0;
     }
 
     public void clearCoordinate(int row, int column) {
@@ -51,7 +55,7 @@ public class Board {
 
     public void replaceCoordinate(Coordinate coordinate, int piece) {
         if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
-        replaceCoordinate(coordinate.row, coordinate.column, piece);
+        replaceCoordinate(coordinate.getRow(), coordinate.getColumn(), piece);
     }
 
     private void replaceKing(Coordinate coordinate, int piece) {
@@ -59,7 +63,7 @@ public class Board {
     }
 
     public void clearCoordinate(Coordinate coordinate) {
-        clearCoordinate(coordinate.row, coordinate.column);
+        clearCoordinate(coordinate.getRow(), coordinate.getColumn());
     }
 
     public CastlingRights getWhiteCastling() {
@@ -98,7 +102,7 @@ public class Board {
         this.whiteKing = coordinate;
     }
 
-    public boolean isOpposingColourOrEmpty(Coordinate destination, int originalPiece) {
+    public boolean isOpposingColourOrEmpty(short destination, int originalPiece) {
         if (Utils.isOutOfBounds(destination)) return false;
 
         boolean isWhite = Pieces.isWhite(originalPiece);
@@ -113,12 +117,12 @@ public class Board {
      * Valid move in this context means either empty or opposing colour
      */
     public boolean isValidMove(Move move) {
-        return Pieces.EMPTY == getCoordinate(move.destination) ||
-            Pieces.isWhite(getCoordinate(move.origin)) != Pieces.isWhite(getCoordinate(move.destination));
+        return Pieces.EMPTY == getCoordinate(move.getDestination()) ||
+            Pieces.isWhite(getCoordinate(move.getOrigin())) != Pieces.isWhite(getCoordinate(move.getDestination()));
     }
 
     public boolean pawnCapturePossible(Coordinate coordinate, int origin) {
-        return getCoordinate(coordinate) != Pieces.EMPTY && isOpposingColourOrEmpty(coordinate, origin);
+        return getCoordinate(coordinate.coord) != Pieces.EMPTY && isOpposingColourOrEmpty(coordinate.coord, origin);
     }
 
     public String toString() {

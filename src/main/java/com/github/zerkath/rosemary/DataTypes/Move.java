@@ -5,52 +5,73 @@ package com.github.zerkath.rosemary.DataTypes;
  * From and to where
  * also promotion
  *
- * TODO: Could convert this to a int value, and use bit shifting to store the values
- * Reason for this is that at perft 4 this accounts for 5.6% of total allocated objects
+ * TODO: Could convert this to a int value, and use bit shifting to store the
+ * values
+ * Reason for this is that at perft 4 this accounts for 5.6% of total allocated
+ * objects
  */
 public class Move {
-    public Coordinate origin;
-    public Coordinate destination;
-    public int promotion;
 
-    public Move(Coordinate origin, Coordinate destination) {
-        this.origin = origin;
-        this.destination = destination;
-        this.promotion = 0;
-    }
+  // TODO: rename this value after doing changes
+  public short p_move;
 
-    public Move(Move move, int promotion) {
-        this.origin = move.origin;
-        this.destination = move.destination;
-        this.promotion = promotion;
-    }
+  // TODO: Should cram this promotion ito the move short value
+  public int promotion;
 
-    public Move(String move) {
-        origin = Utils.getCoordinate(move.substring(0, 2));
-        destination = Utils.getCoordinate(move.substring(2, 4));
-        promotion = 0;
-        if(move.length() == 5) {
-            promotion = Pieces.getNum(move.charAt(4));
-        }
-    }
+  private void fromOriginAndDestination(int origin, int destination) {
+    this.p_move = (short) ((origin << 6) | destination);
+  }
 
-    public String toString() {
-        String sMove = origin.toString() + destination.toString();
-        if(promotion != 0) {
-            sMove += Pieces.getChar(promotion);
-        }
-        return sMove;
-    }
+  public Move(short origin, short destination) {
+    fromOriginAndDestination(origin, destination);
+  }
 
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof Move)) return false;
-        Move otherMove = (Move)other;
-        return origin.equals(otherMove.origin) && destination.equals(otherMove.destination) && promotion == otherMove.promotion;
-    }
 
-    @Override
-    public int hashCode() {
-        return this.toString().hashCode();
+  public Move(Move move, int promotion) {
+    this.p_move = move.p_move;
+    this.promotion = promotion;
+  }
+
+  public Move(String move) {
+
+    int origin = Utils.getCoordinate(move.substring(0, 2));
+    int destination = Utils.getCoordinate(move.substring(2, 4));
+
+    fromOriginAndDestination(origin, destination);
+
+    this.promotion = 0;
+    if (move.length() == 5) {
+      this.promotion = Pieces.getNum(move.charAt(4));
     }
+  }
+
+  public short getOrigin() {
+    return (short) (p_move >> 6);
+  }
+
+  public short getDestination() {
+    return (short) (p_move & Utils.coordinateMask);
+  }
+
+  public String toString() {
+    // String sMove = origin.toString() + destination.toString();
+    String sMove = ""; // FIXME this is a hack
+    if (promotion != 0) {
+      sMove += Pieces.getChar(promotion);
+    }
+    return sMove;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof Move))
+      return false;
+    Move otherMove = (Move) other;
+    return this.p_move == otherMove.p_move && this.promotion == otherMove.promotion;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.p_move + (this.promotion << 12);
+  }
 }

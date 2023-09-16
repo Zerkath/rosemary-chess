@@ -14,8 +14,8 @@ public class Pawn {
     }
 
     private static void pawnCaptures(int nextRow, boolean promotion, Coordinate origin, Moves moves, Board board) {
-        int original_piece = board.getCoordinate(origin);
-        int col = origin.column;
+        int original_piece = board.getCoordinate(origin.coord);
+        int col = origin.getColumn();
         boolean isWhite = Pieces.isWhite(original_piece);
         boolean leftEdge = col == 0;
         boolean rightEdge = col == 7;
@@ -23,7 +23,7 @@ public class Pawn {
         // these destinations are mutates somewhere else
         Coordinate destination1 = new Coordinate(nextRow, col - 1);
         if (!leftEdge && board.pawnCapturePossible(destination1, original_piece)) {
-            Move nextMove = new Move(origin, destination1);
+            Move nextMove = new Move(origin.coord, destination1.coord);
             if (promotion)
                 pawnPromotions(nextMove, isWhite, moves);
             else
@@ -32,7 +32,7 @@ public class Pawn {
 
         Coordinate destination2 = new Coordinate(nextRow, col + 1);
         if (!rightEdge && board.pawnCapturePossible(destination2, original_piece)) {
-            Move nextMove = new Move(origin, destination2);
+            Move nextMove = new Move(origin.coord, destination2.coord);
             if (promotion)
                 pawnPromotions(nextMove, isWhite, moves);
             else
@@ -44,11 +44,11 @@ public class Pawn {
 
         Board board = boardState.board;
 
-        int original_piece = board.getCoordinate(origin);
+        int original_piece = board.getCoordinate(origin.coord);
         boolean isWhite = Pieces.isWhite(original_piece);
         boolean promotion = false;
-        int row = origin.row;
-        int col = origin.column;
+        int row = origin.getRow();
+        int col = origin.getColumn();
 
         int nextRow = row;
         int doubleJump = row;
@@ -73,7 +73,7 @@ public class Pawn {
 
         // forward
         if (board.getCoordinate(nextRow, col) == Pieces.EMPTY) {
-            Move nextMove = new Move(origin, Utils.getCoordinate(nextRow, col));
+            Move nextMove = new Move(origin.coord, Utils.getCoordinate(nextRow, col));
             if (promotion)
                 pawnPromotions(nextMove, isWhite, moves);
             else
@@ -82,19 +82,19 @@ public class Pawn {
             if ((isWhite && row == 6 || (!isWhite && row == 1))
                     && board.getCoordinate(doubleJump, col) == Pieces.EMPTY) {
                 // if at starting square and nothing in front
-                Coordinate destination = Utils.getCoordinate(doubleJump, col);
-                moves.add(new Move(origin, destination));
+                short destination = Utils.getCoordinate(doubleJump, col);
+                moves.add(new Move(origin.coord, destination));
             }
         }
 
         pawnCaptures(nextRow, promotion, origin, moves, board);
 
-        if (boardState.enPassant != null && row == enPassantRow) {
+        if (boardState.enPassant != -1 && row == enPassantRow) {
 
-            Coordinate destination = boardState.enPassant;
-            int distance = origin.column - destination.column;
+            Coordinate destination = new Coordinate(boardState.enPassant);
+            int distance = origin.getColumn() - destination.getColumn();
             if (distance == 1 || distance == -1) {
-                moves.add(new Move(origin, destination));
+                moves.add(new Move(origin.coord, destination.coord));
             }
         }
     }
