@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class King {
 
-    static HashMap<Coordinate, Moves> unfilteredMoves = new HashMap<>();
+    static HashMap<Short, Moves> unfilteredMoves = new HashMap<>();
 
     static {
 
@@ -18,17 +18,19 @@ public class King {
             Moves moves = new Moves();
             for (int row_i = row - 1; row_i <= row + 1; row_i++) {
                 for (int column_i = col - 1; column_i <= col + 1; column_i++) {
-                    if (row_i != row || column_i != col) {
-                        Utils.addToCollection(Utils.getCoordinate(row_i, column_i), origin, moves);
+                    if (row_i < 0 || row_i > 7 || column_i < 0 || column_i > 7)
+                        continue;
+                    else if (row_i != row || column_i != col) {
+                      short target = Utils.getCoordinate(row_i, column_i);
+                      Utils.addToCollection(target, origin, moves);
                     }
                 }
             }
-            unfilteredMoves.put(originCoord, moves);
+            unfilteredMoves.put(origin, moves);
         }
     }
 
     public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
-
         Board board = boardState.board;
         boolean isWhiteTurn = boardState.isWhiteTurn;
         CastlingRights whiteCastling = board.getWhiteCastling();
@@ -40,7 +42,7 @@ public class King {
         int col = origin.getColumn();
 
         // generating moves around king //todo update
-        for (Move move : unfilteredMoves.get(origin)) {
+        for (Move move : unfilteredMoves.get(origin.coord)) {
             if (board.isOpposingColourOrEmpty(move.getDestination(), originalPiece))
                 moves.add(move);
         }

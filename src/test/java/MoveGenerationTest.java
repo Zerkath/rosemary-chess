@@ -298,6 +298,12 @@ public class MoveGenerationTest {
     }
 
     @Test
+    void kingShouldNotTeleport() {
+      String position = "8/2p5/3p4/KP5r/5R1k/8/4P1P1/8 b - - 0 1";
+      Assertions.assertEquals(2, moveGenerator.getLegalMoves(new BoardState(position)).size());
+    }
+
+    @Test
     void kingRestrictedByOtherKing() {
         String fenString = "8/8/8/p2N4/n1k1K3/8/5P2/8 b - - 3 52";
         BoardState boardState = new BoardState(fenString);
