@@ -1,8 +1,9 @@
 
-import DataTypes.Coordinate;
-import DataTypes.Move;
-import DataTypes.Pieces;
+import com.github.zerkath.rosemary.DataTypes.Coordinate;
+import com.github.zerkath.rosemary.DataTypes.Move;
+import com.github.zerkath.rosemary.DataTypes.Pieces;
 import org.junit.jupiter.api.*;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UtilsTest {
 

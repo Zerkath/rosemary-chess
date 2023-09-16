@@ -1,9 +1,9 @@
-import BoardRepresentation.BoardState;
-import DataTypes.Move;
-import DataTypes.Moves;
+import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
+import com.github.zerkath.rosemary.DataTypes.Move;
+import com.github.zerkath.rosemary.DataTypes.Moves;
 
-import Main.UCI_Controller;
-import MoveGeneration.MoveGenerator;
+import com.github.zerkath.rosemary.Main.UCI_Controller;
+import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
 
 import java.util.HashSet;
 
