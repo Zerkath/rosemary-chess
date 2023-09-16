@@ -18,11 +18,8 @@ public class King {
             Moves moves = new Moves();
             for (int row_i = row - 1; row_i <= row + 1; row_i++) {
                 for (int column_i = col - 1; column_i <= col + 1; column_i++) {
-                    if (row_i < 0 || row_i > 7 || column_i < 0 || column_i > 7)
-                        continue;
-                    else if (row_i != row || column_i != col) {
-                      short target = Utils.getCoordinate(row_i, column_i);
-                      Utils.addToCollection(target, origin, moves);
+                    if (row_i != row || column_i != col) {
+                      Utils.addToCollection(row_i, column_i, row, col, moves);
                     }
                 }
             }

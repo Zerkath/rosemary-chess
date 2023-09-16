@@ -8,17 +8,17 @@ public class Utils {
   public static short moveMask = 0b111111;
 
   public static boolean isOutOfBounds(short coord) {
-    return coord < 0 || coord >= 64;
+    return coord < 0 || coord > 64;
   }
 
   public static short getCoordinate(int row, int column) {
     return (short) ((row << 3) | column);
   }
 
-  public static void addToCollection(short dest, short origin, List<Move> moves) {
-    if (isOutOfBounds(dest))
+  public static void addToCollection(int row, int column, int origin_row, int origin_col, List<Move> moves) {
+    if (row < 0 || row > 7 || column < 0 || column > 7)
       return;
-    moves.add(new Move(origin, dest));
+    moves.add(new Move(getCoordinate(origin_row, origin_col), getCoordinate(row, column)));
   }
 
   public static short getCoordinate(String coordinateString) {
