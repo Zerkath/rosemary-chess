@@ -2,6 +2,7 @@ package com.github.zerkath.rosemary.DataTypes;
 
 import java.util.LinkedList;
 
+@Deprecated
 public class Moves extends LinkedList<Move> {
 
     public Moves() {

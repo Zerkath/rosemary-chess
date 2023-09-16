@@ -10,6 +10,7 @@ package com.github.zerkath.rosemary.DataTypes;
  * Reason for this is that at perft 4 this accounts for 5.6% of total allocated
  * objects
  */
+@Deprecated
 public class Move {
 
   // TODO: rename this value after doing changes

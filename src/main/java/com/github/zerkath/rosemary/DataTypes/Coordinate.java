@@ -5,10 +5,10 @@ package com.github.zerkath.rosemary.DataTypes;
  * string to coord and vice versa
  * Accounts for 17.3% of total allocated objects at perft 4
  */
+@Deprecated
 public class Coordinate {
 
   public short coord;
-
 
   private void fromRowAndCol(int row, int col) {
     this.coord = Utils.getCoordinate(row, col);
