@@ -4,12 +4,12 @@ import java.util.Arrays;
 
 public class Board {
 
-  private final int[] board = new int[64];
+  private final byte[] board = new byte[64];
   private CastlingRights whiteCastlingRights = CastlingRights.NONE;
   private CastlingRights blackCastlingRights = CastlingRights.NONE;
   private final StringBuilder strBuilder = new StringBuilder();
-  private Coordinate whiteKing;
-  private Coordinate blackKing;
+  private short whiteKing = -1;
+  private short blackKing = -1;
 
   public Board() {
     for (int i = 0; i < 64; i++) this.board[i] = 0;
@@ -23,15 +23,15 @@ public class Board {
     this.blackKing = board.blackKing;
   }
 
-  public int[] getBoard() {
+  public byte[] getBoard() {
     return this.board;
   }
 
-  public int getCoordinate(short coordinate) {
+  public byte getCoordinate(short coordinate) {
     return this.board[coordinate]; // TODO validation?
   }
 
-  public int getCoordinate(int row, int column) {
+  public byte getCoordinate(int row, int column) {
     return this.board[(row << 3) | column];
   }
 
@@ -43,28 +43,24 @@ public class Board {
     this.board[(row << 3) | column] = 0;
   }
 
-  public int[] getRow(int row) {
+  public byte[] getRow(int row) {
     int startIndex = row << 3;
     int endIndex = startIndex + 8;
     return Arrays.copyOfRange(board, startIndex, endIndex);
   }
 
-  public void replaceCoordinate(int row, int column, int piece) {
+  public void replaceCoordinate(int row, int column, byte piece) {
     this.board[(row << 3) | column] = piece;
   }
 
-  public void replaceCoordinate(Coordinate coordinate, int piece) {
+  public void replaceCoordinate(short coordinate, byte piece) {
     if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
-    replaceCoordinate(coordinate.getRow(), coordinate.getColumn(), piece);
+    replaceCoordinate(MoveUtil.getRow(coordinate), MoveUtil.getColumn(coordinate), piece);
   }
 
-  private void replaceKing(Coordinate coordinate, int piece) {
+  private void replaceKing(short coordinate, int piece) {
     if (Pieces.isWhite(piece)) setWhiteKing(coordinate);
     else setBlackKing(coordinate);
-  }
-
-  public void clearCoordinate(Coordinate coordinate) {
-    clearCoordinate(coordinate.getRow(), coordinate.getColumn());
   }
 
   public CastlingRights getWhiteCastling() {
@@ -88,19 +84,19 @@ public class Board {
     else setBlackCastlingRights(rights);
   }
 
-  public Coordinate getWhiteKing() {
+  public short getWhiteKing() {
     return whiteKing;
   }
 
-  public Coordinate getBlackKing() {
+  public short getBlackKing() {
     return blackKing;
   }
 
-  public void setBlackKing(Coordinate coordinate) {
+  public void setBlackKing(short coordinate) {
     this.blackKing = coordinate;
   }
 
-  public void setWhiteKing(Coordinate coordinate) {
+  public void setWhiteKing(short coordinate) {
     this.whiteKing = coordinate;
   }
 
@@ -116,15 +112,14 @@ public class Board {
   }
 
   /** Valid move in this context means either empty or opposing colour */
-  public boolean isValidMove(Move move) {
-    return Pieces.EMPTY == getCoordinate(move.getDestination())
-        || Pieces.isWhite(getCoordinate(move.getOrigin()))
-            != Pieces.isWhite(getCoordinate(move.getDestination()));
+  public boolean isValidMove(short move) {
+    return Pieces.EMPTY == getCoordinate(MoveUtil.getDestination(move))
+        || Pieces.isWhite(getCoordinate(MoveUtil.getOrigin(move)))
+            != Pieces.isWhite(getCoordinate(MoveUtil.getDestination(move)));
   }
 
-  public boolean pawnCapturePossible(Coordinate coordinate, int origin) {
-    return getCoordinate(coordinate.coord) != Pieces.EMPTY
-        && isOpposingColourOrEmpty(coordinate.coord, origin);
+  public boolean pawnCapturePossible(short coordinate, int origin) {
+    return getCoordinate(coordinate) != Pieces.EMPTY && isOpposingColourOrEmpty(coordinate, origin);
   }
 
   public String toString() {
