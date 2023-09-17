@@ -85,7 +85,7 @@ public class EvaluationCalculations {
 
   private int materialValue() {
     int result = 0;
-    for (Map.Entry<Integer, Integer> entry : state.pieceMap.entrySet()) {
+    for (Map.Entry<Byte, Integer> entry : state.pieceMap.entrySet()) {
       result += pieceToValue(entry.getKey()) * entry.getValue();
     }
     return result;

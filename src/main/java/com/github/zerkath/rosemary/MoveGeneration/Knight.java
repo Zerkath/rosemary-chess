@@ -6,13 +6,12 @@ import java.util.HashMap;
 
 public class Knight {
 
-  static HashMap<Coordinate, Moves> knightMoves = new HashMap<>();
+  static HashMap<Short, Moves> knightMoves = new HashMap<>();
 
   static {
-    for (short originX = 0; originX < 64; originX++) {
-      Coordinate origin = new Coordinate(originX);
-      int row = origin.getRow();
-      int col = origin.getColumn();
+    for (short origin = 0; origin < 64; origin++) {
+      int row = MoveUtil.getRow(origin);
+      int col = MoveUtil.getColumn(origin);
 
       int[] columns = new int[] {col - 2, col + 2};
       int[] rows = new int[] {row - 2, row + 2};
@@ -30,12 +29,12 @@ public class Knight {
     }
   }
 
-  public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+  public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
     Board board = boardState.board;
     Moves n_moves = knightMoves.get(origin);
 
-    for (Move move : n_moves) {
+    for (short move : n_moves) {
       if (board.isValidMove(move)) moves.add(move);
     }
   }

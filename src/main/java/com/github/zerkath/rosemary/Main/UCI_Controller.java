@@ -2,7 +2,7 @@ package com.github.zerkath.rosemary.Main;
 
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
 import com.github.zerkath.rosemary.BoardRepresentation.FenUtils;
-import com.github.zerkath.rosemary.DataTypes.Move;
+import com.github.zerkath.rosemary.DataTypes.MoveUtil;
 import com.github.zerkath.rosemary.DataTypes.Moves;
 import com.github.zerkath.rosemary.Evaluation.EvaluationThread;
 import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
@@ -95,7 +95,7 @@ public class UCI_Controller extends OutputUtils {
         if (split[1].equals("perft")) {
           int depth = Integer.parseInt(split[2]);
 
-          if (split.length > 2) {
+          if (split.length > 3) {
             int iterations = Integer.parseInt(split[3]);
             superPerft(depth, iterations);
           } else {
@@ -197,13 +197,13 @@ public class UCI_Controller extends OutputUtils {
       variance += Math.abs(l - average);
     }
     variance = variance / (double) iterations;
-    println("avg " + average + " var " + variance + " totalRuns" + iterations);
+    println("avg " + average + " var " + variance + " runs " + iterations);
   }
 
   public void getPerft(int depth) {
     long[] result = runPerft(depth, true);
     String str = "\nDepth " + depth + " nodes: " + result[0];
-    println(str + " " + result[1] + "ms");
+    println(str + " " + Long.toUnsignedString(result[1]) + "ms");
   }
 
   public long[] runPerft(int depth, boolean print) {
@@ -231,15 +231,15 @@ public class UCI_Controller extends OutputUtils {
 
   private class PerftResult {
     Integer moveCount;
-    Move move;
+    short move;
 
-    PerftResult(Integer count, Move move) {
+    PerftResult(Integer count, short move) {
       this.moveCount = count;
       this.move = move;
     }
 
     void toStdOut(boolean print) {
-      if (print) println(move.toString() + ":" + moveCount);
+      if (print) println(MoveUtil.moveToString(move) + ": " + moveCount);
     }
   }
 
@@ -284,7 +284,7 @@ public class UCI_Controller extends OutputUtils {
     int numPositions = 0;
     Moves moves = moveGenerator.getLegalMoves(boardState);
 
-    for (Move move : moves) {
+    for (short move : moves) {
       boardState.makeMove(move);
       int result = perftProcess(depth - 1, start, boardState);
       numPositions += result;
