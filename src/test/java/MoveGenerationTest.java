@@ -21,6 +21,8 @@ public class MoveGenerationTest {
     @Order(1)
     void whiteStartMoves() {
         BoardState boardState = new BoardState(d_fen);
+        boardState.printBoard();
+
         Moves moves = moveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(20, moves.size(), moves.getString());
     }
@@ -293,6 +295,12 @@ public class MoveGenerationTest {
     void randomKnight() {
         String position = "5k2/8/8/8/8/8/4Nn1P/R2QK2R w KQ - 1 8";
         Assertions.assertEquals(35, moveGenerator.getLegalMoves(new BoardState(position)).size());
+    }
+
+    @Test
+    void kingShouldNotTeleport() {
+      String position = "8/2p5/3p4/KP5r/5R1k/8/4P1P1/8 b - - 0 1";
+      Assertions.assertEquals(2, moveGenerator.getLegalMoves(new BoardState(position)).size());
     }
 
     @Test

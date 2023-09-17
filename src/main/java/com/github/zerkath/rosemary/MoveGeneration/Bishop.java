@@ -22,26 +22,27 @@ public class Bishop extends SlidingPiece {
     static HashMap<Coordinate, BishopMoves> bishopMoves = new HashMap<>();
 
     static {
-        for (Coordinate origin : Utils.allCoordinates) {
+        for (short originX = 0; originX < 64; originX++) {
+            Coordinate origin = new Coordinate(originX);
             BishopMoves moves = new BishopMoves();
 
             // Bishop moves down and right
-            for (int i = 1; origin.row + i <= 7 && origin.column + i <= 7; i++) {
+            for (int i = 1; origin.getRow() + i <= 7 && origin.getColumn() + i <= 7; i++) {
                 moves.downRight.add(getMove(i, i, origin));
             }
 
             // Bishop moves down and left
-            for (int i = 1; origin.row + i <= 7 && origin.column - i >= 0; i++) {
+            for (int i = 1; origin.getRow() + i <= 7 && origin.getColumn() - i >= 0; i++) {
                 moves.downLeft.add(getMove(i, -i, origin));
             }
 
             // Bishop moves up and right
-            for (int i = 1; origin.row - i >= 0 && origin.column + i <= 7; i++) {
+            for (int i = 1; origin.getRow() - i >= 0 && origin.getColumn() + i <= 7; i++) {
                 moves.upRight.add(getMove(-i, i, origin));
             }
 
             // Bishop moves up and left
-            for (int i = 1; origin.row - i >= 0 && origin.column - i >= 0; i++) {
+            for (int i = 1; origin.getRow() - i >= 0 && origin.getColumn() - i >= 0; i++) {
                 moves.upLeft.add(getMove(-i, -i, origin));
             }
             bishopMoves.put(origin, moves);
@@ -52,7 +53,7 @@ public class Bishop extends SlidingPiece {
 
         Board board = boardState.board;
 
-        boolean isWhite = Pieces.isWhite(board.getCoordinate(origin));
+        boolean isWhite = Pieces.isWhite(board.getCoordinate(origin.coord));
 
         Moves[] allMoves = bishopMoves.get(origin).allMoves;
 

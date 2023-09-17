@@ -5,12 +5,12 @@ import com.github.zerkath.rosemary.DataTypes.*;
 abstract class SlidingPiece {
 
     static Move getMove(int rowOffset, int colOffset, Coordinate origin) {
-        return new Move(origin, Utils.getCoordinate(origin.row + rowOffset, origin.column + colOffset));
+        return new Move(origin.coord, Utils.getCoordinate(origin.getRow() + rowOffset, origin.getColumn() + colOffset));
     }
 
     static TargetSquare getSquareState(Move move, Board board, boolean isWhite) {
 
-        int target = board.getCoordinate(move.destination);
+        int target = board.getCoordinate(move.getDestination());
         if (target == 0)
             return TargetSquare.EMPTY;
 
