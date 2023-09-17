@@ -8,15 +8,17 @@ import com.github.zerkath.rosemary.DataTypes.Utils;
 
 public class Commons {
 
-    static boolean pieceMoveNotPossible(int rowOffset, int colOffset, Board board, Moves moves, Coordinate origin, boolean isWhite) {
-        Coordinate destination = Utils.getCoordinate(origin.row + rowOffset, origin.column + colOffset);
-        int target = board.getCoordinate(destination);
+  static boolean pieceMoveNotPossible(int rowOffset, int colOffset, Board board, Moves moves, Coordinate origin,
+      boolean isWhite) {
+    short destination = Utils.getCoordinate(origin.getRow() + rowOffset, origin.getColumn() + colOffset);
+    int target = board.getCoordinate(destination);
 
-        if(target == 0) {
-            moves.add(origin, destination);
-            return false;
-        }
-        if(isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
-        return true;
+    if (target == 0) {
+      moves.add(origin, new Coordinate(destination));
+      return false;
     }
+    if (isWhite != Pieces.isWhite(target))
+      moves.add(origin, new Coordinate(destination));
+    return true;
+  }
 }

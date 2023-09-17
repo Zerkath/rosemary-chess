@@ -207,7 +207,7 @@ public class UCI_Controller extends OutputUtils {
 
         void toStdOut(boolean print) {
             if (print)
-                println(move + ":" + moveCount);
+                println(move.toString() + ":" + moveCount);
         }
     }
 

@@ -23,24 +23,24 @@ public class Rook extends SlidingPiece {
 
     static {
 
-        for (Coordinate origin : Utils.allCoordinates) {
-
+        for (short originX = 0; originX < 64; originX++) {
+            Coordinate origin = new Coordinate(originX);
             RookMoves moves = new RookMoves();
 
             // Runs as long as destination is within board limits
-            for (int i = 1; origin.column - i >= 0; i++) {
+            for (int i = 1; origin.getColumn() - i >= 0; i++) {
                 moves.left.add(getMove(0, -i, origin));
             }
 
-            for (int i = 1; origin.row - i >= 0; i++) {
+            for (int i = 1; origin.getRow() - i >= 0; i++) {
                 moves.up.add(getMove(-i, 0, origin));
             }
 
-            for (int i = 1; origin.column + i <= 7; i++) {
+            for (int i = 1; origin.getColumn() + i <= 7; i++) {
                 moves.right.add(getMove(0, i, origin));
             }
 
-            for (int i = 1; origin.row + i <= 7; i++) {
+            for (int i = 1; origin.getRow() + i <= 7; i++) {
                 moves.down.add(getMove(i, 0, origin));
             }
 
@@ -52,7 +52,7 @@ public class Rook extends SlidingPiece {
 
         Board board = boardState.board;
 
-        boolean isWhite = Pieces.isWhite(board.getCoordinate(origin));
+        boolean isWhite = Pieces.isWhite(board.getCoordinate(origin.coord));
 
         Moves[] allMoves = rookMoves.get(origin).allMoves;
 

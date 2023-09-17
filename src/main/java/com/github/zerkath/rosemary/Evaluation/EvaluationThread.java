@@ -139,7 +139,7 @@ public class EvaluationThread extends OutputUtils implements Runnable  {
         state.isWhiteTurn = !state.isWhiteTurn; // flip turn temporarily for checking a check
         Moves opponent = moveGenerator.getLegalMoves(state);
         for (Move move : opponent) {
-            int piece = state.board.getCoordinate(move.destination);
+            int piece = state.board.getCoordinate(move.getDestination());
             if(piece == 0) continue;
             if ((isWhite && piece == (Pieces.KING | Pieces.WHITE)) || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {
                 state.isWhiteTurn = old;

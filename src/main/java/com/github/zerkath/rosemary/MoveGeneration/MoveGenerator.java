@@ -41,16 +41,17 @@ public class MoveGenerator {
         return pseudoLegal;
     }
 
-    public void getAllMoves(Coordinate coordinate, BoardState boardState, Moves moves) {
+    public void getAllMoves(short coordinate, BoardState boardState, Moves moves) {
         int piece = boardState.board.getCoordinate(coordinate);
+        Coordinate origin = new Coordinate(coordinate);
         if(piece == 0) return;
         switch (Pieces.getType(piece)) {
-            case Pieces.PAWN -> Pawn.getMoves(coordinate, boardState, moves);
-            case Pieces.BISHOP -> Bishop.getMoves(coordinate, boardState, moves);
-            case Pieces.KNIGHT -> Knight.getMoves(coordinate, boardState, moves);
-            case Pieces.ROOK -> Rook.getMoves(coordinate, boardState, moves);
-            case Pieces.QUEEN -> Queen.getMoves(coordinate, boardState, moves);
-            case Pieces.KING -> King.getMoves(coordinate, boardState, moves);
+            case Pieces.PAWN -> Pawn.getMoves(origin, boardState, moves);
+            case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, moves);
+            case Pieces.KNIGHT -> Knight.getMoves(origin, boardState, moves);
+            case Pieces.ROOK -> Rook.getMoves(origin, boardState, moves);
+            case Pieces.QUEEN -> Queen.getMoves(origin, boardState, moves);
+            case Pieces.KING -> King.getMoves(origin, boardState, moves);
         }
     }
 }
