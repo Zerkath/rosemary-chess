@@ -1,7 +1,6 @@
 package com.github.zerkath.rosemary.BoardRepresentation;
 
 import com.github.zerkath.rosemary.DataTypes.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,8 +17,7 @@ public class BoardState {
 
   public short enPassant = -1;
 
-  public BoardState() {
-  }
+  public BoardState() {}
 
   public BoardState(BoardState state) {
     setBoardState(state);
@@ -55,11 +53,9 @@ public class BoardState {
         break;
       } else {
         if (curr == CastlingRights.QUEEN) {
-          if (!queen)
-            curr = CastlingRights.BOTH;
+          if (!queen) curr = CastlingRights.BOTH;
         } else {
-          if (queen)
-            curr = CastlingRights.BOTH;
+          if (queen) curr = CastlingRights.BOTH;
         }
       }
 
@@ -69,9 +65,9 @@ public class BoardState {
 
   /**
    * used to add rows of FEN data to the board state
-   * 
+   *
    * @param rowData a row of FEN
-   * @param row     which row to place the fen
+   * @param row which row to place the fen
    */
   public void addRow(String rowData, int row) {
     int column = 0;
@@ -148,9 +144,7 @@ public class BoardState {
     setBoardState(previous);
   }
 
-  /**
-   * Returs a copy of the board with the new move
-   */
+  /** Returs a copy of the board with the new move */
   public BoardState makeNonModifyingMove(Move move) {
     BoardState tempBoard = new BoardState(this);
     tempBoard.makeMove(move);
@@ -171,8 +165,9 @@ public class BoardState {
     boolean isWhite = Pieces.isWhite(selected);
 
     checkForCastlingRights(move);
-    
-    if (Pieces.getType(selected) == Pieces.PAWN || board.getCoordinate(move.getDestination()) != 0) {
+
+    if (Pieces.getType(selected) == Pieces.PAWN
+        || board.getCoordinate(move.getDestination()) != 0) {
       halfMove = 0;
     } else {
       halfMove++;
@@ -180,26 +175,24 @@ public class BoardState {
 
     Coordinate temp = new Coordinate(enPassant);
 
-    if (Pieces.getType(selected) == Pieces.PAWN &&
-        enPassant != -1 &&
-        temp.getRow() == temp_destination.getRow() &&
-        temp.getColumn() == temp_destination.getColumn()) {
+    if (Pieces.getType(selected) == Pieces.PAWN
+        && enPassant != -1
+        && temp.getRow() == temp_destination.getRow()
+        && temp.getColumn() == temp_destination.getColumn()) {
       int offSet = isWhite ? 1 : -1;
       board.clearCoordinate(temp.getRow() + offSet, temp.getColumn());
     }
 
     enPassant = -1;
     // add En passant
-    if (Pieces.getType(selected) == Pieces.PAWN &&
-        ((temp_origin.getRow() == 6 && temp_destination.getRow() == 4)
+    if (Pieces.getType(selected) == Pieces.PAWN
+        && ((temp_origin.getRow() == 6 && temp_destination.getRow() == 4)
             || (temp_origin.getRow() == 1 && temp_destination.getRow() == 3))) {
 
       int right = 0;
       int left = 0;
-      if (dCol == 0)
-        right = board.getCoordinate(dRow, dCol + 1);
-      if (dCol == 7)
-        left = board.getCoordinate(dRow, dCol - 1);
+      if (dCol == 0) right = board.getCoordinate(dRow, dCol + 1);
+      if (dCol == 7) left = board.getCoordinate(dRow, dCol - 1);
       if (dCol > 0 && dCol < 7) {
         right = board.getCoordinate(dRow, dCol + 1);
         left = board.getCoordinate(dRow, dCol - 1);
@@ -215,9 +208,9 @@ public class BoardState {
     }
 
     // Castling
-    if (Pieces.getType(selected) == Pieces.KING &&
-        temp_origin.getColumn() == 4 &&
-        ((temp_origin.getRow() == 0 && dRow == 0) || temp_origin.getRow() == 7 && dRow == 7)
+    if (Pieces.getType(selected) == Pieces.KING
+        && temp_origin.getColumn() == 4
+        && ((temp_origin.getRow() == 0 && dRow == 0) || temp_origin.getRow() == 7 && dRow == 7)
         && (dCol == 2 || dCol == 6)) {
 
       board.setCastling(CastlingRights.NONE, isWhite);
@@ -250,22 +243,19 @@ public class BoardState {
 
     board.replaceCoordinate(temp_destination, piece);
 
-    if (!this.isWhiteTurn)
-      turnNumber++;
+    if (!this.isWhiteTurn) turnNumber++;
 
     this.isWhiteTurn = !this.isWhiteTurn;
   }
 
   private void incrementPiece(int piece) {
-    if (piece == 0)
-      return;
+    if (piece == 0) return;
     pieceMap.merge(piece, 1, Integer::sum);
   }
 
   public void updatePieceCount() {
     pieceMap.clear();
-    for (int piece : board.getBoard())
-      incrementPiece(piece);
+    for (int piece : board.getBoard()) incrementPiece(piece);
   }
 
   public String toFenString() {
