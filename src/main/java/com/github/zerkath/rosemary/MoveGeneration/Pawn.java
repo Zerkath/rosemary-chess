@@ -15,7 +15,7 @@ public class Pawn {
   private static void pawnCaptures(
       int nextRow, boolean promotion, short origin, Moves moves, Board board) {
     int original_piece = board.getCoordinate(origin);
-    int col = MoveUtil.getColumn(origin);
+    short col = MoveUtil.getColumn(origin);
     boolean isWhite = Pieces.isWhite(original_piece);
     boolean leftEdge = col == 0;
     boolean rightEdge = col == 7;

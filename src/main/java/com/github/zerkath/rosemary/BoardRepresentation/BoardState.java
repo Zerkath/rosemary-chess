@@ -89,7 +89,9 @@ public class BoardState {
 
   public void playMoves(String[] moves) {
     for (String move : moves) {
-      this.makeMove(MoveUtil.getMove(move));
+      short x = MoveUtil.getMove(move);
+      System.out.println(MoveUtil.moveToString(x));
+      this.makeMove(x);
     }
   }
 
@@ -153,9 +155,9 @@ public class BoardState {
     return tempBoard;
   }
 
-  public void makeMove(short move) {
+  public void makeMove(short moveWithPromotionData) {
     previous = new BoardState(this);
-
+    short move = MoveUtil.clearPromotion(moveWithPromotionData);
     short temp_destination = MoveUtil.getDestination(move);
     short temp_origin = MoveUtil.getOrigin(move);
     int dRow = MoveUtil.getRow(temp_destination);
@@ -163,10 +165,10 @@ public class BoardState {
 
     int selected = board.getCoordinate(temp_origin);
 
-    boolean isBeingPromoted = MoveUtil.getPromotion(move) != 0;
+    boolean isBeingPromoted = MoveUtil.getPromotion(moveWithPromotionData) != 0;
     boolean isWhite = Pieces.isWhite(selected);
 
-    checkForCastlingRights(move);
+    checkForCastlingRights(moveWithPromotionData);
 
     if (Pieces.getType(selected) == Pieces.PAWN
         || board.getCoordinate(MoveUtil.getDestination(move)) != 0) {
@@ -239,9 +241,7 @@ public class BoardState {
 
     int piece = selected;
     if (isBeingPromoted) {
-      piece =
-          MoveUtil.getPromotion(
-              move); // FIXME promotion here should get the piece not raw promotion data
+      piece = Pieces.getPromotionNum(MoveUtil.getPromotion(moveWithPromotionData));
     }
 
     board.replaceCoordinate(temp_destination, piece);

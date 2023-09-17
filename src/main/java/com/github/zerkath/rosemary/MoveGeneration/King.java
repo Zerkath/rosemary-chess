@@ -284,9 +284,8 @@ public class King {
     // let's try the most likely moves to cause check (bishop and rook)
     short origin = white ? board.getWhiteKing() : board.getBlackKing();
 
-    if (distanceWithinBoundary(board.getWhiteKing(), board.getBlackKing(), 1)) return true;
-
     if (origin == -1) return false;
+    if (distanceWithinBoundary(board.getWhiteKing(), board.getBlackKing(), 1)) return true;
 
     int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
     int opponentKnight = Pieces.KNIGHT | opponentColor;
@@ -298,6 +297,7 @@ public class King {
     Moves knightMoves = new Moves();
     Knight.getMoves(origin, boardState, knightMoves);
     for (short move : knightMoves) {
+
       int piece = board.getCoordinate(MoveUtil.getDestination(move));
       if (piece == 0) continue;
       if (opponentKnight == piece) {
@@ -332,12 +332,14 @@ public class King {
     }
     for (short move : moves) {
 
-      short coord = MoveUtil.getDestination(move);
+      int piece = boardState.board.getCoordinate(MoveUtil.getDestination(move));
 
-      int piece = boardState.board.getCoordinate(coord);
-      if (piece != 0 && Pieces.isWhite(piece) != colour) {
+      if (piece == 0) continue;
+      if (Pieces.isWhite(piece) != colour) {
         int destType = Pieces.getType(piece);
-        if (destType == type || destType == Pieces.QUEEN) return true;
+        if (destType == type || destType == Pieces.QUEEN) {
+          return true;
+        }
       }
     }
     return false;

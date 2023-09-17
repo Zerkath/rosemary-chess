@@ -272,6 +272,20 @@ public class MoveGenerationTest {
   }
 
   @Test
+  @Order(103)
+  void movesFromPosition3_1() {
+    long[] result =
+        uci.runPerft(
+            1,
+            true,
+            getTestBoard("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1R1K b kq - 1 1"));
+
+    System.out.println(
+        "Depth: 1" + " Nodes: " + result[0] + " Time: " + result[1] + "ms movesFromPosition3\n");
+    Assertions.assertEquals(46, result[0]);
+  }
+
+  @Test
   @Order(104)
   void movesFromPosition3mirrored() {
     long[] depth = new long[3];

@@ -16,6 +16,30 @@ public class Pieces {
   public static final int m_black = 0b01000;
   public static final int m_colour = m_white | m_black;
 
+  public static char getPromotion(short header) {
+    char result =
+        switch (header & MoveUtil.atomicMask) {
+          case 0b111 -> 'q';
+          case 0b110 -> 'r';
+          case 0b101 -> 'b';
+          case 0b100 -> 'n';
+          default -> '\0';
+        };
+    return (header & 0b1000) != 0 ? Character.toUpperCase(result) : result;
+  }
+
+  public static int getPromotionNum(short header) {
+    int result =
+        switch (header & MoveUtil.atomicMask) {
+          case 0b111 -> QUEEN;
+          case 0b110 -> ROOK;
+          case 0b101 -> BISHOP;
+          case 0b100 -> KNIGHT;
+          default -> '\0';
+        };
+    return (header & 0b1000) != 0 ? result | WHITE : result | BLACK;
+  }
+
   public static char getChar(int piece) {
 
     char result =
@@ -26,7 +50,7 @@ public class Pieces {
           case ROOK -> 'r';
           case QUEEN -> 'q';
           case KING -> 'k';
-          default -> ' ';
+          default -> '\0';
         };
     result = isWhite(piece) ? Character.toUpperCase(result) : result;
     return result;

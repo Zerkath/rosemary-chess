@@ -56,7 +56,7 @@ public class MoveUtil {
   }
 
   public static short clearPromotion(short move) {
-    return (short) (move & coordinateMask);
+    return (short) (move & moveMask);
   }
 
   public static short getOrigin(short move) {
@@ -70,8 +70,13 @@ public class MoveUtil {
   public static String moveToString(short move) {
     short origin = getOrigin(move);
     short destination = getDestination(move);
-
-    return coordinateToString(origin) + "" + coordinateToString(destination);
+    short promotion = getPromotion(move);
+    char x = Pieces.getPromotion(promotion);
+    if (x != '\0') {
+      return coordinateToString(origin) + "" + coordinateToString(destination) + x;
+    } else {
+      return coordinateToString(origin) + "" + coordinateToString(destination);
+    }
   }
 
   public static String coordinateToString(short coordinate) {
