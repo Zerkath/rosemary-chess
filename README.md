@@ -3,7 +3,7 @@ Started out as a project for Artificial Intelligence and Robotics course work in
 
 ## Technology
 - Java version 17+ (originally 11)
-- Junit 
+- Junit
 - Gradle
 
 To work with GUI's the jar needed to be turned into a exe, this was done using http://launch4j.sourceforge.net/

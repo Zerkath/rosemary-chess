@@ -1,54 +1,87 @@
 plugins {
-    id 'java'
-    id 'jacoco'
+	id 'java'
+	id 'jacoco'
+	id 'com.diffplug.spotless' version '6.21.0'
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(17))
+	}
 }
 
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-    options.compilerArgs.add('-Xlint:deprecation')
-    options.compilerArgs.add('-Xlint:unchecked')
-    options.compilerArgs.add('-Xlint:cast')
+	options.encoding = 'UTF-8'
+	options.compilerArgs.add('-Xlint:deprecation')
+	options.compilerArgs.add('-Xlint:unchecked')
+	options.compilerArgs.add('-Xlint:cast')
 }
 
 test {
-    jvmArgs = ['-Xms512m', '-Xmx8G']
+	jvmArgs = ['-Xms512m', '-Xmx8G']
 
-    beforeTest { descriptor ->
-       logger.lifecycle("Running test: " + descriptor)
-    }
+	beforeTest { descriptor ->
+	logger.lifecycle("Running test: " + descriptor)
+	}
 
-    useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
+	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
 }
 
 jacocoTestReport {
-    reports {
-        xml.required.set(false)
-        csv.required.set(false)
-        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
-    }
-    dependsOn(tasks.test)
+	reports {
+		xml.required.set(false)
+		csv.required.set(false)
+		html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+	}
+	dependsOn(tasks.test)
+}
+
+spotless {
+// optional: limit format enforcement to just the files changed by this feature branch
+// ratchetFrom 'origin/main'
+
+format 'misc', {
+	// define the files to apply `misc` to
+	target '*.gradle', '*.md', '.gitignore'
+
+	// define the steps to apply to those files
+	trimTrailingWhitespace()
+	indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+	endWithNewline()
+}
+java {
+	// Use the default importOrder configuration
+	importOrder()
+	removeUnusedImports()
+
+	// Cleanthat will refactor your code, but it may break your style: apply it before your formatter
+	cleanthat()          // has its own section below
+
+	// Choose one of these formatters.
+	googleJavaFormat()
+
+	// eclipse()
+	// prettier()
+	// clangFormat()
+
+	formatAnnotations()  // fixes formatting of type annotations, see below
+}
 }
 
 jar {
-  manifest {
-    attributes(
-        "Manifest-Version": "1.0",
-        "Main-Class": "com.github.zerkath.rosemary.Main.Program"
-        )
-  }
+manifest {
+	attributes(
+		"Manifest-Version": "1.0",
+		"Main-Class": "com.github.zerkath.rosemary.Main.Program"
+		)
+}
 }

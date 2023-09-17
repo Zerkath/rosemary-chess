@@ -2,12 +2,12 @@ package com.github.zerkath.rosemary.BoardRepresentation;
 
 import com.github.zerkath.rosemary.DataTypes.Board;
 import com.github.zerkath.rosemary.DataTypes.Pieces;
-import com.github.zerkath.rosemary.DataTypes.Coordinate;
 import com.github.zerkath.rosemary.DataTypes.Utils;
 
 public class FenUtils {
 
-  private final static String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  private static final String default_fen =
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
   public static BoardState parseFen(String fen) {
 
@@ -26,11 +26,9 @@ public class FenUtils {
 
     BoardState boardState = new BoardState();
 
-    if (split.length != 6)
-      return new BoardState(parseFen(default_fen)); // todo give out errors
+    if (split.length != 6) return new BoardState(parseFen(default_fen)); // todo give out errors
     String[] rows = split[0].split("/");
-    if (rows.length != 8)
-      return new BoardState(parseFen(default_fen));
+    if (rows.length != 8) return new BoardState(parseFen(default_fen));
 
     boardState.isWhiteTurn = split[1].equals("w");
 
@@ -60,46 +58,40 @@ public class FenUtils {
           strBuilder.append(empty);
           empty = 0;
           strBuilder.append(Pieces.getChar(piece));
-        } else
-          strBuilder.append(Pieces.getChar(piece));
+        } else strBuilder.append(Pieces.getChar(piece));
       }
-      if (empty != 0)
-        strBuilder.append(empty);
-      if (row != 7)
-        strBuilder.append("/");
+      if (empty != 0) strBuilder.append(empty);
+      if (row != 7) strBuilder.append("/");
     }
 
     strBuilder.append(boardState.isWhiteTurn ? " w" : " b");
 
-    String WhiteCastlingString = switch (board.getWhiteCastling()) {
-      case KING -> "K";
-      case QUEEN -> "Q";
-      case BOTH -> "KQ";
-      case NONE -> "";
-    };
+    String WhiteCastlingString =
+        switch (board.getWhiteCastling()) {
+          case KING -> "K";
+          case QUEEN -> "Q";
+          case BOTH -> "KQ";
+          case NONE -> "";
+        };
 
-    String BlackCastlingString = switch (board.getBlackCastling()) {
-      case KING -> "k";
-      case QUEEN -> "q";
-      case BOTH -> "kq";
-      case NONE -> "";
-    };
+    String BlackCastlingString =
+        switch (board.getBlackCastling()) {
+          case KING -> "k";
+          case QUEEN -> "q";
+          case BOTH -> "kq";
+          case NONE -> "";
+        };
 
     if (WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
       strBuilder.append(" - ");
     } else {
-      strBuilder.append(" ")
-          .append(WhiteCastlingString)
-          .append(BlackCastlingString)
-          .append(" ");
+      strBuilder.append(" ").append(WhiteCastlingString).append(BlackCastlingString).append(" ");
     }
 
-    strBuilder.append(boardState.enPassant != -1 ? Utils.coordinateToString(boardState.enPassant) : "-");
+    strBuilder.append(
+        boardState.enPassant != -1 ? Utils.coordinateToString(boardState.enPassant) : "-");
 
-    strBuilder.append(" ")
-        .append(boardState.halfMove)
-        .append(" ")
-        .append(boardState.turnNumber);
+    strBuilder.append(" ").append(boardState.halfMove).append(" ").append(boardState.turnNumber);
 
     return strBuilder.toString();
   }

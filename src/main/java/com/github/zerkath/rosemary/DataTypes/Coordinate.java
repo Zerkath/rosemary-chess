@@ -1,9 +1,8 @@
 package com.github.zerkath.rosemary.DataTypes;
 
 /**
- * TODO: Should be converted to a int value with methods for converting between
- * string to coord and vice versa
- * Accounts for 17.3% of total allocated objects at perft 4
+ * TODO: Should be converted to a int value with methods for converting between string to coord and
+ * vice versa Accounts for 17.3% of total allocated objects at perft 4
  */
 @Deprecated
 public class Coordinate {
@@ -29,17 +28,16 @@ public class Coordinate {
   }
 
   public short getRow() {
-    return (short)(coord >> 3);
+    return (short) (coord >> 3);
   }
 
   public short getColumn() {
-    return (short)(coord & Utils.coordinateMask);
+    return (short) (coord & Utils.coordinateMask);
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof Coordinate))
-      return false;
+    if (!(obj instanceof Coordinate)) return false;
     Coordinate c = (Coordinate) obj; // cast for types
     return this.coord == c.coord;
   }

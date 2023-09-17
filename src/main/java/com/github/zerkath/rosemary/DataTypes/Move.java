@@ -1,14 +1,10 @@
 package com.github.zerkath.rosemary.DataTypes;
 
 /**
- * Used for storing basic information about moves
- * From and to where
- * also promotion
+ * Used for storing basic information about moves From and to where also promotion
  *
- * TODO: Could convert this to a int value, and use bit shifting to store the
- * values
- * Reason for this is that at perft 4 this accounts for 5.6% of total allocated
- * objects
+ * <p>TODO: Could convert this to a int value, and use bit shifting to store the values Reason for
+ * this is that at perft 4 this accounts for 5.6% of total allocated objects
  */
 @Deprecated
 public class Move {
@@ -63,8 +59,7 @@ public class Move {
 
   @Override
   public boolean equals(Object other) {
-    if (!(other instanceof Move))
-      return false;
+    if (!(other instanceof Move)) return false;
     Move otherMove = (Move) other;
     return this.p_move == otherMove.p_move && this.promotion == otherMove.promotion;
   }

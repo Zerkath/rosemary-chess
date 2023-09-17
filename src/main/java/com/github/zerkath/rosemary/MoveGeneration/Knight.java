@@ -6,37 +6,37 @@ import java.util.HashMap;
 
 public class Knight {
 
-    static HashMap<Coordinate, Moves> knightMoves = new HashMap<>();
+  static HashMap<Coordinate, Moves> knightMoves = new HashMap<>();
 
-    static {
-        for (short originX = 0; originX < 64; originX++) {
-            Coordinate origin = new Coordinate(originX);
-            int row = origin.getRow();
-            int col = origin.getColumn();
-            
-            int [] columns = new int []{col - 2, col + 2};
-            int [] rows = new int []{row - 2, row + 2};
-            Moves moves = new Moves();
-            for (int d_column: columns) {
-                Utils.addToCollection(row + 1, d_column, row, col, moves);
-                Utils.addToCollection(row - 1, d_column, row, col, moves);
-            }
+  static {
+    for (short originX = 0; originX < 64; originX++) {
+      Coordinate origin = new Coordinate(originX);
+      int row = origin.getRow();
+      int col = origin.getColumn();
 
-            for (int d_row: rows) {
-                Utils.addToCollection(d_row, col + 1, row, col, moves);
-                Utils.addToCollection(d_row, col - 1, row, col, moves);
-            }
-            knightMoves.put(origin, moves);
-        } 
+      int[] columns = new int[] {col - 2, col + 2};
+      int[] rows = new int[] {row - 2, row + 2};
+      Moves moves = new Moves();
+      for (int d_column : columns) {
+        Utils.addToCollection(row + 1, d_column, row, col, moves);
+        Utils.addToCollection(row - 1, d_column, row, col, moves);
+      }
+
+      for (int d_row : rows) {
+        Utils.addToCollection(d_row, col + 1, row, col, moves);
+        Utils.addToCollection(d_row, col - 1, row, col, moves);
+      }
+      knightMoves.put(origin, moves);
     }
+  }
 
-    public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+  public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
 
-        Board board = boardState.board;
-        Moves n_moves = knightMoves.get(origin);
+    Board board = boardState.board;
+    Moves n_moves = knightMoves.get(origin);
 
-        for(Move move: n_moves) {
-           if(board.isValidMove(move)) moves.add(move); 
-        }
+    for (Move move : n_moves) {
+      if (board.isValidMove(move)) moves.add(move);
     }
+  }
 }
