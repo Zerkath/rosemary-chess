@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Board {
 
-  private final int[] board = new int[64];
+  private final byte[] board = new byte[64];
   private CastlingRights whiteCastlingRights = CastlingRights.NONE;
   private CastlingRights blackCastlingRights = CastlingRights.NONE;
   private final StringBuilder strBuilder = new StringBuilder();
@@ -23,15 +23,15 @@ public class Board {
     this.blackKing = board.blackKing;
   }
 
-  public int[] getBoard() {
+  public byte[] getBoard() {
     return this.board;
   }
 
-  public int getCoordinate(short coordinate) {
+  public byte getCoordinate(short coordinate) {
     return this.board[coordinate]; // TODO validation?
   }
 
-  public int getCoordinate(int row, int column) {
+  public byte getCoordinate(int row, int column) {
     return this.board[(row << 3) | column];
   }
 
@@ -43,17 +43,17 @@ public class Board {
     this.board[(row << 3) | column] = 0;
   }
 
-  public int[] getRow(int row) {
+  public byte[] getRow(int row) {
     int startIndex = row << 3;
     int endIndex = startIndex + 8;
     return Arrays.copyOfRange(board, startIndex, endIndex);
   }
 
-  public void replaceCoordinate(int row, int column, int piece) {
+  public void replaceCoordinate(int row, int column, byte piece) {
     this.board[(row << 3) | column] = piece;
   }
 
-  public void replaceCoordinate(short coordinate, int piece) {
+  public void replaceCoordinate(short coordinate, byte piece) {
     if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
     replaceCoordinate(MoveUtil.getRow(coordinate), MoveUtil.getColumn(coordinate), piece);
   }

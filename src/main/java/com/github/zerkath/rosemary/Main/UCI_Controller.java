@@ -197,13 +197,13 @@ public class UCI_Controller extends OutputUtils {
       variance += Math.abs(l - average);
     }
     variance = variance / (double) iterations;
-    println("avg " + average + " var " + variance + " totalRuns" + iterations);
+    println("avg " + average + " var " + variance + " runs " + iterations);
   }
 
   public void getPerft(int depth) {
     long[] result = runPerft(depth, true);
     String str = "\nDepth " + depth + " nodes: " + result[0];
-    println(str + " " + result[1] + "ms");
+    println(str + " " + Long.toUnsignedString(result[1]) + "ms");
   }
 
   public long[] runPerft(int depth, boolean print) {

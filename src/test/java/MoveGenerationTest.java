@@ -184,6 +184,8 @@ public class MoveGenerationTest {
     // took 136s~ after 13/9/2021, wsl2 99s??
     // took 73s~ after 15/9/2021
     // took 51s~ on 18/12/2022 ! new cpu
+    // took 20s on 16/9/2023
+    // took 14s~ after 17/9/2023
     //
     // this test is broken with async,
     // but with manual run in built app this takes 23s while old solution took 43s

@@ -13,7 +13,7 @@ public class BoardState {
   public int turnNumber = 1;
   public int halfMove = 0;
 
-  public Map<Integer, Integer> pieceMap = new HashMap<>();
+  public Map<Byte, Integer> pieceMap = new HashMap<>();
 
   public short enPassant = -1;
 
@@ -79,7 +79,7 @@ public class BoardState {
           column++;
         }
       } else {
-        int piece = Pieces.getNum(ch);
+        byte piece = Pieces.getNum(ch);
         board.replaceCoordinate(Utils.getCoordinate(row, column), piece);
         incrementPiece(piece);
         column++;
@@ -163,7 +163,7 @@ public class BoardState {
     int dRow = MoveUtil.getRow(temp_destination);
     int dCol = MoveUtil.getColumn(temp_destination);
 
-    int selected = board.getCoordinate(temp_origin);
+    byte selected = board.getCoordinate(temp_origin);
 
     boolean isBeingPromoted = MoveUtil.getPromotion(moveWithPromotionData) != 0;
     boolean isWhite = Pieces.isWhite(selected);
@@ -218,7 +218,7 @@ public class BoardState {
 
       board.setCastling(CastlingRights.NONE, isWhite);
 
-      int rook;
+      byte rook;
       short destination;
       short origin;
       if (dCol == 2) {
@@ -239,7 +239,7 @@ public class BoardState {
 
     board.clearCoordinate(temp_origin);
 
-    int piece = selected;
+    byte piece = selected;
     if (isBeingPromoted) {
       piece = Pieces.getPromotionNum(MoveUtil.getPromotion(moveWithPromotionData));
     }
@@ -251,14 +251,14 @@ public class BoardState {
     this.isWhiteTurn = !this.isWhiteTurn;
   }
 
-  private void incrementPiece(int piece) {
+  private void incrementPiece(byte piece) {
     if (piece == 0) return;
     pieceMap.merge(piece, 1, Integer::sum);
   }
 
   public void updatePieceCount() {
     pieceMap.clear();
-    for (int piece : board.getBoard()) incrementPiece(piece);
+    for (byte piece : board.getBoard()) incrementPiece(piece);
   }
 
   public String toFenString() {

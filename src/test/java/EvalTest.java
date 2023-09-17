@@ -59,25 +59,25 @@ public class EvalTest {
         new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     System.out.println("Start");
     boardState.updatePieceCount();
-    for (Map.Entry<Integer, Integer> entry : boardState.pieceMap.entrySet()) {
+    for (Map.Entry<Byte, Integer> entry : boardState.pieceMap.entrySet()) {
       System.out.println(Pieces.getChar(entry.getKey()) + " count: " + entry.getValue());
     }
     UCI_Controller uci = new UCI_Controller();
     uci.boardState = boardState;
     uci.runPerft(4, false);
     boardState.updatePieceCount();
-    Map<Integer, Integer> map = uci.boardState.pieceMap;
+    Map<Byte, Integer> map = uci.boardState.pieceMap;
     System.out.println("\nAfter perft");
-    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+    for (Map.Entry<Byte, Integer> entry : map.entrySet()) {
       System.out.println(Pieces.getChar(entry.getKey()) + " count: " + entry.getValue());
     }
-    Assertions.assertEquals(8, map.get(Pieces.PAWN | Pieces.WHITE));
-    Assertions.assertEquals(8, map.get(Pieces.PAWN | Pieces.BLACK));
-    Assertions.assertEquals(2, map.get(Pieces.KNIGHT | Pieces.WHITE));
-    Assertions.assertEquals(2, map.get(Pieces.KNIGHT | Pieces.BLACK));
-    Assertions.assertEquals(2, map.get(Pieces.ROOK | Pieces.BLACK));
-    Assertions.assertEquals(2, map.get(Pieces.ROOK | Pieces.WHITE));
-    Assertions.assertEquals(1, map.get(Pieces.KING | Pieces.BLACK));
-    Assertions.assertEquals(1, map.get(Pieces.KING | Pieces.WHITE));
+    Assertions.assertEquals(8, map.get((byte) (Pieces.PAWN | Pieces.WHITE)));
+    Assertions.assertEquals(8, map.get((byte) (Pieces.PAWN | Pieces.BLACK)));
+    Assertions.assertEquals(2, map.get((byte) (Pieces.KNIGHT | Pieces.WHITE)));
+    Assertions.assertEquals(2, map.get((byte) (Pieces.KNIGHT | Pieces.BLACK)));
+    Assertions.assertEquals(2, map.get((byte) (Pieces.ROOK | Pieces.BLACK)));
+    Assertions.assertEquals(2, map.get((byte) (Pieces.ROOK | Pieces.WHITE)));
+    Assertions.assertEquals(1, map.get((byte) (Pieces.KING | Pieces.BLACK)));
+    Assertions.assertEquals(1, map.get((byte) (Pieces.KING | Pieces.WHITE)));
   }
 }

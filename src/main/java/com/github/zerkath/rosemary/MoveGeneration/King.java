@@ -97,7 +97,7 @@ public class King {
     int ownRook;
     int pawn, knight, rook, bishop, queen;
     int row;
-    int[] backRow, seventh, sixth;
+    byte[] backRow, seventh, sixth;
     Board board;
 
     public CastlingData(boolean isWhite, int row, Board board) {
