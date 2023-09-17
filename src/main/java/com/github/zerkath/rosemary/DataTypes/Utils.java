@@ -33,7 +33,7 @@ public class Utils {
 
   public static String coordinateToString(short coordinate) {
     int row = (coordinate >> 3);
-    int column = (coordinate & Utils.coordinateMask);
+    int column = (coordinate & coordinateMask);
 
     return toColumnChar(column) + "" + toRowChar(row);
   }

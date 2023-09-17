@@ -15,8 +15,9 @@ package com.github.zerkath.rosemary.DataTypes;
  */
 public class MoveUtil {
 
-  public static short coordinateMask = 0b111;
-  public static short moveMask = 0b111111;
+  public static short atomicMask = 0b111;
+  public static short coordinateMask = 0b111111;
+  public static short moveMask = 0b111111111111;
 
   private static short fromOriginAndDestination(short origin, short destination) {
     return (short) ((origin << 6) | destination);
@@ -32,7 +33,7 @@ public class MoveUtil {
 
     int piece = 0;
     if (move.length() == 5) {
-      Pieces.getNum(move.charAt(4));
+      piece = Pieces.getNum(move.charAt(4));
     }
     return getMove(getMove(origin, destination), Pieces.getType(piece), Pieces.isWhite(piece));
   }
@@ -55,11 +56,11 @@ public class MoveUtil {
   }
 
   public static short clearPromotion(short move) {
-    return (short) (move & moveMask);
+    return (short) (move & coordinateMask);
   }
 
   public static short getOrigin(short move) {
-    return (short) ((move >> 6) & coordinateMask);
+    return (short) ((move & moveMask) >> 6);
   }
 
   public static short getDestination(short move) {
@@ -67,25 +68,25 @@ public class MoveUtil {
   }
 
   public static String moveToString(short move) {
-    int origin = (move >> 6);
-    int destination = (move & Utils.moveMask);
+    short origin = getOrigin(move);
+    short destination = getDestination(move);
 
-    return coordinateToString((short) origin) + "" + coordinateToString((short) destination);
+    return coordinateToString(origin) + "" + coordinateToString(destination);
   }
 
   public static String coordinateToString(short coordinate) {
-    short masked = (short) (coordinate & moveMask);
+    short masked = (short) (coordinate & coordinateMask);
     int row = masked >> 3;
-    int column = masked & coordinateMask;
+    int column = masked & atomicMask;
 
     return Utils.toColumnChar(column) + "" + Utils.toRowChar(row);
   }
 
   public static short getRow(short coord) {
-    return (short) ((coord >> 3) & coordinateMask);
+    return (short) ((coord & coordinateMask) >> 3);
   }
 
   public static short getColumn(short coord) {
-    return (short) (coord & coordinateMask);
+    return (short) (coord & atomicMask);
   }
 }

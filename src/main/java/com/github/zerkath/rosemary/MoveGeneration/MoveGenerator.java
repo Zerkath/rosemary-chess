@@ -34,7 +34,9 @@ public class MoveGenerator {
     while (pseudoIterator.hasNext()) {
       move = pseudoIterator.next();
       boardState.makeMove(move);
-      if (King.kingInCheck(boardState)) pseudoIterator.remove();
+      if (King.kingInCheck(boardState)) {
+        pseudoIterator.remove();
+      }
       boardState.unMakeMove();
     }
     return pseudoLegal;

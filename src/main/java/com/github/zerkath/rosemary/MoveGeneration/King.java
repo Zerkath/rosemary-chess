@@ -286,7 +286,8 @@ public class King {
 
     if (distanceWithinBoundary(board.getWhiteKing(), board.getBlackKing(), 1)) return true;
 
-    // if (origin == null) return false; FIXME was this necessary?
+    if (origin == -1) return false;
+
     int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
     int opponentKnight = Pieces.KNIGHT | opponentColor;
     int opponentPawn = Pieces.PAWN | opponentColor;
@@ -322,15 +323,19 @@ public class King {
 
   private static boolean pieceHasCheck(
       BoardState boardState, boolean colour, int type, short origin) {
+
+    // generate moves from king position to outside
     Moves moves = new Moves();
     switch (type) {
       case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, moves);
       case Pieces.ROOK -> Rook.getMoves(origin, boardState, moves);
     }
     for (short move : moves) {
-      int piece = boardState.board.getCoordinate(MoveUtil.getDestination(move));
-      if (piece == 0) continue;
-      if (Pieces.isWhite(piece) != colour) {
+
+      short coord = MoveUtil.getDestination(move);
+
+      int piece = boardState.board.getCoordinate(coord);
+      if (piece != 0 && Pieces.isWhite(piece) != colour) {
         int destType = Pieces.getType(piece);
         if (destType == type || destType == Pieces.QUEEN) return true;
       }

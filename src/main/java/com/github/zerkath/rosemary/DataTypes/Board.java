@@ -8,8 +8,8 @@ public class Board {
   private CastlingRights whiteCastlingRights = CastlingRights.NONE;
   private CastlingRights blackCastlingRights = CastlingRights.NONE;
   private final StringBuilder strBuilder = new StringBuilder();
-  private short whiteKing;
-  private short blackKing;
+  private short whiteKing = -1;
+  private short blackKing = -1;
 
   public Board() {
     for (int i = 0; i < 64; i++) this.board[i] = 0;
