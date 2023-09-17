@@ -91,10 +91,16 @@ public class UCI_Controller extends OutputUtils {
       return;
     }
     if (split[0].equals("go")) {
-      if (split.length > 2) {
+      if (split.length > 1) {
         if (split[1].equals("perft")) {
           int depth = Integer.parseInt(split[2]);
-          getPerft(depth);
+
+          if (split.length > 2) {
+            int iterations = Integer.parseInt(split[3]);
+            superPerft(depth, iterations);
+          } else {
+            getPerft(depth);
+          }
           return;
         }
       }
@@ -164,6 +170,34 @@ public class UCI_Controller extends OutputUtils {
   public void startEval(int depth) {
     if (threadGroup.activeCount() < 1)
       new Thread(threadGroup, new EvaluationThread(this.boardState, depth, debug, writer)).start();
+  }
+
+  public void superPerft(int depth, int iterations) {
+    long[] allRuns = new long[iterations];
+
+    // warm up
+    for (int i = 0; i < 3; i++) {
+      runPerft(depth, false);
+    }
+
+    // gather results
+    for (int i = 0; i < iterations; i++) {
+      long[] result = runPerft(depth, false);
+      allRuns[i] = result[1];
+    }
+
+    long sum = 0;
+    for (long l : allRuns) {
+      sum += l;
+    }
+
+    double average = sum / (double) iterations;
+    double variance = 0;
+    for (long l : allRuns) {
+      variance += Math.abs(l - average);
+    }
+    variance = variance / (double) iterations;
+    println("avg " + average + " var " + variance + " totalRuns" + iterations);
   }
 
   public void getPerft(int depth) {

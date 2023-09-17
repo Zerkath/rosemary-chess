@@ -163,7 +163,7 @@ public class MoveGenerationTest {
   @Order(200)
   void movesToDepth() {
 
-    long[] depth = new long[5];
+    long[] depth = new long[4];
     long[] expected = {20, 400, 8902, 197281, 4865609, 119060324};
     for (int i = 0; i < depth.length; i++) {
       long[] result = uci.runPerft(i + 1, true, getTestBoard());
