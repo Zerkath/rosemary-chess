@@ -5,47 +5,46 @@ import com.github.zerkath.rosemary.DataTypes.*;
 
 public class Pawn {
 
-  private static void pawnPromotions(Move move, boolean isWhite, Moves moves) {
-    int offset = isWhite ? Pieces.WHITE : Pieces.BLACK;
-    moves.add(new Move(move, Pieces.QUEEN | offset));
-    moves.add(new Move(move, Pieces.KNIGHT | offset));
-    moves.add(new Move(move, Pieces.ROOK | offset));
-    moves.add(new Move(move, Pieces.BISHOP | offset));
+  private static void pawnPromotions(short move, boolean isWhite, Moves moves) {
+    moves.add(MoveUtil.getMove(move, Pieces.QUEEN, isWhite));
+    moves.add(MoveUtil.getMove(move, Pieces.KNIGHT, isWhite));
+    moves.add(MoveUtil.getMove(move, Pieces.ROOK, isWhite));
+    moves.add(MoveUtil.getMove(move, Pieces.BISHOP, isWhite));
   }
 
   private static void pawnCaptures(
-      int nextRow, boolean promotion, Coordinate origin, Moves moves, Board board) {
-    int original_piece = board.getCoordinate(origin.coord);
-    int col = origin.getColumn();
+      int nextRow, boolean promotion, short origin, Moves moves, Board board) {
+    int original_piece = board.getCoordinate(origin);
+    int col = MoveUtil.getColumn(origin);
     boolean isWhite = Pieces.isWhite(original_piece);
     boolean leftEdge = col == 0;
     boolean rightEdge = col == 7;
 
     // these destinations are mutates somewhere else
-    Coordinate destination1 = new Coordinate(nextRow, col - 1);
+    short destination1 = Utils.getCoordinate(nextRow, col - 1);
     if (!leftEdge && board.pawnCapturePossible(destination1, original_piece)) {
-      Move nextMove = new Move(origin.coord, destination1.coord);
+      short nextMove = MoveUtil.getMove(origin, destination1);
       if (promotion) pawnPromotions(nextMove, isWhite, moves);
       else moves.add(nextMove);
     }
 
-    Coordinate destination2 = new Coordinate(nextRow, col + 1);
+    short destination2 = Utils.getCoordinate(nextRow, col + 1);
     if (!rightEdge && board.pawnCapturePossible(destination2, original_piece)) {
-      Move nextMove = new Move(origin.coord, destination2.coord);
+      short nextMove = MoveUtil.getMove(origin, destination2);
       if (promotion) pawnPromotions(nextMove, isWhite, moves);
       else moves.add(nextMove);
     }
   }
 
-  public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+  public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
     Board board = boardState.board;
 
-    int original_piece = board.getCoordinate(origin.coord);
+    int original_piece = board.getCoordinate(origin);
     boolean isWhite = Pieces.isWhite(original_piece);
     boolean promotion = false;
-    int row = origin.getRow();
-    int col = origin.getColumn();
+    int row = MoveUtil.getRow(origin);
+    int col = MoveUtil.getColumn(origin);
 
     int nextRow = row;
     int doubleJump = row;
@@ -67,7 +66,7 @@ public class Pawn {
 
     // forward
     if (board.getCoordinate(nextRow, col) == Pieces.EMPTY) {
-      Move nextMove = new Move(origin.coord, Utils.getCoordinate(nextRow, col));
+      short nextMove = MoveUtil.getMove(origin, Utils.getCoordinate(nextRow, col));
       if (promotion) pawnPromotions(nextMove, isWhite, moves);
       else moves.add(nextMove);
 
@@ -75,7 +74,7 @@ public class Pawn {
           && board.getCoordinate(doubleJump, col) == Pieces.EMPTY) {
         // if at starting square and nothing in front
         short destination = Utils.getCoordinate(doubleJump, col);
-        moves.add(new Move(origin.coord, destination));
+        moves.add(MoveUtil.getMove(origin, destination));
       }
     }
 
@@ -83,10 +82,10 @@ public class Pawn {
 
     if (boardState.enPassant != -1 && row == enPassantRow) {
 
-      Coordinate destination = new Coordinate(boardState.enPassant);
-      int distance = origin.getColumn() - destination.getColumn();
+      short destination = boardState.enPassant;
+      int distance = MoveUtil.getColumn(origin) - MoveUtil.getColumn(destination);
       if (distance == 1 || distance == -1) {
-        moves.add(new Move(origin.coord, destination.coord));
+        moves.add(MoveUtil.getMove(origin, destination));
       }
     }
   }

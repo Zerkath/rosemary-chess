@@ -2,6 +2,7 @@ package com.github.zerkath.rosemary.MoveGeneration;
 
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
 import com.github.zerkath.rosemary.DataTypes.*;
+import com.github.zerkath.rosemary.DataTypes.MoveUtil;
 import java.util.HashMap;
 
 public class King {
@@ -10,9 +11,8 @@ public class King {
 
   static {
     for (short origin = 0; origin < 64; origin++) {
-      Coordinate originCoord = new Coordinate(origin);
-      int row = originCoord.getRow();
-      int col = originCoord.getColumn();
+      int row = MoveUtil.getRow(origin);
+      int col = MoveUtil.getColumn(origin);
       // generating moves around king //todo update
       Moves moves = new Moves();
       for (int row_i = row - 1; row_i <= row + 1; row_i++) {
@@ -26,20 +26,21 @@ public class King {
     }
   }
 
-  public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+  public static void getMoves(short origin, BoardState boardState, Moves moves) {
     Board board = boardState.board;
     boolean isWhiteTurn = boardState.isWhiteTurn;
     CastlingRights whiteCastling = board.getWhiteCastling();
     CastlingRights blackCastling = board.getBlackCastling();
 
-    int originalPiece = board.getCoordinate(origin.coord);
+    int originalPiece = board.getCoordinate(origin);
     boolean isWhite = Pieces.isWhite(originalPiece);
-    int row = origin.getRow();
-    int col = origin.getColumn();
+    int row = MoveUtil.getRow(origin);
+    int col = MoveUtil.getColumn(origin);
 
     // generating moves around king //todo update
-    for (Move move : unfilteredMoves.get(origin.coord)) {
-      if (board.isOpposingColourOrEmpty(move.getDestination(), originalPiece)) moves.add(move);
+    for (short move : unfilteredMoves.get(origin)) {
+      if (board.isOpposingColourOrEmpty(MoveUtil.getDestination(move), originalPiece))
+        moves.add(move);
     }
 
     // castling
@@ -73,14 +74,14 @@ public class King {
         if (current != null) {
           switch (current) {
             case BOTH -> {
-              if (qSide) moves.add(new Move(origin.coord, Utils.getCoordinate(row, 2)));
-              if (kSide) moves.add(new Move(origin.coord, Utils.getCoordinate(row, 6)));
+              if (qSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
+              if (kSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
             }
             case KING -> {
-              if (kSide) moves.add(new Move(origin.coord, Utils.getCoordinate(row, 6)));
+              if (kSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
             }
             case QUEEN -> {
-              if (qSide) moves.add(new Move(origin.coord, Utils.getCoordinate(row, 2)));
+              if (qSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
             }
             case NONE -> {}
           }
@@ -281,11 +282,11 @@ public class King {
     boolean white = !boardState.isWhiteTurn;
     Board board = boardState.board;
     // let's try the most likely moves to cause check (bishop and rook)
-    Coordinate origin = white ? board.getWhiteKing() : board.getBlackKing();
+    short origin = white ? board.getWhiteKing() : board.getBlackKing();
 
     if (distanceWithinBoundary(board.getWhiteKing(), board.getBlackKing(), 1)) return true;
 
-    if (origin == null) return false;
+    // if (origin == null) return false; FIXME was this necessary?
     int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
     int opponentKnight = Pieces.KNIGHT | opponentColor;
     int opponentPawn = Pieces.PAWN | opponentColor;
@@ -295,8 +296,8 @@ public class King {
 
     Moves knightMoves = new Moves();
     Knight.getMoves(origin, boardState, knightMoves);
-    for (Move move : knightMoves) {
-      int piece = board.getCoordinate(move.getDestination());
+    for (short move : knightMoves) {
+      int piece = board.getCoordinate(MoveUtil.getDestination(move));
       if (piece == 0) continue;
       if (opponentKnight == piece) {
         return true;
@@ -304,29 +305,30 @@ public class King {
     }
     Moves pawnMoves = new Moves();
     Pawn.getMoves(origin, boardState, pawnMoves);
-    for (Move move : pawnMoves) {
-      if (boardState.board.getCoordinate(move.getDestination()) == opponentPawn) return true;
+    for (short move : pawnMoves) {
+      if (boardState.board.getCoordinate(MoveUtil.getDestination(move)) == opponentPawn)
+        return true;
     }
     return false; // no checks return false
   }
 
-  private static boolean distanceWithinBoundary(Coordinate a, Coordinate b, int boundary) {
-    if (a == null || b == null) return false;
-    int absCol = Math.abs(a.getColumn() - b.getColumn());
-    int absRow = Math.abs(a.getRow() - b.getRow());
+  private static boolean distanceWithinBoundary(short a, short b, int boundary) {
+    // if (a == null || b == null) return false; // TODO was this necessary?
+    int absCol = Math.abs(MoveUtil.getColumn(a) - MoveUtil.getColumn(b));
+    int absRow = Math.abs(MoveUtil.getRow(a) - MoveUtil.getRow(b));
 
     return absCol <= boundary && absRow <= boundary;
   }
 
   private static boolean pieceHasCheck(
-      BoardState boardState, boolean colour, int type, Coordinate origin) {
+      BoardState boardState, boolean colour, int type, short origin) {
     Moves moves = new Moves();
     switch (type) {
       case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, moves);
       case Pieces.ROOK -> Rook.getMoves(origin, boardState, moves);
     }
-    for (Move move : moves) {
-      int piece = boardState.board.getCoordinate(move.getDestination());
+    for (short move : moves) {
+      int piece = boardState.board.getCoordinate(MoveUtil.getDestination(move));
       if (piece == 0) continue;
       if (Pieces.isWhite(piece) != colour) {
         int destType = Pieces.getType(piece);

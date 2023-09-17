@@ -1,7 +1,7 @@
 package com.github.zerkath.rosemary.Evaluation;
 
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.Move;
+import com.github.zerkath.rosemary.DataTypes.MoveUtil;
 import com.github.zerkath.rosemary.DataTypes.Moves;
 import com.github.zerkath.rosemary.DataTypes.Pieces;
 import com.github.zerkath.rosemary.Main.OutputUtils;
@@ -52,9 +52,9 @@ public class EvaluationThread extends OutputUtils implements Runnable {
       return evalCalculator.calculateMaterial(boardState);
     }
 
-    Move bestMove = null;
+    short bestMove = -1;
 
-    for (Move move : moves) {
+    for (short move : moves) {
       boardState.makeMove(move);
       int eval = alphaBetaMin(boardState, alpha, beta, depth - 1);
       boardState.unMakeMove();
@@ -71,8 +71,8 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     }
 
     if (depth == startingDepth) {
-      if (bestMove == null) bestMove = moves.getFirst();
-      println("bestmove " + bestMove.toString());
+      if (bestMove != -1) bestMove = moves.getFirst();
+      println("bestmove " + MoveUtil.moveToString(bestMove));
     }
     return alpha;
   }
@@ -91,9 +91,9 @@ public class EvaluationThread extends OutputUtils implements Runnable {
       return evalCalculator.calculateMaterial(boardState);
     }
 
-    Move bestMove = null;
+    short bestMove = -1;
 
-    for (Move move : moves) {
+    for (short move : moves) {
       boardState.makeMove(move);
       int eval = alphaBetaMax(boardState, alpha, beta, depth - 1);
       boardState.unMakeMove();
@@ -110,16 +110,16 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     }
 
     if (depth == startingDepth) {
-      if (bestMove == null) bestMove = moves.getFirst();
-      println("bestmove " + bestMove.toString());
+      if (bestMove != -1) bestMove = moves.getFirst();
+      println("bestmove " + MoveUtil.moveToString(bestMove));
     }
     return beta;
   }
 
-  private void printInfoUCI(int depth, int eval, Move move, boolean isWhite) {
+  private void printInfoUCI(int depth, int eval, short move, boolean isWhite) {
 
     String outString = "info depth " + depth;
-    String currMove = " currmove " + move.toString();
+    String currMove = " currmove " + MoveUtil.moveToString(move);
 
     boolean whiteHasMate = eval >= values.mateForWhite;
     boolean isMate = whiteHasMate || eval <= values.mateForBlack;
@@ -142,8 +142,8 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     boolean isWhite = state.isWhiteTurn;
     state.isWhiteTurn = !state.isWhiteTurn; // flip turn temporarily for checking a check
     Moves opponent = moveGenerator.getLegalMoves(state);
-    for (Move move : opponent) {
-      int piece = state.board.getCoordinate(move.getDestination());
+    for (short move : opponent) {
+      int piece = state.board.getCoordinate(MoveUtil.getDestination(move));
       if (piece == 0) continue;
       if ((isWhite && piece == (Pieces.KING | Pieces.WHITE))
           || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {

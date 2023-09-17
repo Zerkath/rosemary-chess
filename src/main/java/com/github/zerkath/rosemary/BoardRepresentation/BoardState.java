@@ -80,7 +80,7 @@ public class BoardState {
         }
       } else {
         int piece = Pieces.getNum(ch);
-        board.replaceCoordinate(new Coordinate(Utils.getCoordinate(row, column)), piece);
+        board.replaceCoordinate(Utils.getCoordinate(row, column), piece);
         incrementPiece(piece);
         column++;
       }
@@ -89,7 +89,7 @@ public class BoardState {
 
   public void playMoves(String[] moves) {
     for (String move : moves) {
-      this.makeMove(new Move(move));
+      this.makeMove(MoveUtil.getMove(move));
     }
   }
 
@@ -103,12 +103,14 @@ public class BoardState {
     }
   }
 
-  private void checkForCastlingRights(Move move) {
-    // FIXME
-    short oRow = new Coordinate(move.getOrigin()).getRow();
-    short oCol = new Coordinate(move.getOrigin()).getColumn();
-    short dRow = new Coordinate(move.getDestination()).getRow();
-    short dCol = new Coordinate(move.getDestination()).getColumn();
+  private void checkForCastlingRights(short move) {
+    short destination = MoveUtil.getDestination(move);
+    short origin = MoveUtil.getOrigin(move);
+
+    short oRow = MoveUtil.getRow(origin);
+    short oCol = MoveUtil.getColumn(origin);
+    short dRow = MoveUtil.getRow(destination);
+    short dCol = MoveUtil.getColumn(destination);
 
     CastlingRights blackCastling = board.getBlackCastling();
     CastlingRights whiteCastling = board.getWhiteCastling();
@@ -145,49 +147,47 @@ public class BoardState {
   }
 
   /** Returs a copy of the board with the new move */
-  public BoardState makeNonModifyingMove(Move move) {
+  public BoardState makeNonModifyingMove(short move) {
     BoardState tempBoard = new BoardState(this);
     tempBoard.makeMove(move);
     return tempBoard;
   }
 
-  public void makeMove(Move move) {
+  public void makeMove(short move) {
     previous = new BoardState(this);
 
-    Coordinate temp_destination = new Coordinate(move.getDestination());
-    Coordinate temp_origin = new Coordinate(move.getOrigin());
-    int dRow = temp_destination.getRow();
-    int dCol = temp_destination.getColumn();
+    short temp_destination = MoveUtil.getDestination(move);
+    short temp_origin = MoveUtil.getOrigin(move);
+    int dRow = MoveUtil.getRow(temp_destination);
+    int dCol = MoveUtil.getColumn(temp_destination);
 
-    int selected = board.getCoordinate(move.getOrigin());
+    int selected = board.getCoordinate(temp_origin);
 
-    boolean isBeingPromoted = move.promotion != 0;
+    boolean isBeingPromoted = MoveUtil.getPromotion(move) != 0;
     boolean isWhite = Pieces.isWhite(selected);
 
     checkForCastlingRights(move);
 
     if (Pieces.getType(selected) == Pieces.PAWN
-        || board.getCoordinate(move.getDestination()) != 0) {
+        || board.getCoordinate(MoveUtil.getDestination(move)) != 0) {
       halfMove = 0;
     } else {
       halfMove++;
     }
 
-    Coordinate temp = new Coordinate(enPassant);
-
     if (Pieces.getType(selected) == Pieces.PAWN
         && enPassant != -1
-        && temp.getRow() == temp_destination.getRow()
-        && temp.getColumn() == temp_destination.getColumn()) {
+        && MoveUtil.getRow(enPassant) == MoveUtil.getRow(temp_destination)
+        && MoveUtil.getColumn(enPassant) == MoveUtil.getColumn(temp_destination)) {
       int offSet = isWhite ? 1 : -1;
-      board.clearCoordinate(temp.getRow() + offSet, temp.getColumn());
+      board.clearCoordinate(MoveUtil.getRow(enPassant) + offSet, MoveUtil.getColumn(enPassant));
     }
 
     enPassant = -1;
     // add En passant
     if (Pieces.getType(selected) == Pieces.PAWN
-        && ((temp_origin.getRow() == 6 && temp_destination.getRow() == 4)
-            || (temp_origin.getRow() == 1 && temp_destination.getRow() == 3))) {
+        && ((MoveUtil.getRow(temp_origin) == 6 && MoveUtil.getRow(temp_destination) == 4)
+            || (MoveUtil.getRow(temp_origin) == 1 && MoveUtil.getRow(temp_destination) == 3))) {
 
       int right = 0;
       int left = 0;
@@ -209,8 +209,9 @@ public class BoardState {
 
     // Castling
     if (Pieces.getType(selected) == Pieces.KING
-        && temp_origin.getColumn() == 4
-        && ((temp_origin.getRow() == 0 && dRow == 0) || temp_origin.getRow() == 7 && dRow == 7)
+        && MoveUtil.getColumn(temp_origin) == 4
+        && ((MoveUtil.getRow(temp_origin) == 0 && dRow == 0)
+            || MoveUtil.getRow(temp_origin) == 7 && dRow == 7)
         && (dCol == 2 || dCol == 6)) {
 
       board.setCastling(CastlingRights.NONE, isWhite);
@@ -226,7 +227,7 @@ public class BoardState {
         origin = Utils.getCoordinate(dRow, 7);
       }
       rook = board.getCoordinate(origin);
-      board.replaceCoordinate(new Coordinate(destination), rook);
+      board.replaceCoordinate(destination, rook);
       board.clearCoordinate(origin);
     }
 
@@ -238,7 +239,9 @@ public class BoardState {
 
     int piece = selected;
     if (isBeingPromoted) {
-      piece = move.promotion;
+      piece =
+          MoveUtil.getPromotion(
+              move); // FIXME promotion here should get the piece not raw promotion data
     }
 
     board.replaceCoordinate(temp_destination, piece);

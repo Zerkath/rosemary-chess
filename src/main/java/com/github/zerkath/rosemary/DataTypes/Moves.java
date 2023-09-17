@@ -2,8 +2,9 @@ package com.github.zerkath.rosemary.DataTypes;
 
 import java.util.LinkedList;
 
-@Deprecated
-public class Moves extends LinkedList<Move> {
+// @Deprecated // Should create a array backed impl instead allowing data to exist on stack instead
+// of heap
+public class Moves extends LinkedList<Short> {
 
   public Moves() {
     super();
@@ -22,12 +23,13 @@ public class Moves extends LinkedList<Move> {
 
   public String getString() {
     StringBuilder stringBuilder = new StringBuilder();
-    for (Move move : this) stringBuilder.append(move.toString()).append(": 1").append('\n');
+    for (short move : this)
+      stringBuilder.append(MoveUtil.moveToString(move)).append(": 1").append('\n');
     return stringBuilder.toString();
   }
 
-  public void add(Coordinate origin, Coordinate destination) {
-    this.add(new Move(origin.coord, destination.coord));
+  public void add(short origin, short destination) {
+    this.add(MoveUtil.getMove(origin, destination));
   }
 
   /**
@@ -39,7 +41,7 @@ public class Moves extends LinkedList<Move> {
     String[] mvs = moves.split(" ");
 
     for (String move : mvs) {
-      this.add(new Move(move));
+      this.add(MoveUtil.getMove(move));
     }
   }
 }

@@ -1,5 +1,5 @@
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.Move;
+import com.github.zerkath.rosemary.DataTypes.MoveUtil;
 import com.github.zerkath.rosemary.DataTypes.Moves;
 import com.github.zerkath.rosemary.Main.UCI_Controller;
 import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
@@ -28,7 +28,7 @@ public class MoveGenerationTest {
   @Order(2)
   void blackStartMoves() {
     BoardState boardState = new BoardState(d_fen);
-    boardState.makeMove(new Move("d2d4"));
+    boardState.makeMove(MoveUtil.getMove("d2d4"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
     Assertions.assertEquals(20, moves.size(), moves.getString());
   }
@@ -37,8 +37,8 @@ public class MoveGenerationTest {
   @Order(3)
   void whiteMovesAfter_d2d4_e7e5() {
     BoardState boardState = new BoardState(d_fen);
-    boardState.makeMove(new Move("d2d4"));
-    boardState.makeMove(new Move("e7e5"));
+    boardState.makeMove(MoveUtil.getMove("d2d4"));
+    boardState.makeMove(MoveUtil.getMove("e7e5"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
     Assertions.assertEquals(29, moves.size());
   }
@@ -84,8 +84,8 @@ public class MoveGenerationTest {
     boardState.printBoard();
     Moves moves = moveGenerator.getLegalMoves(boardState);
     Assertions.assertEquals(12, moves.size());
-    for (Move move : moves) {
-      System.out.println(move.toString());
+    for (short move : moves) {
+      System.out.println(MoveUtil.moveToString(move));
     }
   }
 
@@ -154,7 +154,7 @@ public class MoveGenerationTest {
   @Order(15)
   void blackKingMoves() {
     BoardState boardState = new BoardState("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1");
-    boardState.makeMove(new Move("d2d4"));
+    boardState.makeMove(MoveUtil.getMove("d2d4"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
     Assertions.assertEquals(5, moves.size(), moves.getString());
   }
@@ -330,8 +330,8 @@ public class MoveGenerationTest {
   @Test
   void queenMystery() {
     BoardState boardState = new BoardState("4k3/p1ppqp2/4p3/3PN3/1p2P3/5Q2/7P/4K3 w - - 0 1");
-    boardState.makeMove(new Move("h2h3"));
-    boardState.makeMove(new Move("e7c5"));
+    boardState.makeMove(MoveUtil.getMove("h2h3"));
+    boardState.makeMove(MoveUtil.getMove("e7c5"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
     Assertions.assertEquals(32, moves.size(), moves.getString());
   }
@@ -365,15 +365,15 @@ public class MoveGenerationTest {
 
   private Moves getNonExpectedMoves(Moves expected, Moves actual) {
     Moves result = new Moves();
-    HashSet<Move> expectedSet = new HashSet<>();
+    HashSet<Short> expectedSet = new HashSet<>();
     expectedSet.addAll(expected);
-    for (Move move : actual) {
-      System.out.println("Was not in set " + move.hashCode());
+    for (short move : actual) {
+      System.out.println("Was not in set " + move);
 
       if (!expectedSet.contains(move)) {
         result.add(move);
       } else {
-        System.out.println(move.toString() + "expected");
+        System.out.println(MoveUtil.moveToString(move) + "expected");
       }
     }
     return result;

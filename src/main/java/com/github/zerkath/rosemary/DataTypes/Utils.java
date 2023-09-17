@@ -1,7 +1,5 @@
 package com.github.zerkath.rosemary.DataTypes;
 
-import java.util.List;
-
 public class Utils {
 
   public static short coordinateMask = 0b111;
@@ -16,9 +14,9 @@ public class Utils {
   }
 
   public static void addToCollection(
-      int row, int column, int origin_row, int origin_col, List<Move> moves) {
+      int row, int column, int origin_row, int origin_col, Moves moves) {
     if (row < 0 || row > 7 || column < 0 || column > 7) return;
-    moves.add(new Move(getCoordinate(origin_row, origin_col), getCoordinate(row, column)));
+    moves.add(MoveUtil.getMove(getCoordinate(origin_row, origin_col), getCoordinate(row, column)));
   }
 
   public static short getCoordinate(String coordinateString) {
@@ -40,19 +38,19 @@ public class Utils {
     return toColumnChar(column) + "" + toRowChar(row);
   }
 
-  private static char toColumnChar(int i) {
+  static char toColumnChar(int i) {
     return (char) (i + 'a');
   }
 
-  public static int toColumnInt(char c) {
+  static int toColumnInt(char c) {
     return c - 'a';
   }
 
-  private static char toRowChar(int i) {
+  static char toRowChar(int i) {
     return Character.forDigit(8 - i, 10);
   }
 
-  public static int toRowInt(char c) {
+  static int toRowInt(char c) {
     return 8 - Integer.parseInt(String.valueOf(c));
   }
 }
