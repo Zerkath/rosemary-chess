@@ -1,5 +1,6 @@
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
 import com.github.zerkath.rosemary.DataTypes.CastlingRights;
+import com.github.zerkath.rosemary.DataTypes.*;
 
 import com.github.zerkath.rosemary.DataTypes.Pieces;
 import org.junit.jupiter.api.*;
@@ -117,8 +118,8 @@ public class FenParseTest {
         String fenString = "7k/2pppppp/p7/Pp6/8/8/1PPPPPPP/7K w - b6 0 3";
         BoardState state = new BoardState(fenString);
         Assertions.assertNotNull(state.enPassant);
-        Assertions.assertEquals(2, state.enPassant.row); //row
-        Assertions.assertEquals(1, state.enPassant.column); //col
+        Assertions.assertEquals(2, new Coordinate(state.enPassant).getRow()); //row
+        Assertions.assertEquals(1, new Coordinate(state.enPassant).getColumn()); //col
         Assertions.assertEquals(fenString, state.toFenString());
     }
     @Test
@@ -126,8 +127,8 @@ public class FenParseTest {
         String fenString = "7k/p1pppppp/8/P7/1pP5/8/1P1PPPPP/7K b - c3 0 3";
         BoardState boardState = new BoardState(fenString);
         Assertions.assertNotNull(boardState.enPassant);
-        Assertions.assertEquals(5, boardState.enPassant.row); //row
-        Assertions.assertEquals(2, boardState.enPassant.column); //col
+        Assertions.assertEquals(5, new Coordinate(boardState.enPassant).getRow()); //row
+        Assertions.assertEquals(2, new Coordinate(boardState.enPassant).getColumn()); //col
         Assertions.assertEquals(fenString, boardState.toFenString());
     }
 }
