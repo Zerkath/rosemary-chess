@@ -15,16 +15,15 @@ public class Utils {
     return (short) ((row << 3) | column);
   }
 
-  public static void addToCollection(int row, int column, int origin_row, int origin_col, List<Move> moves) {
-    if (row < 0 || row > 7 || column < 0 || column > 7)
-      return;
+  public static void addToCollection(
+      int row, int column, int origin_row, int origin_col, List<Move> moves) {
+    if (row < 0 || row > 7 || column < 0 || column > 7) return;
     moves.add(new Move(getCoordinate(origin_row, origin_col), getCoordinate(row, column)));
   }
 
   public static short getCoordinate(String coordinateString) {
     return getCoordinate(
-        toRowInt(coordinateString.charAt(1)),
-        toColumnInt(coordinateString.charAt(0)));
+        toRowInt(coordinateString.charAt(1)), toColumnInt(coordinateString.charAt(0)));
   }
 
   public static String moveToString(short move) {
