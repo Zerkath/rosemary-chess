@@ -159,17 +159,19 @@ public class BoardState {
 
   public void makeMove(Move move) {
     previous = new BoardState(this);
+
     Coordinate temp_destination = new Coordinate(move.getDestination());
     Coordinate temp_origin = new Coordinate(move.getOrigin());
     int dRow = temp_destination.getRow();
     int dCol = temp_destination.getColumn();
 
     int selected = board.getCoordinate(move.getOrigin());
+
     boolean isBeingPromoted = move.promotion != 0;
     boolean isWhite = Pieces.isWhite(selected);
 
     checkForCastlingRights(move);
-
+    
     if (Pieces.getType(selected) == Pieces.PAWN || board.getCoordinate(move.getDestination()) != 0) {
       halfMove = 0;
     } else {
@@ -191,6 +193,7 @@ public class BoardState {
     if (Pieces.getType(selected) == Pieces.PAWN &&
         ((temp_origin.getRow() == 6 && temp_destination.getRow() == 4)
             || (temp_origin.getRow() == 1 && temp_destination.getRow() == 3))) {
+
       int right = 0;
       int left = 0;
       if (dCol == 0)
@@ -244,6 +247,7 @@ public class BoardState {
     if (isBeingPromoted) {
       piece = move.promotion;
     }
+
     board.replaceCoordinate(temp_destination, piece);
 
     if (!this.isWhiteTurn)
