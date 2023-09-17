@@ -18,46 +18,53 @@ class BishopMoves {
 public class Bishop extends SlidingPiece {
 
   // Moves should be generated from origin, outwards and be ordered
-  static HashMap<Coordinate, BishopMoves> bishopMoves = new HashMap<>();
+  static HashMap<Short, BishopMoves> bishopMoves = new HashMap<>();
 
   static {
-    for (short originX = 0; originX < 64; originX++) {
-      Coordinate origin = new Coordinate(originX);
+    for (short origin = 0; origin < 64; origin++) {
       BishopMoves moves = new BishopMoves();
 
       // Bishop moves down and right
-      for (int i = 1; origin.getRow() + i <= 7 && origin.getColumn() + i <= 7; i++) {
+      for (int i = 1;
+          MoveUtil.getRow(origin) + i <= 7 && MoveUtil.getColumn(origin) + i <= 7;
+          i++) {
         moves.downRight.add(getMove(i, i, origin));
       }
 
       // Bishop moves down and left
-      for (int i = 1; origin.getRow() + i <= 7 && origin.getColumn() - i >= 0; i++) {
+      for (int i = 1;
+          MoveUtil.getRow(origin) + i <= 7 && MoveUtil.getColumn(origin) - i >= 0;
+          i++) {
         moves.downLeft.add(getMove(i, -i, origin));
       }
 
       // Bishop moves up and right
-      for (int i = 1; origin.getRow() - i >= 0 && origin.getColumn() + i <= 7; i++) {
+      for (int i = 1;
+          MoveUtil.getRow(origin) - i >= 0 && MoveUtil.getColumn(origin) + i <= 7;
+          i++) {
         moves.upRight.add(getMove(-i, i, origin));
       }
 
       // Bishop moves up and left
-      for (int i = 1; origin.getRow() - i >= 0 && origin.getColumn() - i >= 0; i++) {
+      for (int i = 1;
+          MoveUtil.getRow(origin) - i >= 0 && MoveUtil.getColumn(origin) - i >= 0;
+          i++) {
         moves.upLeft.add(getMove(-i, -i, origin));
       }
       bishopMoves.put(origin, moves);
     }
   }
 
-  public static void getMoves(Coordinate origin, BoardState boardState, Moves moves) {
+  public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
     Board board = boardState.board;
 
-    boolean isWhite = Pieces.isWhite(board.getCoordinate(origin.coord));
+    boolean isWhite = Pieces.isWhite(board.getCoordinate(origin));
 
     Moves[] allMoves = bishopMoves.get(origin).allMoves;
 
     for (Moves direction : allMoves) {
-      for (Move move : direction) {
+      for (short move : direction) {
         TargetSquare state = getSquareState(move, board, isWhite);
         addMove(state, move, moves);
         if (state != TargetSquare.EMPTY) break;
