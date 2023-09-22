@@ -72,6 +72,9 @@ public class MoveUtil {
     short destination = getDestination(move);
     short promotion = getPromotion(move);
     char x = Pieces.getPromotion(promotion);
+    if (move == 0) {
+      System.out.print("Was 0");
+    }
     if (x != '\0') {
       return coordinateToString(origin) + "" + coordinateToString(destination) + x;
     } else {

@@ -246,7 +246,7 @@ public class UCI_Controller extends OutputUtils {
   private int perft(int depth, int start, boolean print, BoardState boardState) {
 
     List<CompletableFuture<PerftResult>> list =
-        moveGenerator.getLegalMoves(boardState).stream()
+        moveGenerator.getLegalMoves(boardState).asList().stream()
             .filter(m -> m != null)
             .map(
                 move ->
@@ -284,7 +284,8 @@ public class UCI_Controller extends OutputUtils {
     int numPositions = 0;
     Moves moves = moveGenerator.getLegalMoves(boardState);
 
-    for (short move : moves) {
+    while (moves.hasNext()) {
+      short move = moves.next();
       boardState.makeMove(move);
       int result = perftProcess(depth - 1, start, boardState);
       numPositions += result;

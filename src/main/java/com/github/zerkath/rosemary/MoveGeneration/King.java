@@ -38,7 +38,9 @@ public class King {
     int col = MoveUtil.getColumn(origin);
 
     // generating moves around king //todo update
-    for (short move : unfilteredMoves.get(origin)) {
+    Moves movesAroundKing = unfilteredMoves.get(origin);
+    while (movesAroundKing.hasNext()) {
+      short move = movesAroundKing.next();
       if (board.isOpposingColourOrEmpty(MoveUtil.getDestination(move), originalPiece))
         moves.add(move);
     }
@@ -296,7 +298,8 @@ public class King {
 
     Moves knightMoves = new Moves();
     Knight.getMoves(origin, boardState, knightMoves);
-    for (short move : knightMoves) {
+    while (knightMoves.hasNext()) {
+      short move = knightMoves.next();
 
       int piece = board.getCoordinate(MoveUtil.getDestination(move));
       if (piece == 0) continue;
@@ -306,8 +309,8 @@ public class King {
     }
     Moves pawnMoves = new Moves();
     Pawn.getMoves(origin, boardState, pawnMoves);
-    for (short move : pawnMoves) {
-      if (boardState.board.getCoordinate(MoveUtil.getDestination(move)) == opponentPawn)
+    while (pawnMoves.hasNext()) {
+      if (boardState.board.getCoordinate(MoveUtil.getDestination(pawnMoves.next())) == opponentPawn)
         return true;
     }
     return false; // no checks return false
@@ -330,7 +333,8 @@ public class King {
       case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, moves);
       case Pieces.ROOK -> Rook.getMoves(origin, boardState, moves);
     }
-    for (short move : moves) {
+    while (moves.hasNext()) {
+      short move = moves.next();
 
       int piece = boardState.board.getCoordinate(MoveUtil.getDestination(move));
 

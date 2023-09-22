@@ -1,13 +1,50 @@
 package com.github.zerkath.rosemary.DataTypes;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
-// @Deprecated // Should create a array backed impl instead allowing data to exist on stack instead
-// of heap
-public class Moves extends LinkedList<Short> {
+public class Moves {
 
-  public Moves() {
-    super();
+  private int maxSize = 128;
+  private int writePointer = -1;
+  private int readPointer = -1;
+  private short moves[] = new short[maxSize];
+
+  public Moves() {}
+
+  public List<Short> asList() {
+    List<Short> list = new ArrayList<>();
+    while (this.hasNext()) {
+      list.add(this.next());
+    }
+    this.resetReadHead();
+    return list;
+  }
+
+  public int size() {
+    return writePointer + 1;
+  }
+
+  public void resetReadHead() {
+    readPointer = -1;
+  }
+
+  public boolean hasNext() {
+    return readPointer < writePointer;
+  }
+
+  public short first() {
+    return moves[0];
+  }
+
+  public short next() {
+    readPointer++;
+    return moves[readPointer];
+  }
+
+  public void add(short move) {
+    writePointer += 1;
+    moves[writePointer] = move;
   }
 
   /**
@@ -17,14 +54,13 @@ public class Moves extends LinkedList<Short> {
    * @param moves moves seperated by " ", example "g1g2 f3g5"
    */
   public Moves(String moves) {
-    super();
     this.addAll(moves);
   }
 
   public String getString() {
     StringBuilder stringBuilder = new StringBuilder();
-    for (short move : this)
-      stringBuilder.append(MoveUtil.moveToString(move)).append(": 1").append('\n');
+    for (int i = 0; i < writePointer; i++)
+      stringBuilder.append(MoveUtil.moveToString(moves[i])).append(": 1").append('\n');
     return stringBuilder.toString();
   }
 

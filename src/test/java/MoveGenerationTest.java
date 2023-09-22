@@ -84,7 +84,8 @@ public class MoveGenerationTest {
     boardState.printBoard();
     Moves moves = moveGenerator.getLegalMoves(boardState);
     Assertions.assertEquals(12, moves.size());
-    for (short move : moves) {
+    while (moves.hasNext()) {
+      short move = moves.next();
       System.out.println(MoveUtil.moveToString(move));
     }
   }
@@ -382,10 +383,10 @@ public class MoveGenerationTest {
   private Moves getNonExpectedMoves(Moves expected, Moves actual) {
     Moves result = new Moves();
     HashSet<Short> expectedSet = new HashSet<>();
-    expectedSet.addAll(expected);
-    for (short move : actual) {
+    expectedSet.addAll(expected.asList());
+    while (actual.hasNext()) {
+      short move = actual.next();
       System.out.println("Was not in set " + move);
-
       if (!expectedSet.contains(move)) {
         result.add(move);
       } else {

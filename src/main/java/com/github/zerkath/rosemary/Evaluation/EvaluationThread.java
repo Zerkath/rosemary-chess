@@ -41,7 +41,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
   int alphaBetaMax(BoardState boardState, int alpha, int beta, int depth) { // white
 
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    if (moves.isEmpty()) { // no moves this turn in checkmate or draw
+    if (moves.size() < 1) { // no moves this turn in checkmate or draw
       if (inCheck(boardState)) {
         return -values.mate + ((startingDepth - depth) / 2);
       }
@@ -54,7 +54,8 @@ public class EvaluationThread extends OutputUtils implements Runnable {
 
     short bestMove = -1;
 
-    for (short move : moves) {
+    while (moves.hasNext()) {
+      short move = moves.next();
       boardState.makeMove(move);
       int eval = alphaBetaMin(boardState, alpha, beta, depth - 1);
       boardState.unMakeMove();
@@ -71,7 +72,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     }
 
     if (depth == startingDepth) {
-      if (bestMove != -1) bestMove = moves.getFirst();
+      if (bestMove != -1) bestMove = moves.first();
       println("bestmove " + MoveUtil.moveToString(bestMove));
     }
     return alpha;
@@ -80,7 +81,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
   private int alphaBetaMin(BoardState boardState, int alpha, int beta, int depth) { // black
 
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    if (moves.isEmpty()) { // no moves this turn in checkmate or draw
+    if (moves.size() < 1) { // no moves this turn in checkmate or draw
       if (inCheck(boardState)) {
         return values.mate - ((startingDepth - depth) / 2);
       }
@@ -93,7 +94,9 @@ public class EvaluationThread extends OutputUtils implements Runnable {
 
     short bestMove = -1;
 
-    for (short move : moves) {
+    while (moves.hasNext()) {
+      short move = moves.next();
+
       boardState.makeMove(move);
       int eval = alphaBetaMax(boardState, alpha, beta, depth - 1);
       boardState.unMakeMove();
@@ -110,7 +113,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     }
 
     if (depth == startingDepth) {
-      if (bestMove != -1) bestMove = moves.getFirst();
+      if (bestMove != -1) bestMove = moves.first();
       println("bestmove " + MoveUtil.moveToString(bestMove));
     }
     return beta;
@@ -142,7 +145,8 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     boolean isWhite = state.isWhiteTurn;
     state.isWhiteTurn = !state.isWhiteTurn; // flip turn temporarily for checking a check
     Moves opponent = moveGenerator.getLegalMoves(state);
-    for (short move : opponent) {
+    while (opponent.hasNext()) {
+      short move = opponent.next();
       int piece = state.board.getCoordinate(MoveUtil.getDestination(move));
       if (piece == 0) continue;
       if ((isWhite && piece == (Pieces.KING | Pieces.WHITE))

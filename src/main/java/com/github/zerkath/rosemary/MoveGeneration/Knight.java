@@ -34,7 +34,8 @@ public class Knight {
     Board board = boardState.board;
     Moves n_moves = knightMoves.get(origin);
 
-    for (short move : n_moves) {
+    while (n_moves.hasNext()) {
+      short move = n_moves.next();
       if (board.isValidMove(move)) moves.add(move);
     }
   }

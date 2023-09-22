@@ -54,7 +54,8 @@ public class Rook extends SlidingPiece {
     Moves[] allMoves = rookMoves.get(origin).allMoves;
 
     for (Moves direction : allMoves) {
-      for (short move : direction) {
+      while (direction.hasNext()) {
+        short move = direction.next();
         TargetSquare state = getSquareState(move, board, isWhite);
         addMove(state, move, moves);
         if (state != TargetSquare.EMPTY) break;
