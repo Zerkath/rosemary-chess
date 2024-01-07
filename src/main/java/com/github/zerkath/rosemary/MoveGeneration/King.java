@@ -3,11 +3,10 @@ package com.github.zerkath.rosemary.MoveGeneration;
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
 import com.github.zerkath.rosemary.DataTypes.*;
 import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import java.util.HashMap;
 
 public class King {
 
-  static HashMap<Short, Moves> unfilteredMoves = new HashMap<>();
+  static Moves[] unfilteredMoves = new Moves[64];
 
   static {
     for (short origin = 0; origin < 64; origin++) {
@@ -22,7 +21,7 @@ public class King {
           }
         }
       }
-      unfilteredMoves.put(origin, moves);
+      unfilteredMoves[origin] = moves;
     }
   }
 
@@ -38,7 +37,7 @@ public class King {
     int col = MoveUtil.getColumn(origin);
 
     // generating moves around king //todo update
-    for (short move : unfilteredMoves.get(origin)) {
+    for (short move : unfilteredMoves[origin]) {
       if (board.isOpposingColourOrEmpty(MoveUtil.getDestination(move), originalPiece))
         moves.add(move);
     }

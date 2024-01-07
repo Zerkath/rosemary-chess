@@ -2,7 +2,6 @@ package com.github.zerkath.rosemary.MoveGeneration;
 
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
 import com.github.zerkath.rosemary.DataTypes.*;
-import java.util.HashMap;
 
 class RookMoves {
   Moves up = new Moves();
@@ -18,7 +17,7 @@ class RookMoves {
 public class Rook extends SlidingPiece {
 
   // Moves should be generated from origin, outwards and be ordered
-  static HashMap<Short, RookMoves> rookMoves = new HashMap<>();
+  static RookMoves[] rookMoves = new RookMoves[64];
 
   static {
     for (short origin = 0; origin < 64; origin++) {
@@ -41,7 +40,7 @@ public class Rook extends SlidingPiece {
         moves.down.add(getMove(i, 0, origin));
       }
 
-      rookMoves.put(origin, moves);
+      rookMoves[origin] = moves;
     }
   }
 
@@ -51,7 +50,7 @@ public class Rook extends SlidingPiece {
 
     boolean isWhite = Pieces.isWhite(board.getCoordinate(origin));
 
-    Moves[] allMoves = rookMoves.get(origin).allMoves;
+    Moves[] allMoves = rookMoves[origin].allMoves;
 
     for (Moves direction : allMoves) {
       for (short move : direction) {
