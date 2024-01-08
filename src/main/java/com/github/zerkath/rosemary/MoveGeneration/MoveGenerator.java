@@ -1,7 +1,7 @@
 package com.github.zerkath.rosemary.MoveGeneration;
 
 import com.github.zerkath.rosemary.BoardRepresentation.*;
-import com.github.zerkath.rosemary.DataTypes.*;
+import com.github.zerkath.rosemary.types.*;
 import java.util.Iterator;
 
 public class MoveGenerator {

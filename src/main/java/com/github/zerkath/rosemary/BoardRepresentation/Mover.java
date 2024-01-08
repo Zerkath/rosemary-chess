@@ -1,7 +1,7 @@
 package com.github.zerkath.rosemary.BoardRepresentation;
 
-import com.github.zerkath.rosemary.DataTypes.*;
-import com.github.zerkath.rosemary.DataTypes.CastlingRights;
+import com.github.zerkath.rosemary.types.*;
+import com.github.zerkath.rosemary.types.CastlingRights;
 
 public class Mover {
 

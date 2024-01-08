@@ -1,11 +1,11 @@
 package com.github.zerkath.rosemary.Evaluation;
 
 import com.github.zerkath.rosemary.BoardRepresentation.*;
-import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import com.github.zerkath.rosemary.DataTypes.Moves;
-import com.github.zerkath.rosemary.DataTypes.Pieces;
 import com.github.zerkath.rosemary.Main.OutputUtils;
 import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
+import com.github.zerkath.rosemary.types.MoveUtil;
+import com.github.zerkath.rosemary.types.Moves;
+import com.github.zerkath.rosemary.types.Pieces;
 import java.io.BufferedOutputStream;
 
 public class EvaluationThread extends OutputUtils implements Runnable {

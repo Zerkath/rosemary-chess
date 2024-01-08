@@ -2,10 +2,10 @@ package com.github.zerkath.rosemary.Main;
 
 import com.github.zerkath.rosemary.BoardRepresentation.*;
 import com.github.zerkath.rosemary.BoardRepresentation.FenUtils;
-import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import com.github.zerkath.rosemary.DataTypes.Moves;
 import com.github.zerkath.rosemary.Evaluation.EvaluationThread;
 import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
+import com.github.zerkath.rosemary.types.MoveUtil;
+import com.github.zerkath.rosemary.types.Moves;
 import java.io.BufferedOutputStream;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;

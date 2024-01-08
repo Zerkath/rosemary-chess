@@ -1,8 +1,8 @@
 import com.github.zerkath.rosemary.BoardRepresentation.*;
-import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import com.github.zerkath.rosemary.DataTypes.Moves;
 import com.github.zerkath.rosemary.Main.UCI_Controller;
 import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
+import com.github.zerkath.rosemary.types.MoveUtil;
+import com.github.zerkath.rosemary.types.Moves;
 import java.util.HashSet;
 import org.junit.jupiter.api.*;
 
