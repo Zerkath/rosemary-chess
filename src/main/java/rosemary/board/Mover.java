@@ -84,7 +84,7 @@ public class Mover {
             || MoveUtil.getRow(temp_origin) == 7 && dRow == 7)
         && (dCol == 2 || dCol == 6)) {
 
-      bs.board.setCastling(CastlingRights.NONE, isWhite);
+      bs.setCastling(CastlingRights.NONE, isWhite);
 
       byte rook;
       short destination;
@@ -97,12 +97,12 @@ public class Mover {
         origin = Utils.getCoordinate(dRow, 7);
       }
       rook = bs.board.getCoordinate(origin);
-      bs.board.replaceCoordinate(destination, rook);
+      bs.replaceCoordinate(destination, rook);
       bs.board.clearCoordinate(origin);
     }
 
     if (Pieces.getType(selected) == Pieces.KING) {
-      bs.board.setCastling(CastlingRights.NONE, isWhite);
+      bs.setCastling(CastlingRights.NONE, isWhite);
     }
 
     bs.board.clearCoordinate(temp_origin);
@@ -112,7 +112,7 @@ public class Mover {
       piece = Pieces.getPromotionNum(MoveUtil.getPromotion(moveWithPromotionData));
     }
 
-    bs.board.replaceCoordinate(temp_destination, piece);
+    bs.replaceCoordinate(temp_destination, piece);
 
     if (!bs.isWhiteTurn) bs.turnNumber++;
 
@@ -129,32 +129,32 @@ public class Mover {
     short dRow = MoveUtil.getRow(destination);
     short dCol = MoveUtil.getColumn(destination);
 
-    CastlingRights blackCastling = bs.board.getBlackCastling();
-    CastlingRights whiteCastling = bs.board.getWhiteCastling();
+    CastlingRights blackCastling = bs.getBlackCastling();
+    CastlingRights whiteCastling = bs.getWhiteCastling();
 
     if (oRow == 0 && oCol == 0 || dRow == 0 && dCol == 0) { // black queen side rook
       if (blackCastling == CastlingRights.BOTH) {
-        bs.board.setBlackCastlingRights(CastlingRights.KING);
+        bs.setBlackCastlingRights(CastlingRights.KING);
       } else if (blackCastling == CastlingRights.QUEEN) {
-        bs.board.setBlackCastlingRights(CastlingRights.NONE);
+        bs.setBlackCastlingRights(CastlingRights.NONE);
       }
     } else if (oRow == 0 && oCol == 7 || dRow == 0 && dCol == 7) { // black king side rook
       if (blackCastling == CastlingRights.BOTH) {
-        bs.board.setBlackCastlingRights(CastlingRights.QUEEN);
+        bs.setBlackCastlingRights(CastlingRights.QUEEN);
       } else if (blackCastling == CastlingRights.KING) {
-        bs.board.setBlackCastlingRights(CastlingRights.NONE);
+        bs.setBlackCastlingRights(CastlingRights.NONE);
       }
     } else if (oRow == 7 && oCol == 0 || dRow == 7 && dCol == 0) { // white queen side rook
       if (whiteCastling == CastlingRights.BOTH) {
-        bs.board.setWhiteCastlingRights(CastlingRights.KING);
+        bs.setWhiteCastlingRights(CastlingRights.KING);
       } else if (whiteCastling == CastlingRights.QUEEN) {
-        bs.board.setWhiteCastlingRights(CastlingRights.NONE);
+        bs.setWhiteCastlingRights(CastlingRights.NONE);
       }
     } else if (oRow == 7 && oCol == 7 || dRow == 7 && dCol == 7) { // white king side rook
       if (whiteCastling == CastlingRights.BOTH) {
-        bs.board.setWhiteCastlingRights(CastlingRights.QUEEN);
+        bs.setWhiteCastlingRights(CastlingRights.QUEEN);
       } else if (whiteCastling == CastlingRights.KING) {
-        bs.board.setWhiteCastlingRights(CastlingRights.NONE);
+        bs.setWhiteCastlingRights(CastlingRights.NONE);
       }
     }
   }

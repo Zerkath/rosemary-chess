@@ -12,8 +12,8 @@ public class FenParseTest {
   @Test
   void startingBoard() {
     BoardState state = new BoardState(start);
-    Assertions.assertEquals(CastlingRights.BOTH, state.board.getBlackCastling());
-    Assertions.assertEquals(CastlingRights.BOTH, state.board.getWhiteCastling());
+    Assertions.assertEquals(CastlingRights.BOTH, state.getBlackCastling());
+    Assertions.assertEquals(CastlingRights.BOTH, state.getWhiteCastling());
   }
 
   @Test
@@ -32,24 +32,24 @@ public class FenParseTest {
   void noWhiteQueenSide() {
     BoardState state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kkq - 0 1");
     state.printBoard();
-    Assertions.assertEquals(CastlingRights.BOTH, state.board.getBlackCastling());
-    Assertions.assertEquals(CastlingRights.KING, state.board.getWhiteCastling());
+    Assertions.assertEquals(CastlingRights.BOTH, state.getBlackCastling());
+    Assertions.assertEquals(CastlingRights.KING, state.getWhiteCastling());
   }
 
   @Test
   void noBlackQueenSide() {
     BoardState state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQk - 0 1");
     state.printBoard();
-    Assertions.assertEquals(CastlingRights.KING, state.board.getBlackCastling());
-    Assertions.assertEquals(CastlingRights.BOTH, state.board.getWhiteCastling());
+    Assertions.assertEquals(CastlingRights.KING, state.getBlackCastling());
+    Assertions.assertEquals(CastlingRights.BOTH, state.getWhiteCastling());
   }
 
   @Test
   void noCastlingRights() {
     BoardState state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1");
     state.printBoard();
-    Assertions.assertEquals(CastlingRights.NONE, state.board.getBlackCastling());
-    Assertions.assertEquals(CastlingRights.NONE, state.board.getWhiteCastling());
+    Assertions.assertEquals(CastlingRights.NONE, state.getBlackCastling());
+    Assertions.assertEquals(CastlingRights.NONE, state.getWhiteCastling());
   }
 
   @Test

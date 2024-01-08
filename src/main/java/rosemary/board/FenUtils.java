@@ -69,7 +69,7 @@ public class FenUtils {
     strBuilder.append(boardState.isWhiteTurn ? " w" : " b");
 
     String WhiteCastlingString =
-        switch (board.getWhiteCastling()) {
+        switch (boardState.getWhiteCastling()) {
           case KING -> "K";
           case QUEEN -> "Q";
           case BOTH -> "KQ";
@@ -77,7 +77,7 @@ public class FenUtils {
         };
 
     String BlackCastlingString =
-        switch (board.getBlackCastling()) {
+        switch (boardState.getBlackCastling()) {
           case KING -> "k";
           case QUEEN -> "q";
           case BOTH -> "kq";

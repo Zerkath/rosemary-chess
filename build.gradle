@@ -53,38 +53,39 @@ spotless {
 // ratchetFrom 'origin/main'
 
 format 'misc', {
-	// define the files to apply `misc` to
-	target '*.gradle', '*.md', '.gitignore'
+		// define the files to apply `misc` to
+		target '*.gradle', '*.md', '.gitignore'
 
-	// define the steps to apply to those files
-	trimTrailingWhitespace()
-	indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
-	endWithNewline()
-}
-java {
-	// Use the default importOrder configuration
-	importOrder()
-	removeUnusedImports()
+		// define the steps to apply to those files
+		trimTrailingWhitespace()
+		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+		endWithNewline()
+	}
 
-	// Cleanthat will refactor your code, but it may break your style: apply it before your formatter
-	cleanthat()          // has its own section below
+	java {
+		// Use the default importOrder configuration
+		importOrder()
+		removeUnusedImports()
 
-	// Choose one of these formatters.
-	googleJavaFormat()
+		// Cleanthat will refactor your code, but it may break your style: apply it before your formatter
+		cleanthat()          // has its own section below
 
-	// eclipse()
-	// prettier()
-	// clangFormat()
+		// Choose one of these formatters.
+		googleJavaFormat()
 
-	formatAnnotations()  // fixes formatting of type annotations, see below
-}
+		// eclipse()
+		// prettier()
+		// clangFormat()
+
+		formatAnnotations()  // fixes formatting of type annotations, see below
+	}
 }
 
 jar {
 manifest {
 	attributes(
 		"Manifest-Version": "1.0",
-		"Main-Class": "com.github.zerkath.rosemary.Main.Program"
+		"Main-Class": "rosemary.Program"
 		)
 }
 }

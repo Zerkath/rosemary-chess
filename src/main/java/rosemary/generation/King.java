@@ -28,8 +28,8 @@ public class King {
   public static void getMoves(short origin, BoardState boardState, Moves moves) {
     Board board = boardState.board;
     boolean isWhiteTurn = boardState.isWhiteTurn;
-    CastlingRights whiteCastling = board.getWhiteCastling();
-    CastlingRights blackCastling = board.getBlackCastling();
+    CastlingRights whiteCastling = boardState.getWhiteCastling();
+    CastlingRights blackCastling = boardState.getBlackCastling();
 
     int originalPiece = board.getCoordinate(origin);
     boolean isWhite = Pieces.isWhite(originalPiece);
@@ -281,10 +281,11 @@ public class King {
     boolean white = !boardState.isWhiteTurn;
     Board board = boardState.board;
     // let's try the most likely moves to cause check (bishop and rook)
-    short origin = white ? board.getWhiteKing() : board.getBlackKing();
+    short origin = white ? boardState.getWhiteKing() : boardState.getBlackKing();
 
     if (origin == -1) return false;
-    if (distanceWithinBoundary(board.getWhiteKing(), board.getBlackKing(), 1)) return true;
+    if (distanceWithinBoundary(boardState.getWhiteKing(), boardState.getBlackKing(), 1))
+      return true;
 
     int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
     int opponentKnight = Pieces.KNIGHT | opponentColor;
@@ -313,7 +314,6 @@ public class King {
   }
 
   private static boolean distanceWithinBoundary(short a, short b, int boundary) {
-    // if (a == null || b == null) return false; // TODO was this necessary?
     int absCol = Math.abs(MoveUtil.getColumn(a) - MoveUtil.getColumn(b));
     int absRow = Math.abs(MoveUtil.getRow(a) - MoveUtil.getRow(b));
 

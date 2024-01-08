@@ -11,6 +11,10 @@ public class BoardState {
 
   public int turnNumber = 1;
   public int halfMove = 0;
+  private CastlingRights whiteCastlingRights = CastlingRights.NONE;
+  private CastlingRights blackCastlingRights = CastlingRights.NONE;
+  private short whiteKing = -1;
+  private short blackKing = -1;
 
   public Map<Byte, Integer> pieceMap = new HashMap<>();
 
@@ -32,19 +36,23 @@ public class BoardState {
     this.turnNumber = state.turnNumber;
     this.halfMove = state.halfMove;
     this.enPassant = state.enPassant;
+    this.whiteCastlingRights = state.whiteCastlingRights;
+    this.blackCastlingRights = state.blackCastlingRights;
+    this.whiteKing = state.whiteKing;
+    this.blackKing = state.blackKing;
   }
 
   public void setCastling(char[] castling) {
     if (castling.length == 1 && castling[0] == '-') {
-      board.setWhiteCastlingRights(CastlingRights.NONE);
-      board.setBlackCastlingRights(CastlingRights.NONE);
+      setWhiteCastlingRights(CastlingRights.NONE);
+      setBlackCastlingRights(CastlingRights.NONE);
       return;
     }
 
     for (char c : castling) {
       boolean white = !Character.isLowerCase(c);
       boolean queen = Character.toLowerCase(c) == 'q';
-      CastlingRights curr = white ? board.getWhiteCastling() : board.getBlackCastling();
+      CastlingRights curr = white ? getWhiteCastling() : getBlackCastling();
       if (curr == CastlingRights.NONE) {
         curr = queen ? CastlingRights.QUEEN : CastlingRights.KING;
       } else if (curr == CastlingRights.BOTH) {
@@ -57,7 +65,7 @@ public class BoardState {
         }
       }
 
-      board.setCastling(curr, white);
+      setCastling(curr, white);
     }
   }
 
@@ -78,7 +86,7 @@ public class BoardState {
         }
       } else {
         byte piece = Pieces.getNum(ch);
-        board.replaceCoordinate(Utils.getCoordinate(row, column), piece);
+        replaceCoordinate(Utils.getCoordinate(row, column), piece);
         incrementPiece(piece);
         column++;
       }
@@ -106,5 +114,52 @@ public class BoardState {
 
   public void printBoard() {
     printBoard(this);
+  }
+
+  public short getWhiteKing() {
+    return whiteKing;
+  }
+
+  public short getBlackKing() {
+    return blackKing;
+  }
+
+  public void setBlackKing(short coordinate) {
+    this.blackKing = coordinate;
+  }
+
+  public void setWhiteKing(short coordinate) {
+    this.whiteKing = coordinate;
+  }
+
+  public CastlingRights getWhiteCastling() {
+    return whiteCastlingRights;
+  }
+
+  public CastlingRights getBlackCastling() {
+    return blackCastlingRights;
+  }
+
+  public void setWhiteCastlingRights(CastlingRights rights) {
+    this.whiteCastlingRights = rights;
+  }
+
+  public void setBlackCastlingRights(CastlingRights rights) {
+    this.blackCastlingRights = rights;
+  }
+
+  public void setCastling(CastlingRights rights, boolean white) {
+    if (white) setWhiteCastlingRights(rights);
+    else setBlackCastlingRights(rights);
+  }
+
+  private void replaceKing(short coordinate, int piece) {
+    if (Pieces.isWhite(piece)) setWhiteKing(coordinate);
+    else setBlackKing(coordinate);
+  }
+
+  public void replaceCoordinate(short coordinate, byte piece) {
+    if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
+    board.replaceCoordinate(MoveUtil.getRow(coordinate), MoveUtil.getColumn(coordinate), piece);
   }
 }

@@ -22,7 +22,7 @@ public class EvaluationCalculations {
       for (int column = 2; column < 6; column++) {
         int piece = board.getCoordinate(row, column);
         if (piece != 0) {
-          value += Pieces.isWhite(piece) ? 20 : -20;
+          value += Pieces.isWhite(piece) ? 25 : -20;
         }
       }
     }
@@ -47,10 +47,10 @@ public class EvaluationCalculations {
 
   private int getDevelopmentValue(Board board, int knight, int bishop, int row) {
     int value = 0;
-    if (isPieceAtSquare(row, 1, knight, board)) value += 15;
-    if (isPieceAtSquare(row, 2, bishop, board)) value += 15;
-    if (isPieceAtSquare(row, 5, bishop, board)) value += 15;
-    if (isPieceAtSquare(row, 6, knight, board)) value += 15;
+    if (isPieceAtSquare(row, 1, knight, board)) value += 35;
+    if (isPieceAtSquare(row, 2, bishop, board)) value += 35;
+    if (isPieceAtSquare(row, 5, bishop, board)) value += 35;
+    if (isPieceAtSquare(row, 6, knight, board)) value += 35;
     return value;
   }
 

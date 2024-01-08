@@ -4,12 +4,9 @@ import java.util.Arrays;
 
 public class Board {
 
-  private final byte[] board = new byte[64];
-  private CastlingRights whiteCastlingRights = CastlingRights.NONE;
-  private CastlingRights blackCastlingRights = CastlingRights.NONE;
   private final StringBuilder strBuilder = new StringBuilder();
-  private short whiteKing = -1;
-  private short blackKing = -1;
+
+  private final byte[] board = new byte[64];
 
   public Board() {
     for (int i = 0; i < 64; i++) this.board[i] = 0;
@@ -17,10 +14,6 @@ public class Board {
 
   public Board(Board board) {
     System.arraycopy(board.board, 0, this.board, 0, 64);
-    this.whiteCastlingRights = board.whiteCastlingRights;
-    this.blackCastlingRights = board.blackCastlingRights;
-    this.whiteKing = board.whiteKing;
-    this.blackKing = board.blackKing;
   }
 
   public byte[] getBoard() {
@@ -28,7 +21,7 @@ public class Board {
   }
 
   public byte getCoordinate(short coordinate) {
-    return this.board[coordinate]; // TODO validation?
+    return this.board[coordinate];
   }
 
   public byte getCoordinate(int row, int column) {
@@ -51,53 +44,6 @@ public class Board {
 
   public void replaceCoordinate(int row, int column, byte piece) {
     this.board[(row << 3) | column] = piece;
-  }
-
-  public void replaceCoordinate(short coordinate, byte piece) {
-    if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
-    replaceCoordinate(MoveUtil.getRow(coordinate), MoveUtil.getColumn(coordinate), piece);
-  }
-
-  private void replaceKing(short coordinate, int piece) {
-    if (Pieces.isWhite(piece)) setWhiteKing(coordinate);
-    else setBlackKing(coordinate);
-  }
-
-  public CastlingRights getWhiteCastling() {
-    return whiteCastlingRights;
-  }
-
-  public CastlingRights getBlackCastling() {
-    return blackCastlingRights;
-  }
-
-  public void setWhiteCastlingRights(CastlingRights rights) {
-    whiteCastlingRights = rights;
-  }
-
-  public void setBlackCastlingRights(CastlingRights rights) {
-    blackCastlingRights = rights;
-  }
-
-  public void setCastling(CastlingRights rights, boolean white) {
-    if (white) setWhiteCastlingRights(rights);
-    else setBlackCastlingRights(rights);
-  }
-
-  public short getWhiteKing() {
-    return whiteKing;
-  }
-
-  public short getBlackKing() {
-    return blackKing;
-  }
-
-  public void setBlackKing(short coordinate) {
-    this.blackKing = coordinate;
-  }
-
-  public void setWhiteKing(short coordinate) {
-    this.whiteKing = coordinate;
   }
 
   public boolean isOpposingColourOrEmpty(short destination, int originalPiece) {
