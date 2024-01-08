@@ -1,7 +1,7 @@
 package com.github.zerkath.rosemary.MoveGeneration;
 
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.*;
+import com.github.zerkath.rosemary.types.*;
 
 public class Knight {
 
@@ -9,11 +9,11 @@ public class Knight {
 
   static {
     for (short origin = 0; origin < 64; origin++) {
-      int row = MoveUtil.getRow(origin);
-      int col = MoveUtil.getColumn(origin);
+      short row = MoveUtil.getRow(origin);
+      short col = MoveUtil.getColumn(origin);
 
-      int[] columns = new int[] {col - 2, col + 2};
-      int[] rows = new int[] {row - 2, row + 2};
+      short[] columns = new short[] {(short) (col - 2), (short) (col + 2)};
+      short[] rows = new short[] {(short) (row - 2), (short) (row + 2)};
       Moves moves = new Moves();
       for (int d_column : columns) {
         Utils.addToCollection(row + 1, d_column, row, col, moves);

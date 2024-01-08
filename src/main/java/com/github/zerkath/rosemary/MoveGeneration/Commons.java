@@ -1,10 +1,10 @@
 package com.github.zerkath.rosemary.MoveGeneration;
 
-import com.github.zerkath.rosemary.DataTypes.Board;
-import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import com.github.zerkath.rosemary.DataTypes.Moves;
-import com.github.zerkath.rosemary.DataTypes.Pieces;
-import com.github.zerkath.rosemary.DataTypes.Utils;
+import com.github.zerkath.rosemary.types.Board;
+import com.github.zerkath.rosemary.types.MoveUtil;
+import com.github.zerkath.rosemary.types.Moves;
+import com.github.zerkath.rosemary.types.Pieces;
+import com.github.zerkath.rosemary.types.Utils;
 
 public class Commons {
 
