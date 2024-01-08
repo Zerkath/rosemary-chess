@@ -1,9 +1,9 @@
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.Evaluation.EvaluationCalculations;
-import com.github.zerkath.rosemary.Main.UCI_Controller;
-import com.github.zerkath.rosemary.types.Pieces;
 import java.util.Map;
 import org.junit.jupiter.api.*;
+import rosemary.UCI_Controller;
+import rosemary.board.BoardState;
+import rosemary.eval.*;
+import rosemary.types.Pieces;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class EvalTest {

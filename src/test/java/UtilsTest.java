@@ -1,7 +1,7 @@
-import com.github.zerkath.rosemary.types.MoveUtil;
-import com.github.zerkath.rosemary.types.Pieces;
-import com.github.zerkath.rosemary.types.Utils;
 import org.junit.jupiter.api.*;
+import rosemary.types.MoveUtil;
+import rosemary.types.Pieces;
+import rosemary.types.Utils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UtilsTest {
