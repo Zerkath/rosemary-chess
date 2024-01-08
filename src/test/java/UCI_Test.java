@@ -1,6 +1,6 @@
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.Main.UCI_Controller;
 import org.junit.jupiter.api.*;
+import rosemary.UCI_Controller;
+import rosemary.board.BoardState;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UCI_Test {

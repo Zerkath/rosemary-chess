@@ -1,10 +1,10 @@
-import com.github.zerkath.rosemary.BoardRepresentation.*;
-import com.github.zerkath.rosemary.Main.UCI_Controller;
-import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
-import com.github.zerkath.rosemary.types.MoveUtil;
-import com.github.zerkath.rosemary.types.Moves;
 import java.util.HashSet;
 import org.junit.jupiter.api.*;
+import rosemary.UCI_Controller;
+import rosemary.board.*;
+import rosemary.generation.MoveGenerator;
+import rosemary.types.MoveUtil;
+import rosemary.types.Moves;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
