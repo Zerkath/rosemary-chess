@@ -1,6 +1,6 @@
-import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import com.github.zerkath.rosemary.DataTypes.Pieces;
-import com.github.zerkath.rosemary.DataTypes.Utils;
+import com.github.zerkath.rosemary.types.MoveUtil;
+import com.github.zerkath.rosemary.types.Pieces;
+import com.github.zerkath.rosemary.types.Utils;
 import org.junit.jupiter.api.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

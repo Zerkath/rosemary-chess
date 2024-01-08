@@ -53,9 +53,6 @@ public class PerftBenchmark {
   @Measurement(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
   public void position_6bR() {
     UCI_Controller uci = new UCI_Controller();
-    uci.runPerft(
-        4,
-        false,
-        new BoardState("6bR/1k6/1r6/8/R2q4/KQ2r3/8/5B2 w - - 0 1"));
+    uci.runPerft(4, false, new BoardState("6bR/1k6/1r6/8/R2q4/KQ2r3/8/5B2 w - - 0 1"));
   }
 }

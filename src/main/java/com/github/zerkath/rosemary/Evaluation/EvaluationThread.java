@@ -1,11 +1,11 @@
 package com.github.zerkath.rosemary.Evaluation;
 
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import com.github.zerkath.rosemary.DataTypes.Moves;
-import com.github.zerkath.rosemary.DataTypes.Pieces;
+import com.github.zerkath.rosemary.BoardRepresentation.*;
 import com.github.zerkath.rosemary.Main.OutputUtils;
 import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
+import com.github.zerkath.rosemary.types.MoveUtil;
+import com.github.zerkath.rosemary.types.Moves;
+import com.github.zerkath.rosemary.types.Pieces;
 import java.io.BufferedOutputStream;
 
 public class EvaluationThread extends OutputUtils implements Runnable {
@@ -55,9 +55,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     short bestMove = -1;
 
     for (short move : moves) {
-      boardState.makeMove(move);
-      int eval = alphaBetaMin(boardState, alpha, beta, depth - 1);
-      boardState.unMakeMove();
+      int eval = alphaBetaMin(Mover.makeMove(boardState, move), alpha, beta, depth - 2);
       if (depth == startingDepth) {
         printInfoUCI(depth, eval, move, true);
       }
@@ -94,9 +92,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     short bestMove = -1;
 
     for (short move : moves) {
-      boardState.makeMove(move);
-      int eval = alphaBetaMax(boardState, alpha, beta, depth - 1);
-      boardState.unMakeMove();
+      int eval = alphaBetaMax(Mover.makeMove(boardState, move), alpha, beta, depth - 1);
       if (depth == startingDepth) {
         printInfoUCI(depth, eval, move, false);
       }

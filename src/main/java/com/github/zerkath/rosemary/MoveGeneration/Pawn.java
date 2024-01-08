@@ -1,7 +1,7 @@
 package com.github.zerkath.rosemary.MoveGeneration;
 
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.*;
+import com.github.zerkath.rosemary.types.*;
 
 public class Pawn {
 

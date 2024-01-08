@@ -1,8 +1,8 @@
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import com.github.zerkath.rosemary.DataTypes.Moves;
+import com.github.zerkath.rosemary.BoardRepresentation.*;
 import com.github.zerkath.rosemary.Main.UCI_Controller;
 import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
+import com.github.zerkath.rosemary.types.MoveUtil;
+import com.github.zerkath.rosemary.types.Moves;
 import java.util.HashSet;
 import org.junit.jupiter.api.*;
 
@@ -21,24 +21,24 @@ public class MoveGenerationTest {
     boardState.printBoard();
 
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    Assertions.assertEquals(20, moves.size(), moves.getString());
+    Assertions.assertEquals(20, moves.size(), moves.toString());
   }
 
   @Test
   @Order(2)
   void blackStartMoves() {
     BoardState boardState = new BoardState(d_fen);
-    boardState.makeMove(MoveUtil.getMove("d2d4"));
+    Mover.makeMove(boardState, MoveUtil.getMove("d2d4"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    Assertions.assertEquals(20, moves.size(), moves.getString());
+    Assertions.assertEquals(20, moves.size(), moves.toString());
   }
 
   @Test
   @Order(3)
   void whiteMovesAfter_d2d4_e7e5() {
     BoardState boardState = new BoardState(d_fen);
-    boardState.makeMove(MoveUtil.getMove("d2d4"));
-    boardState.makeMove(MoveUtil.getMove("e7e5"));
+    boardState = Mover.makeMove(boardState, MoveUtil.getMove("d2d4"));
+    boardState = Mover.makeMove(boardState, MoveUtil.getMove("e7e5"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
     Assertions.assertEquals(29, moves.size());
   }
@@ -56,7 +56,7 @@ public class MoveGenerationTest {
   void kingUnderAttack() {
     String position = "rnbq1bnr/pppkpppp/3pQ3/8/8/2P5/PP1PPPPP/RNB1KBNR b KQ - 3 3";
     Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
-    Assertions.assertEquals(4, moves.size(), moves.getString());
+    Assertions.assertEquals(4, moves.size(), moves.toString());
   }
 
   @Test
@@ -64,7 +64,7 @@ public class MoveGenerationTest {
   void whiteKingUnderAttack() {
     String position = "rnb1kbnr/pp1ppppp/2p5/8/8/3Pq3/PPPKPPPP/RNBQ1BNR w - - 0 1";
     Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
-    Assertions.assertEquals(4, moves.size(), moves.getString());
+    Assertions.assertEquals(4, moves.size(), moves.toString());
   }
 
   BoardState getTestBoard() {
@@ -94,8 +94,8 @@ public class MoveGenerationTest {
   void busyBoard() {
     BoardState boardState =
         new BoardState("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-    boardState.playMoves("h1g1 e7c5".split(" "));
-    boardState.printBoard(boardState);
+    Mover.makeMoves(boardState, "h1g1 e7c5".split(" "));
+    boardState.printBoard();
     System.out.println(Character.toLowerCase('q') == 'p');
   }
 
@@ -104,8 +104,8 @@ public class MoveGenerationTest {
   void weirdPawnBehavior() {
     BoardState boardState =
         new BoardState("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-    boardState.playMoves("e1f1 h3g2 f1g2".split(" "));
-    boardState.printBoard(boardState);
+    Mover.makeMoves(boardState, "e1f1 h3g2 f1g2".split(" "));
+    boardState.printBoard();
   }
 
   @Test
@@ -154,9 +154,9 @@ public class MoveGenerationTest {
   @Order(15)
   void blackKingMoves() {
     BoardState boardState = new BoardState("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1");
-    boardState.makeMove(MoveUtil.getMove("d2d4"));
+    boardState = Mover.makeMove(boardState, MoveUtil.getMove("d2d4"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    Assertions.assertEquals(5, moves.size(), moves.getString());
+    Assertions.assertEquals(5, moves.size(), moves.toString());
   }
 
   @Test
@@ -346,10 +346,10 @@ public class MoveGenerationTest {
   @Test
   void queenMystery() {
     BoardState boardState = new BoardState("4k3/p1ppqp2/4p3/3PN3/1p2P3/5Q2/7P/4K3 w - - 0 1");
-    boardState.makeMove(MoveUtil.getMove("h2h3"));
-    boardState.makeMove(MoveUtil.getMove("e7c5"));
+    boardState = Mover.makeMove(boardState, MoveUtil.getMove("h2h3"));
+    boardState = Mover.makeMove(boardState, MoveUtil.getMove("e7c5"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    Assertions.assertEquals(32, moves.size(), moves.getString());
+    Assertions.assertEquals(32, moves.size(), moves.toString());
   }
 
   @Test

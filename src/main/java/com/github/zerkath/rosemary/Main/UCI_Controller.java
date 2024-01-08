@@ -1,11 +1,11 @@
 package com.github.zerkath.rosemary.Main;
 
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
+import com.github.zerkath.rosemary.BoardRepresentation.*;
 import com.github.zerkath.rosemary.BoardRepresentation.FenUtils;
-import com.github.zerkath.rosemary.DataTypes.MoveUtil;
-import com.github.zerkath.rosemary.DataTypes.Moves;
 import com.github.zerkath.rosemary.Evaluation.EvaluationThread;
 import com.github.zerkath.rosemary.MoveGeneration.MoveGenerator;
+import com.github.zerkath.rosemary.types.MoveUtil;
+import com.github.zerkath.rosemary.types.Moves;
 import java.io.BufferedOutputStream;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -74,7 +74,7 @@ public class UCI_Controller extends OutputUtils {
         if (endIndex + 2 < message.length()) {
           String[] moves = message.substring(endIndex + 2).split(" ");
           moves = Arrays.copyOfRange(moves, 1, moves.length);
-          boardState.playMoves(moves);
+          boardState = Mover.makeMoves(boardState, moves);
         }
         return;
       }
@@ -82,7 +82,7 @@ public class UCI_Controller extends OutputUtils {
       if (split[1].equals("startpos")) {
         setToDefault();
         String[] moves = Arrays.copyOfRange(split, 3, split.length);
-        boardState.playMoves(moves);
+        boardState = Mover.makeMoves(boardState, moves);
         return;
       }
     }
@@ -253,8 +253,7 @@ public class UCI_Controller extends OutputUtils {
                     CompletableFuture.supplyAsync(
                         () ->
                             new PerftResult(
-                                perftProcess(
-                                    depth - 1, start, boardState.makeNonModifyingMove(move)),
+                                perftProcess(depth - 1, start, Mover.makeMove(boardState, move)),
                                 move)))
             .collect(Collectors.toList());
 
@@ -285,10 +284,8 @@ public class UCI_Controller extends OutputUtils {
     Moves moves = moveGenerator.getLegalMoves(boardState);
 
     for (short move : moves) {
-      boardState.makeMove(move);
-      int result = perftProcess(depth - 1, start, boardState);
+      int result = perftProcess(depth - 1, start, Mover.makeMove(boardState, move));
       numPositions += result;
-      boardState.unMakeMove();
     }
     return numPositions;
   }

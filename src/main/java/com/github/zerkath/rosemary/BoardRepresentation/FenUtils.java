@@ -1,12 +1,12 @@
 package com.github.zerkath.rosemary.BoardRepresentation;
 
-import com.github.zerkath.rosemary.DataTypes.Board;
-import com.github.zerkath.rosemary.DataTypes.Pieces;
-import com.github.zerkath.rosemary.DataTypes.Utils;
+import com.github.zerkath.rosemary.types.Board;
+import com.github.zerkath.rosemary.types.Pieces;
+import com.github.zerkath.rosemary.types.Utils;
 
 public class FenUtils {
 
-  private static final String default_fen =
+  public static final String default_fen =
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
   public static BoardState parseFen(String fen) {
@@ -44,8 +44,10 @@ public class FenUtils {
     return boardState;
   }
 
+  private static StringBuilder strBuilder = new StringBuilder();
+
   public static String getFenString(BoardState boardState) {
-    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.setLength(0);
     Board board = boardState.board;
 
     for (int row = 0; row < 8; row++) {

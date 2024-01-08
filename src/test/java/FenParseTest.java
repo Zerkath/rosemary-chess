@@ -1,7 +1,7 @@
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.*;
-import com.github.zerkath.rosemary.DataTypes.CastlingRights;
-import com.github.zerkath.rosemary.DataTypes.Pieces;
+import com.github.zerkath.rosemary.BoardRepresentation.*;
+import com.github.zerkath.rosemary.types.*;
+import com.github.zerkath.rosemary.types.CastlingRights;
+import com.github.zerkath.rosemary.types.Pieces;
 import org.junit.jupiter.api.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -133,5 +133,17 @@ public class FenParseTest {
     Assertions.assertEquals(5, MoveUtil.getRow(boardState.enPassant)); // row
     Assertions.assertEquals(2, MoveUtil.getColumn(boardState.enPassant)); // col
     Assertions.assertEquals(fenString, boardState.toFenString());
+  }
+
+  @Test
+  void playingMovesShouldNotAlterOriginal() {
+    BoardState boardState =
+        new BoardState("rnbqkbnr/pppp2pp/8/3Ppp2/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 3");
+    String original = boardState.toFenString();
+
+    // should create a new board, original should be unaltered
+    Mover.makeMoves(boardState, "d5e6 d7e6".split(" "));
+
+    Assertions.assertEquals(original, boardState.toFenString());
   }
 }
