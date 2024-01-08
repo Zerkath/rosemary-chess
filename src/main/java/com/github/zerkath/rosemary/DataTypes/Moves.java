@@ -21,7 +21,8 @@ public class Moves extends LinkedList<Short> {
     this.addAll(moves);
   }
 
-  public String getString() {
+  @Override
+  public String toString() {
     StringBuilder stringBuilder = new StringBuilder();
     for (short move : this)
       stringBuilder.append(MoveUtil.moveToString(move)).append(": 1").append('\n');

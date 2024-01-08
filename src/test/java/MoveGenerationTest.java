@@ -21,7 +21,7 @@ public class MoveGenerationTest {
     boardState.printBoard();
 
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    Assertions.assertEquals(20, moves.size(), moves.getString());
+    Assertions.assertEquals(20, moves.size(), moves.toString());
   }
 
   @Test
@@ -30,7 +30,7 @@ public class MoveGenerationTest {
     BoardState boardState = new BoardState(d_fen);
     boardState.makeMove(MoveUtil.getMove("d2d4"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    Assertions.assertEquals(20, moves.size(), moves.getString());
+    Assertions.assertEquals(20, moves.size(), moves.toString());
   }
 
   @Test
@@ -56,7 +56,7 @@ public class MoveGenerationTest {
   void kingUnderAttack() {
     String position = "rnbq1bnr/pppkpppp/3pQ3/8/8/2P5/PP1PPPPP/RNB1KBNR b KQ - 3 3";
     Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
-    Assertions.assertEquals(4, moves.size(), moves.getString());
+    Assertions.assertEquals(4, moves.size(), moves.toString());
   }
 
   @Test
@@ -64,7 +64,7 @@ public class MoveGenerationTest {
   void whiteKingUnderAttack() {
     String position = "rnb1kbnr/pp1ppppp/2p5/8/8/3Pq3/PPPKPPPP/RNBQ1BNR w - - 0 1";
     Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
-    Assertions.assertEquals(4, moves.size(), moves.getString());
+    Assertions.assertEquals(4, moves.size(), moves.toString());
   }
 
   BoardState getTestBoard() {
@@ -156,7 +156,7 @@ public class MoveGenerationTest {
     BoardState boardState = new BoardState("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1");
     boardState.makeMove(MoveUtil.getMove("d2d4"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    Assertions.assertEquals(5, moves.size(), moves.getString());
+    Assertions.assertEquals(5, moves.size(), moves.toString());
   }
 
   @Test
@@ -349,7 +349,7 @@ public class MoveGenerationTest {
     boardState.makeMove(MoveUtil.getMove("h2h3"));
     boardState.makeMove(MoveUtil.getMove("e7c5"));
     Moves moves = moveGenerator.getLegalMoves(boardState);
-    Assertions.assertEquals(32, moves.size(), moves.getString());
+    Assertions.assertEquals(32, moves.size(), moves.toString());
   }
 
   @Test

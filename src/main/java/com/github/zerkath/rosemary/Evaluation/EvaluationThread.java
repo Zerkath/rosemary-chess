@@ -55,9 +55,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     short bestMove = -1;
 
     for (short move : moves) {
-      boardState.makeMove(move);
-      int eval = alphaBetaMin(boardState, alpha, beta, depth - 1);
-      boardState.unMakeMove();
+      int eval = alphaBetaMin(boardState.makeMove(move), alpha, beta, depth - 1);
       if (depth == startingDepth) {
         printInfoUCI(depth, eval, move, true);
       }
@@ -94,9 +92,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     short bestMove = -1;
 
     for (short move : moves) {
-      boardState.makeMove(move);
-      int eval = alphaBetaMax(boardState, alpha, beta, depth - 1);
-      boardState.unMakeMove();
+      int eval = alphaBetaMax(boardState.makeMove(move), alpha, beta, depth - 1);
       if (depth == startingDepth) {
         printInfoUCI(depth, eval, move, false);
       }

@@ -21,3 +21,16 @@ PerftBenchmark.position_6bR       thrpt    5   5.647 ± 0.079  ops/s
 PerftBenchmark.position_r1b1k1r1  thrpt    5   3.990 ± 0.067  ops/s
 PerftBenchmark.position_r1bQk2r   thrpt    5  88.009 ± 4.822  ops/s
 ```
+
+
+# Potential improvement with changes to boardstate
+
+
+Notably running perft 6 took 8500ms~ from 11000ms
+
+```
+PerftBenchmark.position_2kr3r     thrpt    5  15.107 ± 0.826  ops/s
+PerftBenchmark.position_6bR       thrpt    5   7.169 ± 0.174  ops/s
+PerftBenchmark.position_r1b1k1r1  thrpt    5   5.434 ± 0.478  ops/s
+PerftBenchmark.position_r1bQk2r   thrpt    5  86.771 ± 4.516  ops/s
+```

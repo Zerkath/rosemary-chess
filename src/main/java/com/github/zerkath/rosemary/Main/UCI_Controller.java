@@ -74,7 +74,7 @@ public class UCI_Controller extends OutputUtils {
         if (endIndex + 2 < message.length()) {
           String[] moves = message.substring(endIndex + 2).split(" ");
           moves = Arrays.copyOfRange(moves, 1, moves.length);
-          boardState.playMoves(moves);
+          boardState = boardState.playMoves(moves);
         }
         return;
       }
@@ -82,7 +82,7 @@ public class UCI_Controller extends OutputUtils {
       if (split[1].equals("startpos")) {
         setToDefault();
         String[] moves = Arrays.copyOfRange(split, 3, split.length);
-        boardState.playMoves(moves);
+        boardState = boardState.playMoves(moves);
         return;
       }
     }
@@ -253,9 +253,7 @@ public class UCI_Controller extends OutputUtils {
                     CompletableFuture.supplyAsync(
                         () ->
                             new PerftResult(
-                                perftProcess(
-                                    depth - 1, start, boardState.makeNonModifyingMove(move)),
-                                move)))
+                                perftProcess(depth - 1, start, boardState.makeMove(move)), move)))
             .collect(Collectors.toList());
 
     CompletableFuture<Void> futures =
@@ -285,10 +283,8 @@ public class UCI_Controller extends OutputUtils {
     Moves moves = moveGenerator.getLegalMoves(boardState);
 
     for (short move : moves) {
-      boardState.makeMove(move);
-      int result = perftProcess(depth - 1, start, boardState);
+      int result = perftProcess(depth - 1, start, boardState.makeMove(move));
       numPositions += result;
-      boardState.unMakeMove();
     }
     return numPositions;
   }
