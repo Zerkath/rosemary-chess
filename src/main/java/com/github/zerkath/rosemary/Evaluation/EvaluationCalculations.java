@@ -1,7 +1,7 @@
 package com.github.zerkath.rosemary.Evaluation;
 
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.*;
+import com.github.zerkath.rosemary.types.*;
 import java.util.Map;
 
 public class EvaluationCalculations {

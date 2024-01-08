@@ -1,4 +1,4 @@
-package com.github.zerkath.rosemary.DataTypes;
+package com.github.zerkath.rosemary.types;
 
 /**
  * Move representation short. 12bits: 6 bits for origin, 6 bits for destination 0b000_000_000_000 =

@@ -1,4 +1,4 @@
-package com.github.zerkath.rosemary.DataTypes;
+package com.github.zerkath.rosemary.types;
 
 public class Utils {
 

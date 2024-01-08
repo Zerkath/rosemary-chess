@@ -1,7 +1,7 @@
 import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
-import com.github.zerkath.rosemary.DataTypes.Pieces;
 import com.github.zerkath.rosemary.Evaluation.EvaluationCalculations;
 import com.github.zerkath.rosemary.Main.UCI_Controller;
+import com.github.zerkath.rosemary.types.Pieces;
 import java.util.Map;
 import org.junit.jupiter.api.*;
 
