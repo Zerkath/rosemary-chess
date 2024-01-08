@@ -1,6 +1,6 @@
 package com.github.zerkath.rosemary.MoveGeneration;
 
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
+import com.github.zerkath.rosemary.BoardRepresentation.*;
 import com.github.zerkath.rosemary.DataTypes.*;
 import java.util.Iterator;
 
@@ -33,7 +33,7 @@ public class MoveGenerator {
     short move;
     while (pseudoIterator.hasNext()) {
       move = pseudoIterator.next();
-      if (King.kingInCheck(boardState.makeMove(move))) {
+      if (King.kingInCheck(Mover.makeMove(boardState, move))) {
         pseudoIterator.remove();
       }
     }

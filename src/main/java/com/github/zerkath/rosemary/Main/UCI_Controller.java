@@ -1,6 +1,6 @@
 package com.github.zerkath.rosemary.Main;
 
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
+import com.github.zerkath.rosemary.BoardRepresentation.*;
 import com.github.zerkath.rosemary.BoardRepresentation.FenUtils;
 import com.github.zerkath.rosemary.DataTypes.MoveUtil;
 import com.github.zerkath.rosemary.DataTypes.Moves;
@@ -74,7 +74,7 @@ public class UCI_Controller extends OutputUtils {
         if (endIndex + 2 < message.length()) {
           String[] moves = message.substring(endIndex + 2).split(" ");
           moves = Arrays.copyOfRange(moves, 1, moves.length);
-          boardState = boardState.playMoves(moves);
+          boardState = Mover.makeMoves(boardState, moves);
         }
         return;
       }
@@ -82,7 +82,7 @@ public class UCI_Controller extends OutputUtils {
       if (split[1].equals("startpos")) {
         setToDefault();
         String[] moves = Arrays.copyOfRange(split, 3, split.length);
-        boardState = boardState.playMoves(moves);
+        boardState = Mover.makeMoves(boardState, moves);
         return;
       }
     }
@@ -253,7 +253,8 @@ public class UCI_Controller extends OutputUtils {
                     CompletableFuture.supplyAsync(
                         () ->
                             new PerftResult(
-                                perftProcess(depth - 1, start, boardState.makeMove(move)), move)))
+                                perftProcess(depth - 1, start, Mover.makeMove(boardState, move)),
+                                move)))
             .collect(Collectors.toList());
 
     CompletableFuture<Void> futures =
@@ -283,7 +284,7 @@ public class UCI_Controller extends OutputUtils {
     Moves moves = moveGenerator.getLegalMoves(boardState);
 
     for (short move : moves) {
-      int result = perftProcess(depth - 1, start, boardState.makeMove(move));
+      int result = perftProcess(depth - 1, start, Mover.makeMove(boardState, move));
       numPositions += result;
     }
     return numPositions;

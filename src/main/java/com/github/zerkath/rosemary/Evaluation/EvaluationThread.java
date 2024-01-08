@@ -1,6 +1,6 @@
 package com.github.zerkath.rosemary.Evaluation;
 
-import com.github.zerkath.rosemary.BoardRepresentation.BoardState;
+import com.github.zerkath.rosemary.BoardRepresentation.*;
 import com.github.zerkath.rosemary.DataTypes.MoveUtil;
 import com.github.zerkath.rosemary.DataTypes.Moves;
 import com.github.zerkath.rosemary.DataTypes.Pieces;
@@ -55,7 +55,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     short bestMove = -1;
 
     for (short move : moves) {
-      int eval = alphaBetaMin(boardState.makeMove(move), alpha, beta, depth - 1);
+      int eval = alphaBetaMin(Mover.makeMove(boardState, move), alpha, beta, depth - 2);
       if (depth == startingDepth) {
         printInfoUCI(depth, eval, move, true);
       }
@@ -92,7 +92,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     short bestMove = -1;
 
     for (short move : moves) {
-      int eval = alphaBetaMax(boardState.makeMove(move), alpha, beta, depth - 1);
+      int eval = alphaBetaMax(Mover.makeMove(boardState, move), alpha, beta, depth - 1);
       if (depth == startingDepth) {
         printInfoUCI(depth, eval, move, false);
       }

@@ -85,21 +85,6 @@ public class BoardState {
     }
   }
 
-  public BoardState playMoves(String[] moves) {
-    BoardState bs = this;
-    for (String move : moves) {
-      short x = MoveUtil.getMove(move);
-      System.out.println(MoveUtil.moveToString(x));
-      bs = bs.makeMove(x);
-    }
-    return bs;
-  }
-
-  public BoardState makeMove(short move) {
-    BoardState tempBoard = new BoardState(this);
-    return Mover.makeMove(tempBoard, move);
-  }
-
   private void incrementPiece(byte piece) {
     if (piece == 0) return;
     pieceMap.merge(piece, 1, Integer::sum);

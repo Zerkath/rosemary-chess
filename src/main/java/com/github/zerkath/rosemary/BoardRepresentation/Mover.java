@@ -1,10 +1,28 @@
 package com.github.zerkath.rosemary.BoardRepresentation;
 
 import com.github.zerkath.rosemary.DataTypes.*;
+import com.github.zerkath.rosemary.DataTypes.CastlingRights;
 
 public class Mover {
 
-  public static BoardState makeMove(BoardState bs, short moveWithPromotionData) {
+  public static BoardState makeMoves(BoardState bs, String[] moves) {
+    short[] m = new short[moves.length];
+    for (int i = 0; i < moves.length; i++) {
+      m[i] = MoveUtil.getMove(moves[i]);
+    }
+    return makeMoves(bs, m);
+  }
+
+  public static BoardState makeMoves(BoardState bs, short[] moves) {
+    BoardState boardState = bs;
+    for (short move : moves) {
+      boardState = makeMove(boardState, move);
+    }
+    return boardState;
+  }
+
+  public static BoardState makeMove(BoardState boardState, short moveWithPromotionData) {
+    BoardState bs = new BoardState(boardState);
 
     short move = MoveUtil.clearPromotion(moveWithPromotionData);
     short temp_destination = MoveUtil.getDestination(move);
