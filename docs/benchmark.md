@@ -2,7 +2,6 @@
 
 Benchmarks can be ran with `./gradlew jmh`
 
-
 # Result of 07.01.2024 - Using arrays instead of HashSets
 
 ## Before 
@@ -25,7 +24,6 @@ PerftBenchmark.position_r1bQk2r   thrpt    5  88.009 ± 4.822  ops/s
 
 # Potential improvement with changes to boardstate
 
-
 Notably running perft 6 took 8500ms~ from 11000ms
 
 ```
@@ -33,4 +31,15 @@ PerftBenchmark.position_2kr3r     thrpt    5  14.349 ± 0.667  ops/s
 PerftBenchmark.position_6bR       thrpt    5   6.793 ± 0.272  ops/s
 PerftBenchmark.position_r1b1k1r1  thrpt    5   5.119 ± 0.036  ops/s
 PerftBenchmark.position_r1bQk2r   thrpt    5  88.411 ± 2.494  ops/s
+```
+
+# New suite of benchmarks
+
+```
+PerftBenchmark.position_bishops  thrpt    5   7.752 ± 3.550  ops/ms
+PerftBenchmark.position_knights  thrpt    5   9.865 ± 1.212  ops/ms
+PerftBenchmark.position_normal   thrpt    5   7.723 ± 1.738  ops/ms
+PerftBenchmark.position_pawns    thrpt    5  13.959 ± 0.754  ops/ms
+PerftBenchmark.position_queens   thrpt    5   3.036 ± 0.029  ops/ms
+PerftBenchmark.position_rooks    thrpt    5   5.557 ± 0.980  ops/ms
 ```

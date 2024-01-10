@@ -1,7 +1,7 @@
 package rosemary.types;
 
 public enum TargetSquare {
-  EMPTY,
-  FRIENDLY,
-  ENEMY
+    EMPTY,
+    FRIENDLY,
+    ENEMY
 }

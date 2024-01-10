@@ -8,18 +8,19 @@ import rosemary.types.Utils;
 
 public class Commons {
 
-  static boolean pieceMoveNotPossible(
-      int rowOffset, int colOffset, Board board, Moves moves, short origin, boolean isWhite) {
-    short destination =
-        Utils.getCoordinate(
-            MoveUtil.getRow(origin) + rowOffset, MoveUtil.getColumn(origin) + colOffset);
-    int target = board.getCoordinate(destination);
+    static boolean pieceMoveNotPossible(
+            int rowOffset, int colOffset, Board board, Moves moves, short origin, boolean isWhite) {
+        short destination =
+                Utils.getCoordinate(
+                        MoveUtil.getRow(origin) + rowOffset,
+                        MoveUtil.getColumn(origin) + colOffset);
+        int target = board.getCoordinate(destination);
 
-    if (target == 0) {
-      moves.add(origin, destination);
-      return false;
+        if (target == 0) {
+            moves.add(origin, destination);
+            return false;
+        }
+        if (isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
+        return true;
     }
-    if (isWhite != Pieces.isWhite(target)) moves.add(origin, destination);
-    return true;
-  }
 }

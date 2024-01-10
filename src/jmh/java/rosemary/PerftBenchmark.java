@@ -6,52 +6,88 @@ import rosemary.generation.*;
 
 public class PerftBenchmark {
 
-  @Benchmark
-  @Fork(value = 1, warmups = 1)
-  @OutputTimeUnit(java.util.concurrent.TimeUnit.SECONDS)
-  @BenchmarkMode(Mode.Throughput)
-  @Warmup(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-  @Measurement(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-  public void position_r1b1k1r1() {
-    UCI_Controller uci = new UCI_Controller();
-    uci.runPerft(
-        4, false, new BoardState("r1b1k1r1/1p3p2/p4b1p/2N5/5q2/8/4PPBP/1RR3K1 b q - 1 27"));
-  }
+    @Benchmark
+    @Fork(value = 1, warmups = 1)
+    @OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
+    @BenchmarkMode(Mode.Throughput)
+    @Warmup(iterations = 5, time = 1, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 2, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    public void position_pawns() {
+        UCI_Controller uci = new UCI_Controller();
+        uci.runPerft(
+                2,
+                false,
+                new BoardState("8/5kpp/4p3/5P2/5p2/4P3/5KPP/8 w - - 0 1")); // 4 pawns each side
+    }
 
-  @Benchmark
-  @Fork(value = 1, warmups = 1)
-  @OutputTimeUnit(java.util.concurrent.TimeUnit.SECONDS)
-  @BenchmarkMode(Mode.Throughput)
-  @Warmup(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-  @Measurement(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-  public void position_r1bQk2r() {
-    UCI_Controller uci = new UCI_Controller();
-    uci.runPerft(
-        4, false, new BoardState("r1bQk2r/ppp2ppp/2p5/2b5/4n3/2N4P/PPP2PP1/R1B1KB1R b KQkq - 0 8"));
-  }
+    @Benchmark
+    @Fork(value = 1, warmups = 1)
+    @OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
+    @BenchmarkMode(Mode.Throughput)
+    @Warmup(iterations = 5, time = 1, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 2, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    public void position_rooks() {
+        UCI_Controller uci = new UCI_Controller();
+        uci.runPerft(
+                2,
+                false,
+                new BoardState("1k6/2r5/R5R1/4r3/8/6R1/1K6/2r5 w - - 0 1")); // 3 rooks each side
+    }
 
-  @Benchmark
-  @Fork(value = 1, warmups = 1)
-  @OutputTimeUnit(java.util.concurrent.TimeUnit.SECONDS)
-  @BenchmarkMode(Mode.Throughput)
-  @Warmup(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-  @Measurement(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-  public void position_2kr3r() {
-    UCI_Controller uci = new UCI_Controller();
-    uci.runPerft(
-        4,
-        false,
-        new BoardState("2kr3r/2p4p/2nq1p1n/1N1p2p1/1P1P4/P3PN1P/5PP1/R2Q1RK1 b - - 0 20"));
-  }
+    @Benchmark
+    @Fork(value = 1, warmups = 1)
+    @OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
+    @BenchmarkMode(Mode.Throughput)
+    @Warmup(iterations = 5, time = 1, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 2, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    public void position_bishops() {
+        UCI_Controller uci = new UCI_Controller();
+        uci.runPerft(
+                2,
+                false,
+                new BoardState("k7/4B3/5b2/7B/2b5/4B3/1b6/7K w - - 0 1")); // 3 bishops each side
+    }
 
-  @Benchmark
-  @Fork(value = 1, warmups = 1)
-  @OutputTimeUnit(java.util.concurrent.TimeUnit.SECONDS)
-  @BenchmarkMode(Mode.Throughput)
-  @Warmup(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-  @Measurement(iterations = 5, time = 750, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-  public void position_6bR() {
-    UCI_Controller uci = new UCI_Controller();
-    uci.runPerft(4, false, new BoardState("6bR/1k6/1r6/8/R2q4/KQ2r3/8/5B2 w - - 0 1"));
-  }
+    @Benchmark
+    @Fork(value = 1, warmups = 1)
+    @OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
+    @BenchmarkMode(Mode.Throughput)
+    @Warmup(iterations = 5, time = 1, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 2, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    public void position_queens() {
+        UCI_Controller uci = new UCI_Controller();
+        uci.runPerft(
+                2,
+                false,
+                new BoardState("k7/4Q3/5q2/7Q/2q5/4Q3/1q6/7K w - - 0 1")); // 3 queens each side
+    }
+
+    @Benchmark
+    @Fork(value = 1, warmups = 1)
+    @OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
+    @BenchmarkMode(Mode.Throughput)
+    @Warmup(iterations = 5, time = 1, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 2, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    public void position_knights() {
+        UCI_Controller uci = new UCI_Controller();
+        uci.runPerft(
+                2,
+                false,
+                new BoardState("6k1/5n2/6N1/1n4n1/3N4/8/2N5/1K6 w - - 0 1")); // 3 knights each side
+    }
+
+    @Benchmark
+    @Fork(value = 1, warmups = 1)
+    @OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
+    @BenchmarkMode(Mode.Throughput)
+    @Warmup(iterations = 5, time = 1, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 2, timeUnit = java.util.concurrent.TimeUnit.SECONDS)
+    public void position_normal() {
+        UCI_Controller uci = new UCI_Controller();
+        uci.runPerft(
+                2,
+                false,
+                new BoardState(
+                        "r1bq1rk1/ppp2pp1/2n1pn1p/b2p4/3P1B2/2P1PN2/PP1NBPPP/R2Q1RK1 w - - 2 9"));
+    }
 }
