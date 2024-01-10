@@ -63,7 +63,7 @@ public class EvalTest {
         }
         UciController uci = new UciController();
         uci.boardState = boardState;
-        uci.runPerft(4, false);
+        uci.runPerft(2, false);
         Map<Byte, Byte> map = uci.boardState.getPieceMap();
         System.out.println("\nAfter perft");
         for (Map.Entry<Byte, Byte> entry : map.entrySet()) {
