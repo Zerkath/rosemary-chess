@@ -71,7 +71,7 @@ format 'misc', {
 		cleanthat()          // has its own section below
 
 		// Choose one of these formatters.
-		googleJavaFormat()
+		googleJavaFormat().aosp()
 
 		// eclipse()
 		// prettier()
