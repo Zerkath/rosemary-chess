@@ -17,15 +17,15 @@ public class PerftRunner {
     }
 
     private class PerftResult {
-        Integer moveCount;
+        long moveCount;
         short move;
 
-        PerftResult(Integer count, short move) {
+        PerftResult(long count, short move) {
             this.moveCount = count;
             this.move = move;
         }
 
-        int getMoveCount() {
+        long getMoveCount() {
             return moveCount;
         }
 
@@ -35,23 +35,21 @@ public class PerftRunner {
     }
 
     private CompletableFuture<PerftResult> futurePerft(
-            short move, int depth, int start, BoardState boardState) {
+            short move, int depth, BoardState boardState) {
         return CompletableFuture.supplyAsync(
                 () ->
                         new PerftResult(
                                 perftProcess(depth - 1, Mover.makeMove(boardState, move)), move));
     }
 
-    public int _perft(int depth, int start, boolean print, BoardState boardState) {
-        perftMap.clear();
-
+    public long perft(int depth, boolean print, BoardState boardState) {
         List<CompletableFuture<PerftResult>> list =
                 moveGenerator.getLegalMoves(boardState).stream()
                         .filter(Objects::nonNull)
-                        .map(move -> futurePerft(move, depth, start, boardState))
+                        .map(move -> futurePerft(move, depth, boardState))
                         .collect(Collectors.toList());
 
-        CompletableFuture<Integer> result =
+        CompletableFuture<Long> result =
                 CompletableFuture.allOf(list.toArray(new CompletableFuture[0]))
                         .thenApplyAsync(
                                 future ->
@@ -59,7 +57,7 @@ public class PerftRunner {
                                                 .map(CompletableFuture::join)
                                                 .peek(pr -> pr.toStdOut(print))
                                                 .map(PerftResult::getMoveCount)
-                                                .reduce(0, Integer::sum));
+                                                .reduce(0L, Long::sum));
 
         try {
             return result.get();
@@ -68,40 +66,19 @@ public class PerftRunner {
         }
     }
 
-    public int perft(int depth, boolean print, BoardState boardState) {
-        perftMap.clear();
-        int total = 0;
-        for (short move : moveGenerator.getLegalMoves(boardState)) {
-            int result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
-            if (print) System.out.println(MoveUtil.moveToString(move) + ": " + result);
-            total += result;
-        }
-        return total;
-    }
-
-    // private ConcurrentHashMap<Long, Integer> perftMap = new
-    // ConcurrentHashMap<>();
-
-    private HashMap<Long, Integer> perftMap = new HashMap<>();
-
     private int perftProcess(int depth, BoardState boardState) {
         if (depth <= 0) return 1;
-        long hash = BoardHasher.calculateHash(boardState, depth);
 
-        if (perftMap.containsKey(hash)) {
-            return perftMap.get(hash);
-        } else {
-            int numPositions = 0;
-            Moves moves = moveGenerator.getLegalMoves(boardState);
+        int numPositions = 0;
+        Moves moves = moveGenerator.getLegalMoves(boardState);
 
-            for (short move : moves) {
-                int result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
+        for (short move : moves) {
+            int result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
 
-                numPositions += result;
-            }
-
-            return numPositions;
+            numPositions += result;
         }
+
+        return numPositions;
     }
 
     /**
@@ -114,7 +91,7 @@ public class PerftRunner {
      */
     public long[] getPerftScore(int depth, boolean print, BoardState bState) {
         long start = System.currentTimeMillis();
-        int perftMoves = perft(depth, print, bState);
+        long perftMoves = perft(depth, print, bState);
         long end = System.currentTimeMillis();
         return new long[] {perftMoves, end - start};
     }
