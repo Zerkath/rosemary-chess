@@ -6,21 +6,21 @@ import java.nio.charset.StandardCharsets;
 
 public class OutputUtils {
 
-  BufferedOutputStream writer;
+    BufferedOutputStream writer;
 
-  public OutputUtils(BufferedOutputStream writer) {
-    this.writer = writer;
-  }
-
-  public void print(String str) {
-    try {
-      writer.write(str.getBytes(StandardCharsets.UTF_8));
-      writer.flush();
-    } catch (IOException ignored) {
+    public OutputUtils(BufferedOutputStream writer) {
+        this.writer = writer;
     }
-  }
 
-  public void println(String str) {
-    print(str + "\r\n");
-  }
+    public void print(String str) {
+        try {
+            writer.write(str.getBytes(StandardCharsets.UTF_8));
+            writer.flush();
+        } catch (IOException ignored) {
+        }
+    }
+
+    public void println(String str) {
+        print(str + "\r\n");
+    }
 }
