@@ -1,6 +1,6 @@
 import java.util.HashSet;
 import org.junit.jupiter.api.*;
-import rosemary.UciController;
+import rosemary.PerftRunner;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
@@ -12,7 +12,7 @@ public class MoveGenerationTest {
     String d_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     MoveGenerator moveGenerator = new MoveGenerator();
-    UciController uci = new UciController();
+    PerftRunner perftRunner = new PerftRunner(moveGenerator);
 
     @Test
     @Order(1)
@@ -169,7 +169,7 @@ public class MoveGenerationTest {
         long[] depth = new long[4];
         long[] expected = {20, 400, 8902, 197281, 4865609, 119060324};
         for (int i = 0; i < depth.length; i++) {
-            long[] result = uci.runPerft(i + 1, true, getTestBoard());
+            long[] result = perftRunner.getPerftScore(i + 1, true, getTestBoard());
             depth[i] = result[0];
             System.out.println(
                     "Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + result[1] + "ms\n");
@@ -200,7 +200,7 @@ public class MoveGenerationTest {
         long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    uci.runPerft(
+                    perftRunner.getPerftScore(
                             i + 1,
                             true,
                             getTestBoard(
@@ -229,7 +229,7 @@ public class MoveGenerationTest {
         long[] depth = new long[4];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    uci.runPerft(
+                    perftRunner.getPerftScore(
                             i + 1, true, getTestBoard("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"));
             depth[i] = result[0];
             System.out.println(
@@ -256,7 +256,7 @@ public class MoveGenerationTest {
         long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    uci.runPerft(
+                    perftRunner.getPerftScore(
                             i + 1,
                             true,
                             getTestBoard(
@@ -283,7 +283,7 @@ public class MoveGenerationTest {
     @Order(103)
     void movesFromPosition3_1() {
         long[] result =
-                uci.runPerft(
+                perftRunner.getPerftScore(
                         1,
                         true,
                         getTestBoard(
@@ -305,7 +305,7 @@ public class MoveGenerationTest {
         long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    uci.runPerft(
+                    perftRunner.getPerftScore(
                             i + 1,
                             true,
                             getTestBoard(
@@ -334,7 +334,7 @@ public class MoveGenerationTest {
         long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    uci.runPerft(
+                    perftRunner.getPerftScore(
                             i + 1,
                             true,
                             getTestBoard(
