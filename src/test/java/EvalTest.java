@@ -1,6 +1,6 @@
 import java.util.Map;
 import org.junit.jupiter.api.*;
-import rosemary.UCI_Controller;
+import rosemary.UciController;
 import rosemary.board.BoardState;
 import rosemary.eval.*;
 import rosemary.types.Pieces;
@@ -61,7 +61,7 @@ public class EvalTest {
         for (Map.Entry<Byte, Byte> entry : boardState.getPieceMap().entrySet()) {
             System.out.println(Pieces.getChar(entry.getKey()) + " count: " + entry.getValue());
         }
-        UCI_Controller uci = new UCI_Controller();
+        UciController uci = new UciController();
         uci.boardState = boardState;
         uci.runPerft(4, false);
         Map<Byte, Byte> map = uci.boardState.getPieceMap();

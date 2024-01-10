@@ -13,18 +13,18 @@ import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
 import rosemary.types.Moves;
 
-public class UCI_Controller extends OutputUtils {
+public class UciController extends OutputUtils {
 
     public BoardState boardState;
     public boolean uci_mode = true;
-    public int depth = 8;
+    public int depth = 6;
     public boolean debug = true;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
     MoveGenerator moveGenerator = new MoveGenerator();
 
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public UCI_Controller() {
+    public UciController() {
         super(new BufferedOutputStream(System.out));
         boardState = new BoardState(defaultBoard);
     }
@@ -240,41 +240,41 @@ public class UCI_Controller extends OutputUtils {
             this.move = move;
         }
 
+        int getMoveCount() {
+            return moveCount;
+        }
+
         void toStdOut(boolean print) {
             if (print) println(MoveUtil.moveToString(move) + ": " + moveCount);
         }
+    }
+
+    private CompletableFuture<PerftResult> futurePerft(
+            short move, int depth, int start, BoardState boardState) {
+        return CompletableFuture.supplyAsync(
+                () ->
+                        new PerftResult(
+                                perftProcess(depth - 1, start, Mover.makeMove(boardState, move)),
+                                move));
     }
 
     private int perft(int depth, int start, boolean print, BoardState boardState) {
 
         List<CompletableFuture<PerftResult>> list =
                 moveGenerator.getLegalMoves(boardState).stream()
-                        .filter(m -> m != null)
-                        .map(
-                                move ->
-                                        CompletableFuture.supplyAsync(
-                                                () ->
-                                                        new PerftResult(
-                                                                perftProcess(
-                                                                        depth - 1,
-                                                                        start,
-                                                                        Mover.makeMove(
-                                                                                boardState, move)),
-                                                                move)))
+                        .filter(Objects::nonNull)
+                        .map(move -> futurePerft(move, depth, start, boardState))
                         .collect(Collectors.toList());
 
-        CompletableFuture<Void> futures =
-                CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
-
         CompletableFuture<Integer> result =
-                futures.thenApply(
-                        future -> {
-                            return list.stream()
-                                    .map(CompletableFuture::join)
-                                    .peek(pr -> pr.toStdOut(print))
-                                    .map(pr -> pr.moveCount)
-                                    .reduce(0, Integer::sum);
-                        });
+                CompletableFuture.allOf(list.toArray(new CompletableFuture[0]))
+                        .thenApplyAsync(
+                                future ->
+                                        list.stream()
+                                                .map(CompletableFuture::join)
+                                                .peek(pr -> pr.toStdOut(print))
+                                                .map(PerftResult::getMoveCount)
+                                                .reduce(0, Integer::sum));
 
         try {
             return result.get();

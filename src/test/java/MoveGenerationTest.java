@@ -1,6 +1,6 @@
 import java.util.HashSet;
 import org.junit.jupiter.api.*;
-import rosemary.UCI_Controller;
+import rosemary.UciController;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
@@ -12,7 +12,7 @@ public class MoveGenerationTest {
     String d_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     MoveGenerator moveGenerator = new MoveGenerator();
-    UCI_Controller uci = new UCI_Controller();
+    UciController uci = new UciController();
 
     @Test
     @Order(1)
