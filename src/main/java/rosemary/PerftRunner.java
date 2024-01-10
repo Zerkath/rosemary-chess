@@ -39,11 +39,11 @@ public class PerftRunner {
         return CompletableFuture.supplyAsync(
                 () ->
                         new PerftResult(
-                                perftProcess(depth - 1, start, Mover.makeMove(boardState, move)),
-                                move));
+                                perftProcess(depth - 1, Mover.makeMove(boardState, move)), move));
     }
 
-    private int perft(int depth, int start, boolean print, BoardState boardState) {
+    public int _perft(int depth, int start, boolean print, BoardState boardState) {
+        perftMap.clear();
 
         List<CompletableFuture<PerftResult>> list =
                 moveGenerator.getLegalMoves(boardState).stream()
@@ -68,17 +68,40 @@ public class PerftRunner {
         }
     }
 
-    private int perftProcess(int depth, int start, BoardState boardState) {
-        if (depth <= 0) return 1;
-
-        int numPositions = 0;
-        Moves moves = moveGenerator.getLegalMoves(boardState);
-
-        for (short move : moves) {
-            int result = perftProcess(depth - 1, start, Mover.makeMove(boardState, move));
-            numPositions += result;
+    public int perft(int depth, boolean print, BoardState boardState) {
+        perftMap.clear();
+        int total = 0;
+        for (short move : moveGenerator.getLegalMoves(boardState)) {
+            int result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
+            if (print) System.out.println(MoveUtil.moveToString(move) + ": " + result);
+            total += result;
         }
-        return numPositions;
+        return total;
+    }
+
+    // private ConcurrentHashMap<Long, Integer> perftMap = new
+    // ConcurrentHashMap<>();
+
+    private HashMap<Long, Integer> perftMap = new HashMap<>();
+
+    private int perftProcess(int depth, BoardState boardState) {
+        if (depth <= 0) return 1;
+        long hash = BoardHasher.calculateHash(boardState, depth);
+
+        if (perftMap.containsKey(hash)) {
+            return perftMap.get(hash);
+        } else {
+            int numPositions = 0;
+            Moves moves = moveGenerator.getLegalMoves(boardState);
+
+            for (short move : moves) {
+                int result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
+
+                numPositions += result;
+            }
+
+            return numPositions;
+        }
     }
 
     /**
@@ -91,7 +114,7 @@ public class PerftRunner {
      */
     public long[] getPerftScore(int depth, boolean print, BoardState bState) {
         long start = System.currentTimeMillis();
-        int perftMoves = perft(depth, depth, print, bState);
+        int perftMoves = perft(depth, print, bState);
         long end = System.currentTimeMillis();
         return new long[] {perftMoves, end - start};
     }

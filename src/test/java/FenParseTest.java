@@ -1,9 +1,7 @@
-import java.util.Map;
 import org.junit.jupiter.api.*;
 import rosemary.board.*;
 import rosemary.types.*;
 import rosemary.types.CastlingRights;
-import rosemary.types.Pieces;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class FenParseTest {
@@ -62,53 +60,15 @@ public class FenParseTest {
         BoardState state =
                 new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         state.printBoard();
-        Map<Byte, Byte> m = state.getPieceMap();
-        Assertions.assertEquals(8, (int) m.get(Pieces.getNum('p')));
-        Assertions.assertEquals(8, (int) m.get(Pieces.getNum('P')));
-        Assertions.assertEquals(2, (int) m.get(Pieces.getNum('r')));
-        Assertions.assertEquals(2, (int) m.get(Pieces.getNum('R')));
-        Assertions.assertEquals(1, (int) m.get(Pieces.getNum('q')));
-        Assertions.assertEquals(1, (int) m.get(Pieces.getNum('Q')));
-        Assertions.assertEquals(1, (int) m.get(Pieces.getNum('k')));
+        byte[] m = state.getPieceMap();
+        Assertions.assertEquals(8, (int) m[Pieces.getNum('p')]);
+        Assertions.assertEquals(8, (int) m[Pieces.getNum('P')]);
+        Assertions.assertEquals(2, (int) m[Pieces.getNum('r')]);
+        Assertions.assertEquals(2, (int) m[Pieces.getNum('R')]);
+        Assertions.assertEquals(1, (int) m[Pieces.getNum('q')]);
+        Assertions.assertEquals(1, (int) m[Pieces.getNum('Q')]);
+        Assertions.assertEquals(1, (int) m[Pieces.getNum('k')]);
     }
-
-    //    @Test
-    //    void noBlackPieces() {
-    //
-    //        BoardState state = new BoardState("8/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    //        int [] countedPieces = state.countPieces();
-    //        state.printBoard();
-    //        Assertions.assertEquals(16, countedPieces[0]);
-    //        Assertions.assertEquals(0, countedPieces[1]);
-    //    }
-    //
-    //    @Test
-    //    void noWhitePieces() {
-    //
-    //        BoardState state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/8/8 w KQkq - 0 1");
-    //        int [] countedPieces = state.countPieces();
-    //        state.printBoard();
-    //        Assertions.assertEquals(0, countedPieces[0]);
-    //        Assertions.assertEquals(16, countedPieces[1]);
-    //    }
-    //
-    //    @Test
-    //    void weirdBoardPosition() {
-    //        //https://lichess.org/editor/q3k3/2P3P1/6q1/3P1P2/1P1q4/3B1N2/P2B2N1/1R2K2R_w_K_-_0_1
-    //        BoardState state = new BoardState("q3k3/2P3P1/6q1/3P1P2/1P1q4/3B1N2/P2B2N1/1R2K2R w K
-    // -
-    // 0 1");
-    //        int [] countedPieces = state.countPieces();
-    //        state.printBoard();
-    //        Assertions.assertEquals(3, countedPieces[12]); //black queens
-    //        Assertions.assertEquals(6, countedPieces[3]); //white pawns
-    //        Assertions.assertEquals(2, countedPieces[9]); //white knights
-    //        Assertions.assertEquals(2, countedPieces[5]); //white bishops
-    //
-    //        Assertions.assertEquals(1, countedPieces[13]); //kings
-    //        Assertions.assertEquals(1, countedPieces[14]);
-    //
-    //    }
 
     @Test
     void printFen() {

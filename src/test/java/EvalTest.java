@@ -1,4 +1,3 @@
-import java.util.Map;
 import org.junit.jupiter.api.*;
 import rosemary.UciController;
 import rosemary.board.BoardState;
@@ -58,24 +57,26 @@ public class EvalTest {
         BoardState boardState =
                 new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         System.out.println("Start");
-        for (Map.Entry<Byte, Byte> entry : boardState.getPieceMap().entrySet()) {
-            System.out.println(Pieces.getChar(entry.getKey()) + " count: " + entry.getValue());
+
+        byte[] pieceMap = boardState.getPieceMap();
+        for (int i = 0; i < 23; i++) {
+            System.out.println(Pieces.getChar(i) + " count: " + pieceMap[i]);
         }
         UciController uci = new UciController();
         uci.boardState = boardState;
         uci.runPerft(2, false);
-        Map<Byte, Byte> map = uci.boardState.getPieceMap();
+        byte[] map = uci.boardState.getPieceMap();
         System.out.println("\nAfter perft");
-        for (Map.Entry<Byte, Byte> entry : map.entrySet()) {
-            System.out.println(Pieces.getChar(entry.getKey()) + " count: " + entry.getValue());
+        for (int i = 0; i < 23; i++) {
+            System.out.println(Pieces.getChar(i) + " count: " + map[i]);
         }
-        Assertions.assertEquals(8, (int) map.get((byte) (Pieces.PAWN | Pieces.WHITE)));
-        Assertions.assertEquals(8, (int) map.get((byte) (Pieces.PAWN | Pieces.BLACK)));
-        Assertions.assertEquals(2, (int) map.get((byte) (Pieces.KNIGHT | Pieces.WHITE)));
-        Assertions.assertEquals(2, (int) map.get((byte) (Pieces.KNIGHT | Pieces.BLACK)));
-        Assertions.assertEquals(2, (int) map.get((byte) (Pieces.ROOK | Pieces.BLACK)));
-        Assertions.assertEquals(2, (int) map.get((byte) (Pieces.ROOK | Pieces.WHITE)));
-        Assertions.assertEquals(1, (int) map.get((byte) (Pieces.KING | Pieces.BLACK)));
-        Assertions.assertEquals(1, (int) map.get((byte) (Pieces.KING | Pieces.WHITE)));
+        Assertions.assertEquals(8, (int) map[(byte) (Pieces.PAWN | Pieces.WHITE)]);
+        Assertions.assertEquals(8, (int) map[(byte) (Pieces.PAWN | Pieces.BLACK)]);
+        Assertions.assertEquals(2, (int) map[(byte) (Pieces.KNIGHT | Pieces.WHITE)]);
+        Assertions.assertEquals(2, (int) map[(byte) (Pieces.KNIGHT | Pieces.BLACK)]);
+        Assertions.assertEquals(2, (int) map[(byte) (Pieces.ROOK | Pieces.BLACK)]);
+        Assertions.assertEquals(2, (int) map[(byte) (Pieces.ROOK | Pieces.WHITE)]);
+        Assertions.assertEquals(1, (int) map[(byte) (Pieces.KING | Pieces.BLACK)]);
+        Assertions.assertEquals(1, (int) map[(byte) (Pieces.KING | Pieces.WHITE)]);
     }
 }

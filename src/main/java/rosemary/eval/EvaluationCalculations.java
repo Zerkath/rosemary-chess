@@ -1,6 +1,5 @@
 package rosemary.eval;
 
-import java.util.Map;
 import rosemary.board.BoardState;
 import rosemary.types.*;
 
@@ -78,10 +77,12 @@ public class EvaluationCalculations {
         return Pieces.isWhite(piece) ? result : -result;
     }
 
-    private int materialValue(Map<Byte, Byte> pieceMap) {
+    private int materialValue(byte[] pieceMap) {
         int result = 0;
-        for (Map.Entry<Byte, Byte> entry : pieceMap.entrySet()) {
-            result += pieceToValue(entry.getKey()) * entry.getValue();
+
+        for (int i = 0; i < 23; i++) {
+            if (pieceMap[i] == 0) continue;
+            result += pieceToValue(i) * pieceMap[i];
         }
         return result;
     }

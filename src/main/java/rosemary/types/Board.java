@@ -9,11 +9,16 @@ public class Board {
     private final byte[] board = new byte[64];
 
     public Board() {
-        for (int i = 0; i < 64; i++) this.board[i] = 0;
+        Arrays.fill(this.board, (byte) 0);
     }
 
     public Board(Board board) {
         System.arraycopy(board.board, 0, this.board, 0, 64);
+    }
+
+    public Board setBoard(Board board) {
+        System.arraycopy(board.board, 0, this.board, 0, 64);
+        return this;
     }
 
     public byte[] getBoard() {

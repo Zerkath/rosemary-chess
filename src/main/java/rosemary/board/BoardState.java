@@ -1,6 +1,6 @@
 package rosemary.board;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import rosemary.types.*;
 
 public class BoardState {
@@ -89,12 +89,36 @@ public class BoardState {
         }
     }
 
-    public HashMap<Byte, Byte> getPieceMap() {
-        HashMap<Byte, Byte> pieceMap = new HashMap<>();
+    /**
+     * returns a piece map of the board state index is the piece number, value is the number of
+     * pieces on the board there are some empty spaces in the array, but maybe cache locality is
+     * worth it?
+     */
+    public byte[] getPieceMap() {
+        byte[] pieceMap = new byte[23]; // 22 is the max value of king + white
+        Arrays.fill(pieceMap, (byte) 0); // ensure values are initialised
 
-        for (byte piece : board.getBoard()) {
-            if (piece == 0) continue;
-            pieceMap.put(piece, (byte) (1 + pieceMap.getOrDefault(piece, (byte) 0)));
+        byte[] board = this.board.getBoard();
+
+        // unrolled loop for performance
+        for (int i = 0; i < 64; i += 8) {
+            byte piece1 = board[i];
+            byte piece2 = board[i + 1];
+            byte piece3 = board[i + 2];
+            byte piece4 = board[i + 3];
+            byte piece5 = board[i + 4];
+            byte piece6 = board[i + 5];
+            byte piece7 = board[i + 6];
+            byte piece8 = board[i + 7];
+
+            if (piece1 != 0) pieceMap[piece1] = (byte) (1 + pieceMap[piece1]);
+            if (piece2 != 0) pieceMap[piece2] = (byte) (1 + pieceMap[piece2]);
+            if (piece3 != 0) pieceMap[piece3] = (byte) (1 + pieceMap[piece3]);
+            if (piece4 != 0) pieceMap[piece4] = (byte) (1 + pieceMap[piece4]);
+            if (piece5 != 0) pieceMap[piece5] = (byte) (1 + pieceMap[piece5]);
+            if (piece6 != 0) pieceMap[piece6] = (byte) (1 + pieceMap[piece6]);
+            if (piece7 != 0) pieceMap[piece7] = (byte) (1 + pieceMap[piece7]);
+            if (piece8 != 0) pieceMap[piece8] = (byte) (1 + pieceMap[piece8]);
         }
 
         return pieceMap;
