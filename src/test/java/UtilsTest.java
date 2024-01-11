@@ -15,23 +15,6 @@ public class UtilsTest {
     }
 
     @Test
-    void move() {
-        // Move expected = new Move(new Coordinate(4, 4).coord, new Coordinate(3, 4).coord);
-        // Move result = MoveUtil.getMove("e4e5");
-        // Assertions.assertEquals(
-        //     new Coordinate(MoveUtil.getDestination(expected)).getColumn(),
-        //     new Coordinate(MoveUtil.getDestination(result)).getColumn());
-        // Assertions.assertEquals(
-        //     new Coordinate(MoveUtil.getDestination(expected)).getRow(),
-        //     new Coordinate(MoveUtil.getDestination(result)).getRow());
-        // Assertions.assertEquals(
-        //     MoveUtil.getOrigin(expected)).getColumn(),
-        //     MoveUtil.getOrigin(result)).getColumn());
-        // Assertions.assertEquals(
-        //     MoveUtil.getOrigin(expected)).getRow(), MoveUtil.getOrigin(result)).getRow());
-    }
-
-    @Test
     void promotionCommand() {
         short expected =
                 MoveUtil.getMove(

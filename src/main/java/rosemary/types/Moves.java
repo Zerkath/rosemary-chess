@@ -2,8 +2,6 @@ package rosemary.types;
 
 import java.util.LinkedList;
 
-// @Deprecated // Should create a array backed impl instead allowing data to exist on stack instead
-// of heap
 public class Moves extends LinkedList<Short> {
 
     public Moves() {
