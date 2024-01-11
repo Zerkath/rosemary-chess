@@ -46,9 +46,9 @@ public class Rook extends SlidingPiece {
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
-        Board board = boardState.board;
+        byte[] board = boardState.board;
 
-        boolean isWhite = Pieces.isWhite(board.getCoordinate(origin));
+        boolean isWhite = Pieces.isWhite(board[origin]);
 
         Moves[] allMoves = rookMoves[origin].allMoves;
 

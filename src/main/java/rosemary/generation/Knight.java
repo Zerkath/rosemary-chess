@@ -30,11 +30,10 @@ public class Knight {
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
-        Board board = boardState.board;
         Moves n_moves = knightMoves[origin];
 
         for (short move : n_moves) {
-            if (board.isValidMove(move)) moves.add(move);
+            if (BoardUtils.isValidMove(move, boardState.board)) moves.add(move);
         }
     }
 }

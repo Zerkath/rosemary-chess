@@ -1,11 +1,11 @@
 import org.junit.jupiter.api.*;
-import rosemary.UCI_Controller;
+import rosemary.UciController;
 import rosemary.board.BoardState;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UCI_Test {
+public class UciTest {
 
-    UCI_Controller uci = new UCI_Controller();
+    UciController uci = new UciController();
 
     @Test
     void kingSideCastling() {

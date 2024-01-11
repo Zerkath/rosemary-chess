@@ -38,7 +38,7 @@ public class Program {
 class InputHandler extends Thread {
 
     BlockingQueue<String> queue;
-    UCI_Controller uci = new UCI_Controller();
+    UciController uci = new UciController();
     boolean active = true;
 
     public InputHandler(BlockingQueue<String> queue) {
