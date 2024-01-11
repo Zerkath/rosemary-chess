@@ -1,6 +1,7 @@
 package rosemary.generation;
 
-import rosemary.board.BoardState;
+import java.util.*;
+import rosemary.board.*;
 import rosemary.types.*;
 import rosemary.types.MoveUtil;
 
@@ -293,18 +294,18 @@ public class King {
         // its inverse turn
         boolean white = !boardState.isWhiteTurn;
         byte[] board = boardState.board;
+
         // let's try the most likely moves to cause check (bishop and rook)
         short origin = white ? boardState.whiteKing : boardState.blackKing;
-
         if (origin == -1) return false;
+        if (pieceHasCheck(boardState, white, Pieces.ROOK, origin)
+                || pieceHasCheck(boardState, white, Pieces.BISHOP, origin)) return true;
+
         if (distanceWithinBoundary(boardState.whiteKing, boardState.blackKing, 1)) return true;
 
         int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
         int opponentKnight = Pieces.KNIGHT | opponentColor;
         int opponentPawn = Pieces.PAWN | opponentColor;
-
-        if (pieceHasCheck(boardState, white, Pieces.ROOK, origin)
-                || pieceHasCheck(boardState, white, Pieces.BISHOP, origin)) return true;
 
         Moves knightMoves = new Moves();
         Knight.getMoves(origin, boardState, knightMoves);
