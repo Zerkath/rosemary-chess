@@ -5,19 +5,22 @@ import rosemary.types.*;
 
 public class BoardState {
 
-    public Board board = new Board();
+    // public Board board = new Board();
     public boolean isWhiteTurn;
 
     public short turnNumber = 1;
     public short halfMove = 0;
-    private CastlingRights whiteCastlingRights = CastlingRights.NONE;
-    private CastlingRights blackCastlingRights = CastlingRights.NONE;
-    private short whiteKing = -1;
-    private short blackKing = -1;
+    public byte[] board = new byte[64];
+    public CastlingRights whiteCastlingRights = CastlingRights.NONE;
+    public CastlingRights blackCastlingRights = CastlingRights.NONE;
+    public short whiteKing = -1;
+    public short blackKing = -1;
 
     public short enPassant = -1;
 
-    public BoardState() {}
+    public BoardState() {
+        Arrays.fill(board, (byte) 0);
+    }
 
     public BoardState(BoardState state) {
         setBoardState(state);
@@ -28,7 +31,7 @@ public class BoardState {
     }
 
     public void setBoardState(BoardState state) {
-        this.board = new Board(state.board);
+        this.board = BoardUtils.copy(state.board);
         this.isWhiteTurn = state.isWhiteTurn;
         this.turnNumber = state.turnNumber;
         this.halfMove = state.halfMove;
@@ -78,7 +81,7 @@ public class BoardState {
             if (Character.isDigit(ch)) {
                 int numOfEmpty = Character.digit(ch, 10);
                 for (int j = 0; j < numOfEmpty; j++) {
-                    board.clearCoordinate(row, column);
+                    board[Utils.getCoordinate(row, column)] = 0; // clearing the coordinate
                     column++;
                 }
             } else {
@@ -97,8 +100,6 @@ public class BoardState {
     public byte[] getPieceMap() {
         byte[] pieceMap = new byte[23]; // 22 is the max value of king + white
         Arrays.fill(pieceMap, (byte) 0); // ensure values are initialised
-
-        byte[] board = this.board.getBoard();
 
         // unrolled loop for performance
         for (int i = 0; i < 64; i += 8) {
@@ -137,14 +138,6 @@ public class BoardState {
         printBoard(this);
     }
 
-    public short getWhiteKing() {
-        return whiteKing;
-    }
-
-    public short getBlackKing() {
-        return blackKing;
-    }
-
     public void setBlackKing(short coordinate) {
         this.blackKing = coordinate;
     }
@@ -181,6 +174,6 @@ public class BoardState {
 
     public void replaceCoordinate(short coordinate, byte piece) {
         if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
-        board.replaceCoordinate(MoveUtil.getRow(coordinate), MoveUtil.getColumn(coordinate), piece);
+        board[coordinate] = piece;
     }
 }

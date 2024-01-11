@@ -25,7 +25,7 @@ public class FenParseTest {
     void getRow() {
         BoardState state =
                 new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        Assertions.assertEquals(8, state.board.getRow(7).length);
+        Assertions.assertEquals(8, BoardUtils.getRow(7, state.board).length);
     }
 
     @Test

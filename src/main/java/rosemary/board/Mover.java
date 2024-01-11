@@ -30,7 +30,7 @@ public class Mover {
         int dRow = MoveUtil.getRow(temp_destination);
         int dCol = MoveUtil.getColumn(temp_destination);
 
-        byte selected = bs.board.getCoordinate(temp_origin);
+        byte selected = bs.board[temp_origin];
 
         boolean isBeingPromoted = MoveUtil.getPromotion(moveWithPromotionData) != 0;
         boolean isWhite = Pieces.isWhite(selected);
@@ -38,7 +38,7 @@ public class Mover {
         checkForCastlingRights(bs, moveWithPromotionData);
 
         if (Pieces.getType(selected) == Pieces.PAWN
-                || bs.board.getCoordinate(MoveUtil.getDestination(move)) != 0) {
+                || bs.board[MoveUtil.getDestination(move)] != 0) {
             bs.halfMove = 0;
         } else {
             bs.halfMove++;
@@ -49,8 +49,9 @@ public class Mover {
                 && MoveUtil.getRow(bs.enPassant) == MoveUtil.getRow(temp_destination)
                 && MoveUtil.getColumn(bs.enPassant) == MoveUtil.getColumn(temp_destination)) {
             int offSet = isWhite ? 1 : -1;
-            bs.board.clearCoordinate(
-                    MoveUtil.getRow(bs.enPassant) + offSet, MoveUtil.getColumn(bs.enPassant));
+            short row = (short) (MoveUtil.getRow(bs.enPassant) + offSet);
+            short col = MoveUtil.getColumn(bs.enPassant);
+            bs.board[Utils.getCoordinate(row, col)] = 0;
         }
 
         bs.enPassant = -1;
@@ -62,11 +63,11 @@ public class Mover {
 
             int right = 0;
             int left = 0;
-            if (dCol == 0) right = bs.board.getCoordinate(dRow, dCol + 1);
-            if (dCol == 7) left = bs.board.getCoordinate(dRow, dCol - 1);
+            if (dCol == 0) right = bs.board[Utils.getCoordinate(dRow, dCol + 1)];
+            if (dCol == 7) left = bs.board[Utils.getCoordinate(dRow, dCol - 1)];
             if (dCol > 0 && dCol < 7) {
-                right = bs.board.getCoordinate(dRow, dCol + 1);
-                left = bs.board.getCoordinate(dRow, dCol - 1);
+                right = bs.board[Utils.getCoordinate(dRow, dCol + 1)];
+                left = bs.board[Utils.getCoordinate(dRow, dCol - 1)];
             }
 
             if (Pieces.getType(right) == Pieces.PAWN) {
@@ -97,16 +98,16 @@ public class Mover {
                 destination = Utils.getCoordinate(dRow, 5);
                 origin = Utils.getCoordinate(dRow, 7);
             }
-            rook = bs.board.getCoordinate(origin);
+            rook = bs.board[origin];
             bs.replaceCoordinate(destination, rook);
-            bs.board.clearCoordinate(origin);
+            bs.board[origin] = 0;
         }
 
         if (Pieces.getType(selected) == Pieces.KING) {
             bs.setCastling(CastlingRights.NONE, isWhite);
         }
 
-        bs.board.clearCoordinate(temp_origin);
+        bs.board[temp_origin] = 0;
 
         byte piece = selected;
         if (isBeingPromoted) {

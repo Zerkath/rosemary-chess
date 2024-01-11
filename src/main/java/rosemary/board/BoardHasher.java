@@ -29,7 +29,7 @@ public class BoardHasher {
         long hash = 0;
 
         for (short square = 0; square < 64; square++) {
-            int p = boardState.board.getCoordinate(square);
+            int p = boardState.board[square];
             if (p != Pieces.EMPTY) {
                 int color = Pieces.isWhite(p) ? 1 : 0;
                 int piece = p & Pieces.m_type - 1;

@@ -15,7 +15,7 @@ public class EvaluationCalculations {
         int value = 0;
         for (int row = 2; row < 6; row++) {
             for (int column = 2; column < 6; column++) {
-                int piece = state.board.getCoordinate(row, column);
+                int piece = state.board[Utils.getCoordinate(row, column)];
                 if (piece != 0) {
                     value += Pieces.isWhite(piece) ? 25 : -20;
                 }
@@ -48,8 +48,8 @@ public class EvaluationCalculations {
         return value;
     }
 
-    private boolean isPieceAtSquare(int row, int column, int piece, Board board) {
-        int comparison = board.getCoordinate(row, column);
+    private boolean isPieceAtSquare(int row, int column, int piece, byte[] board) {
+        int comparison = board[Utils.getCoordinate(row, column)];
         if (comparison == 0) return false;
         return comparison == piece;
     }

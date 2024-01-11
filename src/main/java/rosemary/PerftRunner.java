@@ -1,8 +1,6 @@
 package rosemary;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
@@ -16,54 +14,19 @@ public class PerftRunner {
         this.moveGenerator = moveGenerator;
     }
 
-    private class PerftResult {
-        long moveCount;
-        short move;
-
-        PerftResult(long count, short move) {
-            this.moveCount = count;
-            this.move = move;
-        }
-
-        long getMoveCount() {
-            return moveCount;
-        }
-
-        void toStdOut(boolean print) {
-            if (print) System.out.println(MoveUtil.moveToString(move) + ": " + moveCount);
-        }
-    }
-
-    private CompletableFuture<PerftResult> futurePerft(
-            short move, int depth, BoardState boardState) {
-        return CompletableFuture.supplyAsync(
-                () ->
-                        new PerftResult(
-                                perftProcess(depth - 1, Mover.makeMove(boardState, move)), move));
-    }
-
     public long perft(int depth, boolean print, BoardState boardState) {
-        List<CompletableFuture<PerftResult>> list =
-                moveGenerator.getLegalMoves(boardState).stream()
-                        .filter(Objects::nonNull)
-                        .map(move -> futurePerft(move, depth, boardState))
-                        .collect(Collectors.toList());
+        long total = 0;
+        Moves moves = moveGenerator.getLegalMoves(boardState);
 
-        CompletableFuture<Long> result =
-                CompletableFuture.allOf(list.toArray(new CompletableFuture[0]))
-                        .thenApplyAsync(
-                                future ->
-                                        list.stream()
-                                                .map(CompletableFuture::join)
-                                                .peek(pr -> pr.toStdOut(print))
-                                                .map(PerftResult::getMoveCount)
-                                                .reduce(0L, Long::sum));
-
-        try {
-            return result.get();
-        } catch (Throwable e) {
-            return 0;
+        for (final short move : moves) {
+            long result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
+            total += result;
+            if (print) {
+                System.out.println(MoveUtil.moveToString(move) + " " + result);
+            }
         }
+
+        return total;
     }
 
     private int perftProcess(int depth, BoardState boardState) {

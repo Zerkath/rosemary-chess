@@ -26,20 +26,20 @@ public class King {
     }
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
-        Board board = boardState.board;
+        byte[] board = boardState.board;
         boolean isWhiteTurn = boardState.isWhiteTurn;
         CastlingRights whiteCastling = boardState.getWhiteCastling();
         CastlingRights blackCastling = boardState.getBlackCastling();
 
-        int originalPiece = board.getCoordinate(origin);
+        int originalPiece = board[origin];
         boolean isWhite = Pieces.isWhite(originalPiece);
         int row = MoveUtil.getRow(origin);
         int col = MoveUtil.getColumn(origin);
 
         // generating moves around king //todo update
         for (short move : unfilteredMoves[origin]) {
-            if (board.isOpposingColourOrEmpty(MoveUtil.getDestination(move), originalPiece))
-                moves.add(move);
+            if (BoardUtils.isOpposingColourOrEmpty(
+                    MoveUtil.getDestination(move), originalPiece, board)) moves.add(move);
         }
 
         // castling
@@ -54,8 +54,6 @@ public class King {
                     && !backRankThreat(
                             data)) { // only check if the king is in the original position and
                 // hasn't moved
-
-                int piece = isWhite ? Pieces.ROOK | Pieces.WHITE : Pieces.ROOK | Pieces.BLACK;
 
                 boolean qSide = queenSidePossible(data);
 
@@ -102,9 +100,9 @@ public class King {
         int pawn, knight, rook, bishop, queen;
         int row;
         byte[] backRow, seventh, sixth;
-        Board board;
+        byte[] board;
 
-        public CastlingData(boolean isWhite, int row, Board board) {
+        public CastlingData(boolean isWhite, int row, byte[] board) {
             this.isWhite = isWhite;
             this.board = board;
             this.row = row;
@@ -116,9 +114,9 @@ public class King {
             bishop = Pieces.BISHOP | opponentColour;
             queen = Pieces.QUEEN | opponentColour;
 
-            backRow = board.getRow(row);
-            seventh = board.getRow(row == 7 ? 6 : 1);
-            sixth = board.getRow(row == 7 ? 5 : 2);
+            backRow = BoardUtils.getRow(row, board);
+            seventh = BoardUtils.getRow(row == 7 ? 6 : 1, board);
+            sixth = BoardUtils.getRow(row == 7 ? 5 : 2, board);
         }
     }
 
@@ -215,7 +213,7 @@ public class King {
 
         for (int j = startIndex; j <= endIndex; j++) {
             for (int i = backRank; i != oppBackRank; i += iteration) {
-                int piece = data.board.getCoordinate(Utils.getCoordinate(i, j));
+                int piece = data.board[Utils.getCoordinate(i, j)];
                 if (data.rook == piece || data.queen == piece) return true;
                 if (piece != 0) break;
             }
@@ -253,7 +251,7 @@ public class King {
             horIndex = i - 1;
             verIndex = verStart;
             while (horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
-                int piece = data.board.getCoordinate(verIndex, horIndex);
+                int piece = data.board[Utils.getCoordinate(verIndex, horIndex)];
 
                 if (data.bishop == piece || data.queen == piece) return true;
                 if (piece != 0) break;
@@ -264,7 +262,7 @@ public class King {
             horIndex = i + 1;
             verIndex = verStart;
             while (horIndex <= 7 && horIndex >= 0 && verIndex <= 7 && verIndex >= 0) {
-                int piece = data.board.getCoordinate(verIndex, horIndex);
+                int piece = data.board[Utils.getCoordinate(verIndex, horIndex)];
 
                 if (data.bishop == piece || data.queen == piece) return true;
                 if (piece != 0) break;
@@ -284,13 +282,12 @@ public class King {
     public static boolean kingInCheck(BoardState boardState) {
         // its inverse turn
         boolean white = !boardState.isWhiteTurn;
-        Board board = boardState.board;
+        byte[] board = boardState.board;
         // let's try the most likely moves to cause check (bishop and rook)
-        short origin = white ? boardState.getWhiteKing() : boardState.getBlackKing();
+        short origin = white ? boardState.whiteKing : boardState.blackKing;
 
         if (origin == -1) return false;
-        if (distanceWithinBoundary(boardState.getWhiteKing(), boardState.getBlackKing(), 1))
-            return true;
+        if (distanceWithinBoundary(boardState.whiteKing, boardState.blackKing, 1)) return true;
 
         int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
         int opponentKnight = Pieces.KNIGHT | opponentColor;
@@ -303,7 +300,7 @@ public class King {
         Knight.getMoves(origin, boardState, knightMoves);
         for (short move : knightMoves) {
 
-            int piece = board.getCoordinate(MoveUtil.getDestination(move));
+            int piece = board[MoveUtil.getDestination(move)];
             if (piece == 0) continue;
             if (opponentKnight == piece) {
                 return true;
@@ -312,8 +309,7 @@ public class King {
         Moves pawnMoves = new Moves();
         Pawn.getMoves(origin, boardState, pawnMoves);
         for (short move : pawnMoves) {
-            if (boardState.board.getCoordinate(MoveUtil.getDestination(move)) == opponentPawn)
-                return true;
+            if (boardState.board[MoveUtil.getDestination(move)] == opponentPawn) return true;
         }
         return false; // no checks return false
     }
@@ -336,7 +332,7 @@ public class King {
         }
         for (short move : moves) {
 
-            int piece = boardState.board.getCoordinate(MoveUtil.getDestination(move));
+            int piece = boardState.board[MoveUtil.getDestination(move)];
 
             if (piece == 0) continue;
             if (Pieces.isWhite(piece) != colour) {
