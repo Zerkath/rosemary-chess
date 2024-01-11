@@ -15,13 +15,18 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     boolean playerTurnWhite;
     boolean debug;
     int depth;
+    MoveGenerator moveGenerator;
     EvaluationValues values = new EvaluationValues();
     EvaluationCalculations evalCalculator = new EvaluationCalculations();
-    MoveGenerator moveGenerator = new MoveGenerator();
 
     public EvaluationThread(
-            BoardState boardState, int depth, boolean debug, BufferedOutputStream writer) {
+            MoveGenerator moveGenerator,
+            BoardState boardState,
+            int depth,
+            boolean debug,
+            BufferedOutputStream writer) {
         super(writer);
+        this.moveGenerator = moveGenerator;
         this.boardState = boardState;
         this.startingDepth = depth;
         this.depth = depth;
@@ -87,7 +92,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
         }
 
         if (depth == startingDepth) {
-            if (bestMove != -1) bestMove = moves.getFirst();
+            if (bestMove == -1) bestMove = moves.getFirst();
             println("bestmove " + MoveUtil.moveToString(bestMove));
         }
 
@@ -121,7 +126,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
         state.isWhiteTurn = !state.isWhiteTurn; // flip turn temporarily for checking a check
         Moves opponent = moveGenerator.getLegalMoves(state);
         for (short move : opponent) {
-            int piece = state.board.getCoordinate(MoveUtil.getDestination(move));
+            int piece = state.board[MoveUtil.getDestination(move)];
             if (piece == 0) continue;
             if ((isWhite && piece == (Pieces.KING | Pieces.WHITE))
                     || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {
