@@ -1,6 +1,5 @@
 package rosemary.board;
 
-import rosemary.types.Board;
 import rosemary.types.Pieces;
 import rosemary.types.Utils;
 
@@ -48,12 +47,12 @@ public class FenUtils {
 
     public static String getFenString(BoardState boardState) {
         strBuilder.setLength(0);
-        Board board = boardState.board;
+        byte[] board = boardState.board;
 
         for (int row = 0; row < 8; row++) {
             int empty = 0;
             for (int column = 0; column < 8; column++) {
-                int piece = board.getCoordinate(row, column);
+                int piece = board[Utils.getCoordinate(row, column)];
                 if (piece == 0) {
                     empty++;
                 } else if (empty != 0) {

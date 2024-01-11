@@ -56,15 +56,13 @@ public class Bishop extends SlidingPiece {
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
-        Board board = boardState.board;
-
-        boolean isWhite = Pieces.isWhite(board.getCoordinate(origin));
+        boolean isWhite = Pieces.isWhite(boardState.board[origin]);
 
         Moves[] allMoves = bishopMoves[origin].allMoves;
 
         for (Moves direction : allMoves) {
             for (short move : direction) {
-                TargetSquare state = getSquareState(move, board, isWhite);
+                TargetSquare state = getSquareState(move, boardState.board, isWhite);
                 addMove(state, move, moves);
                 if (state != TargetSquare.EMPTY) break;
             }
