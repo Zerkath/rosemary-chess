@@ -98,14 +98,12 @@ public class King {
         int opponentColour;
         int ownRook;
         int pawn, knight, rook, bishop, queen;
-        int row;
-        byte[] backRow, seventh, sixth;
+        int backRow, seventh, sixth;
         byte[] board;
 
         public CastlingData(boolean isWhite, int row, byte[] board) {
             this.isWhite = isWhite;
             this.board = board;
-            this.row = row;
             opponentColour = isWhite ? Pieces.BLACK : Pieces.WHITE;
             ownRook = Pieces.ROOK | (isWhite ? Pieces.WHITE : Pieces.BLACK);
             pawn = Pieces.PAWN | opponentColour;
@@ -114,57 +112,67 @@ public class King {
             bishop = Pieces.BISHOP | opponentColour;
             queen = Pieces.QUEEN | opponentColour;
 
-            backRow = BoardUtils.getRow(row, board);
-            seventh = BoardUtils.getRow(row == 7 ? 6 : 1, board);
-            sixth = BoardUtils.getRow(row == 7 ? 5 : 2, board);
+            backRow = row;
+            seventh = row == 7 ? 6 : 1;
+            sixth = row == 7 ? 5 : 2;
         }
     }
 
     private static boolean castlingStoppedByKnightOrPawn(CastlingData data) {
+        byte[] board = data.board;
         for (int i = 3; i <= 5; i++)
-            if (data.sixth[i] == data.knight || data.seventh[i] == data.pawn) return true;
-        return data.seventh[2] == data.knight || data.seventh[6] == data.knight;
+            if (board[Utils.getCoordinate(data.sixth, i)] == data.knight
+                    || board[Utils.getCoordinate(data.seventh, i)] == data.pawn) return true;
+        return board[Utils.getCoordinate(data.seventh, 2)] == data.knight
+                || board[Utils.getCoordinate(data.seventh, 6)] == data.knight;
     }
 
     private static boolean queenSideCastlingStoppedByKnight(CastlingData data) {
         int knight = data.knight;
         int pawn = data.pawn;
+        byte[] board = data.board;
 
-        if (data.seventh[0] == knight
-                || data.seventh[1] == pawn
-                || data.seventh[2] == pawn
-                || data.seventh[4] == knight
-                || data.seventh[5] == knight) {
+        if (board[Utils.getCoordinate(data.seventh, 0)] == knight
+                || board[Utils.getCoordinate(data.seventh, 1)] == pawn
+                || board[Utils.getCoordinate(data.seventh, 2)] == pawn
+                || board[Utils.getCoordinate(data.seventh, 4)] == knight
+                || board[Utils.getCoordinate(data.seventh, 5)] == knight) {
             return true;
         }
 
-        return data.sixth[1] == knight || data.sixth[2] == knight;
+        return board[Utils.getCoordinate(data.sixth, 1)] == knight
+                || board[Utils.getCoordinate(data.sixth, 2)] == knight;
     }
 
     private static boolean kingSideCastlingStoppedByKnight(CastlingData data) {
         int knight = data.knight;
         int pawn = data.pawn;
+        byte[] board = data.board;
 
-        if (data.seventh[7] == knight || data.seventh[6] == pawn || data.seventh[3] == knight) {
+        if (board[Utils.getCoordinate(data.seventh, 7)] == knight
+                || board[Utils.getCoordinate(data.seventh, 6)] == pawn
+                || board[Utils.getCoordinate(data.seventh, 3)] == knight) {
             return true;
         }
 
-        return data.sixth[7] == knight || data.sixth[6] == knight;
+        return board[Utils.getCoordinate(data.sixth, 7)] == knight
+                || board[Utils.getCoordinate(data.sixth, 6)] == knight;
     }
 
     private static boolean queenSidePossible(CastlingData data) {
-        if (data.ownRook != data.backRow[0]
-                || data.backRow[1] != 0
-                || data.backRow[2] != 0
-                || data.backRow[3] != 0) return false;
+        if (data.ownRook != data.board[Utils.getCoordinate(data.backRow, 0)]
+                || data.board[Utils.getCoordinate(data.backRow, 1)] != 0
+                || data.board[Utils.getCoordinate(data.backRow, 2)] != 0
+                || data.board[Utils.getCoordinate(data.backRow, 3)] != 0) return false;
         if (queenSideCastlingStoppedByKnight(data)) return false;
         if (queenSideCastlingStoppedVertically(data)) return false;
         return !queenSideCastlingStoppedDiagonally(data);
     }
 
     private static boolean kingSidePossible(CastlingData data) {
-        if (data.ownRook != data.backRow[7] || data.backRow[6] != 0 || data.backRow[5] != 0)
-            return false;
+        if (data.ownRook != data.board[Utils.getCoordinate(data.backRow, 7)]
+                || data.board[Utils.getCoordinate(data.backRow, 6)] != 0
+                || data.board[Utils.getCoordinate(data.backRow, 5)] != 0) return false;
         if (kingSideCastlingStoppedByKnight(data)) return false;
         if (kingSideCastlingStoppedVertically(data)) return false;
         return !kingSideCastlingStoppedDiagonally(data);
@@ -173,12 +181,12 @@ public class King {
     private static boolean backRankThreat(CastlingData data) {
 
         for (int i = 3; i >= 0; i--) {
-            int piece = data.backRow[i];
+            int piece = data.board[Utils.getCoordinate(data.backRow, i)];
             if (data.queen == piece || data.rook == piece) return true;
             if (piece != 0) break;
         }
         for (int i = 5; i <= 7; i++) {
-            int piece = data.backRow[i];
+            int piece = data.board[Utils.getCoordinate(data.backRow, i)];
             if (data.queen == piece || data.rook == piece) return true;
             if (piece != 0) break;
         }
@@ -231,7 +239,9 @@ public class King {
     }
 
     private static boolean inCheckDiagonally(CastlingData data) {
-        if (data.seventh[3] == data.pawn || data.seventh[5] == data.pawn) return true;
+        byte[] board = data.board;
+        if (board[Utils.getCoordinate(data.seventh, 3)] == data.pawn
+                || board[Utils.getCoordinate(data.seventh, 5)] == data.pawn) return true;
         return isThreatenedDiagonally(data, 4, 4);
     }
 

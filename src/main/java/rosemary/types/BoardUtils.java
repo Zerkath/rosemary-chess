@@ -1,7 +1,5 @@
 package rosemary.types;
 
-import java.util.Arrays;
-
 public class BoardUtils {
 
     private static final StringBuilder strBuilder = new StringBuilder();
@@ -10,18 +8,6 @@ public class BoardUtils {
         byte[] copy = new byte[64];
         System.arraycopy(board, 0, copy, 0, 64);
         return copy;
-    }
-
-    /**
-     * Copies the underlying array should instead index from existing array
-     *
-     * @deprecated Wait for new implementation
-     */
-    @Deprecated
-    public static byte[] getRow(int row, byte[] board) {
-        int startIndex = row << 3;
-        int endIndex = startIndex + 8;
-        return Arrays.copyOfRange(board, startIndex, endIndex);
     }
 
     public static boolean isOpposingColourOrEmpty(

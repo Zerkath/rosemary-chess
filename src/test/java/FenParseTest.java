@@ -22,13 +22,6 @@ public class FenParseTest {
     }
 
     @Test
-    void getRow() {
-        BoardState state =
-                new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        Assertions.assertEquals(8, BoardUtils.getRow(7, state.board).length);
-    }
-
-    @Test
     void noWhiteQueenSide() {
         BoardState state =
                 new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kkq - 0 1");

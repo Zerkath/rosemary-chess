@@ -36,11 +36,10 @@ PerftBenchmark.position_r1bQk2r   thrpt    5  88.411 ± 2.494  ops/s
 # New suite of benchmarks, changed to non-concurrent perft
 
 ```
-PerftBenchmark.position_bishops  thrpt   10    7.632 ± 0.155  ops/s
-PerftBenchmark.position_knights  thrpt   10   23.889 ± 0.347  ops/s
-PerftBenchmark.position_normal   thrpt   10    4.835 ± 0.049  ops/s
-PerftBenchmark.position_pawns    thrpt   10  126.980 ± 0.697  ops/s
-PerftBenchmark.position_queens   thrpt   10    0.542 ± 0.017  ops/s
-PerftBenchmark.position_rooks    thrpt   10    2.768 ± 0.044  ops/s
+PerftBenchmark.position_bishops  thrpt   10    7.566 ± 0.055  ops/s
+PerftBenchmark.position_knights  thrpt   10   25.571 ± 0.259  ops/s
+PerftBenchmark.position_normal   thrpt   10    4.890 ± 0.051  ops/s
+PerftBenchmark.position_pawns    thrpt   10  124.815 ± 5.337  ops/s
+PerftBenchmark.position_queens   thrpt   10    0.555 ± 0.003  ops/s
+PerftBenchmark.position_rooks    thrpt   10    2.918 ± 0.071  ops/s
 ```
-
