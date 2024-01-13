@@ -1,15 +1,15 @@
 package rosemary.eval;
 
 public class EvaluationValues {
-    public final int ePawn = 100; // material values
-    public final int eKnight = 300;
-    public final int eBishop = 310;
-    public final int eRook = 500;
-    public final int eQueen = 900;
+    public static final int ePawn = 100; // material values
+    public static final int eKnight = 300;
+    public static final int eBishop = 310;
+    public static final int eRook = 500;
+    public static final int eQueen = 900;
 
-    public final int mateOffset = 50;
-    public final int mate = 2000000000 + mateOffset;
+    public static final int mateOffset = 50;
+    public static final int mate = 2000000000 + mateOffset;
 
-    public final int mateForBlack = -mate + mateOffset;
-    public final int mateForWhite = mate - mateOffset;
+    public static final int mateForBlack = -mate + mateOffset;
+    public static final int mateForWhite = mate - mateOffset;
 }
