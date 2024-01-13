@@ -5,8 +5,6 @@ import rosemary.types.*;
 
 public class EvaluationCalculations {
 
-    EvaluationValues values = new EvaluationValues();
-
     public int calculateMaterial(BoardState state) {
         return piecesInMiddle(state) + materialValue(state.getPieceMap()) + development(state);
     }
@@ -59,19 +57,19 @@ public class EvaluationCalculations {
         int result = 0;
         switch (Pieces.getType(piece)) {
             case Pieces.PAWN:
-                result = values.ePawn;
+                result = EvaluationValues.ePawn;
                 break;
             case Pieces.ROOK:
-                result = values.eRook;
+                result = EvaluationValues.eRook;
                 break;
             case Pieces.BISHOP:
-                result = values.eBishop;
+                result = EvaluationValues.eBishop;
                 break;
             case Pieces.QUEEN:
-                result = values.eQueen;
+                result = EvaluationValues.eQueen;
                 break;
             case Pieces.KNIGHT:
-                result = values.eKnight;
+                result = EvaluationValues.eKnight;
                 break;
         }
         return Pieces.isWhite(piece) ? result : -result;
