@@ -7,6 +7,7 @@ import rosemary.types.Pieces;
 public class BoardHasher {
     private static long[][] pieceKeys;
     private static long enPassantKey;
+    private static long whiteTurnKey;
 
     // Initialize Zobrist keys
     static {
@@ -22,11 +23,19 @@ public class BoardHasher {
         }
 
         enPassantKey = random.nextLong();
+        whiteTurnKey = random.nextLong();
     }
 
     public static UUID hashBoard(BoardState boardState) {
         long whiteHash = 0;
         long blackHash = 0;
+        if (boardState.isWhiteTurn) {
+            whiteHash = whiteTurnKey;
+            blackHash = -whiteTurnKey;
+        } else {
+            whiteHash = -whiteTurnKey;
+            blackHash = whiteTurnKey;
+        }
 
         for (short square = 0; square < 64; square++) {
             int p = boardState.board[square];
