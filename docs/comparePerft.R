@@ -7,7 +7,7 @@ df_diff <- aggregate(
   Score ~ Benchmark,
   data = data,
   FUN = function(x) {
-    -diff(x)[1]
+    diff(x)[1]
   }
 )
 
