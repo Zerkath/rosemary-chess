@@ -1,7 +1,6 @@
 package rosemary.board;
 
 import java.util.Random;
-import java.util.UUID;
 import rosemary.types.Pieces;
 
 public class BoardHasher {
@@ -26,15 +25,13 @@ public class BoardHasher {
         whiteTurnKey = random.nextLong();
     }
 
-    public static UUID hashBoard(BoardState boardState) {
-        long whiteHash = 0;
-        long blackHash = 0;
+    public static long hashBoard(BoardState boardState) {
+        long hash = 0;
+
         if (boardState.isWhiteTurn) {
-            whiteHash = whiteTurnKey;
-            blackHash = -whiteTurnKey;
+            hash = whiteTurnKey;
         } else {
-            whiteHash = -whiteTurnKey;
-            blackHash = whiteTurnKey;
+            hash = -whiteTurnKey;
         }
 
         for (short square = 0; square < 64; square++) {
@@ -44,18 +41,12 @@ public class BoardHasher {
                 int color = isWhite ? 0 : 1;
                 int piece = (p & Pieces.m_type) - 1;
                 long hasher = pieceKeys[color][(piece * 64 + square)];
-
-                if (isWhite) {
-                    whiteHash ^= hasher;
-                } else {
-                    blackHash ^= hasher;
-                }
+                hash ^= hasher;
             }
         }
 
-        whiteHash ^= enPassantKey * boardState.enPassant;
-        blackHash ^= enPassantKey * boardState.enPassant;
+        hash ^= enPassantKey * boardState.enPassant;
 
-        return new UUID(whiteHash, blackHash);
+        return hash;
     }
 }
