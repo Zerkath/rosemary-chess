@@ -4,8 +4,8 @@ import org.openjdk.jmh.annotations.*;
 import rosemary.board.*;
 
 @Fork(1)
-@OutputTimeUnit(java.util.concurrent.TimeUnit.SECONDS)
-@BenchmarkMode(Mode.Throughput)
+@OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
+@BenchmarkMode(Mode.AverageTime)
 @Warmup(iterations = 5, time = 250, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
 @Measurement(iterations = 10, time = 500, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
 @State(Scope.Benchmark)
