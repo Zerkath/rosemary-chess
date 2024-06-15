@@ -11,7 +11,7 @@ public class BoardHasher {
     // Initialize Zobrist keys
     static {
         pieceKeys = new long[2][6 * 64]; // 2 colors, 6 piece types, 64 squares
-        Random random = new Random(); // set seed for reproducibility, of benchmarks
+        Random random = new Random(100); // set seed for reproducibility, of benchmarks
 
         for (int color = 0; color < 2; color++) {
             for (int piece = 0; piece < 6; piece++) {

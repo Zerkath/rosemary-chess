@@ -1,6 +1,5 @@
 package rosemary.eval;
 
-import java.io.BufferedOutputStream;
 import rosemary.OutputUtils;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
@@ -8,25 +7,15 @@ import rosemary.types.MoveUtil;
 import rosemary.types.Moves;
 import rosemary.types.Pieces;
 
-public class EvaluationThread extends OutputUtils implements Runnable {
+public class EvaluationThread implements Runnable {
 
     BoardState boardState;
     int startingDepth;
     boolean playerTurnWhite;
     boolean debug;
     int depth;
-    MoveGenerator moveGenerator;
-    EvaluationValues values = new EvaluationValues();
-    EvaluationCalculations evalCalculator = new EvaluationCalculations();
 
-    public EvaluationThread(
-            MoveGenerator moveGenerator,
-            BoardState boardState,
-            int depth,
-            boolean debug,
-            BufferedOutputStream writer) {
-        super(writer);
-        this.moveGenerator = moveGenerator;
+    public EvaluationThread(BoardState boardState, int depth, boolean debug) {
         this.boardState = boardState;
         this.startingDepth = depth;
         this.depth = depth;
@@ -47,19 +36,19 @@ public class EvaluationThread extends OutputUtils implements Runnable {
     }
 
     int alphaBeta(BoardState boardState, int alpha, int beta, int depth, boolean isMaxing) {
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
 
         if (moves.isEmpty()) { // no moves this turn in checkmate or draw
             if (inCheck(boardState)) {
                 return isMaxing
-                        ? -values.mate + ((startingDepth - depth) / 2)
-                        : values.mate - ((startingDepth - depth) / 2);
+                        ? -EvaluationValues.mate + ((startingDepth - depth) / 2)
+                        : EvaluationValues.mate - ((startingDepth - depth) / 2);
             }
             return 0;
         }
 
         if (depth == 0 || Thread.currentThread().isInterrupted()) {
-            return evalCalculator.calculateMaterial(boardState);
+            return EvaluationCalculations.calculateMaterial(boardState);
         }
 
         short bestMove = -1;
@@ -93,7 +82,7 @@ public class EvaluationThread extends OutputUtils implements Runnable {
 
         if (depth == startingDepth) {
             if (bestMove == -1) bestMove = moves.getFirst();
-            println("bestmove " + MoveUtil.moveToString(bestMove));
+            OutputUtils.println("bestmove " + MoveUtil.moveToString(bestMove));
         }
 
         return isMaxing ? alpha : beta;
@@ -104,27 +93,27 @@ public class EvaluationThread extends OutputUtils implements Runnable {
         String outString = "info depth " + depth;
         String currMove = " currmove " + MoveUtil.moveToString(move);
 
-        boolean whiteHasMate = eval >= values.mateForWhite;
-        boolean isMate = whiteHasMate || eval <= values.mateForBlack;
+        boolean whiteHasMate = eval >= EvaluationValues.mateForWhite;
+        boolean isMate = whiteHasMate || eval <= EvaluationValues.mateForBlack;
         int whiteTurn = isWhite ? 1 : -1;
 
         if (isMate) {
             int offset =
                     whiteHasMate
-                            ? whiteTurn + values.mate - eval
-                            : whiteTurn - values.mate - eval - (isWhite ? 1 : 0);
+                            ? whiteTurn + EvaluationValues.mate - eval
+                            : whiteTurn - EvaluationValues.mate - eval - (isWhite ? 1 : 0);
             outString += " score mate " + offset;
         } else {
             outString += " score cp " + eval;
         }
-        println(outString + currMove);
+        OutputUtils.println(outString + currMove);
     }
 
     private boolean inCheck(BoardState state) {
         boolean old = state.isWhiteTurn;
         boolean isWhite = state.isWhiteTurn;
         state.isWhiteTurn = !state.isWhiteTurn; // flip turn temporarily for checking a check
-        Moves opponent = moveGenerator.getLegalMoves(state);
+        Moves opponent = MoveGenerator.getLegalMoves(state);
         for (short move : opponent) {
             int piece = state.board[MoveUtil.getDestination(move)];
             if (piece == 0) continue;

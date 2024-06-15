@@ -2,7 +2,6 @@ package rosemary;
 
 import org.openjdk.jmh.annotations.*;
 import rosemary.board.*;
-import rosemary.generation.MoveGenerator;
 
 @Fork(1)
 @OutputTimeUnit(java.util.concurrent.TimeUnit.SECONDS)
@@ -12,12 +11,9 @@ import rosemary.generation.MoveGenerator;
 @State(Scope.Benchmark)
 public class PerftBenchmark {
 
-    private MoveGenerator moveGenerator = new MoveGenerator();
-    private PerftRunner perftRunner = new PerftRunner(moveGenerator);
-
     @Benchmark
     public void position_pawns() {
-        perftRunner.perft(
+        PerftRunner.perft(
                 4,
                 false,
                 new BoardState("8/5kpp/4p3/5P2/5p2/4P3/5KPP/8 w - - 0 1")); // 4 pawns each side
@@ -25,7 +21,7 @@ public class PerftBenchmark {
 
     @Benchmark
     public void position_rooks() {
-        perftRunner.perft(
+        PerftRunner.perft(
                 4,
                 false,
                 new BoardState("1k6/2r5/R5R1/4r3/8/6R1/1K6/2r5 w - - 0 1")); // 3 rooks each side
@@ -33,7 +29,7 @@ public class PerftBenchmark {
 
     @Benchmark
     public void position_bishops() {
-        perftRunner.perft(
+        PerftRunner.perft(
                 4,
                 false,
                 new BoardState("k7/4B3/5b2/7B/2b5/4B3/1b6/7K w - - 0 1")); // 3 bishops each side
@@ -41,7 +37,7 @@ public class PerftBenchmark {
 
     @Benchmark
     public void position_queens() {
-        perftRunner.perft(
+        PerftRunner.perft(
                 4,
                 false,
                 new BoardState("k7/4Q3/5q2/7Q/2q5/4Q3/1q6/7K w - - 0 1")); // 3 queens each side
@@ -49,7 +45,7 @@ public class PerftBenchmark {
 
     @Benchmark
     public void position_knights() {
-        perftRunner.perft(
+        PerftRunner.perft(
                 4,
                 false,
                 new BoardState("6k1/5n2/6N1/1n4n1/3N4/8/2N5/1K6 w - - 0 1")); // 3 knights each side
@@ -57,7 +53,7 @@ public class PerftBenchmark {
 
     @Benchmark
     public void position_normal() {
-        perftRunner.perft(
+        PerftRunner.perft(
                 4,
                 false,
                 new BoardState(

@@ -1,6 +1,5 @@
 package rosemary;
 
-import java.util.*;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
@@ -8,15 +7,9 @@ import rosemary.types.Moves;
 
 public class PerftRunner {
 
-    MoveGenerator moveGenerator;
-
-    public PerftRunner(MoveGenerator moveGenerator) {
-        this.moveGenerator = moveGenerator;
-    }
-
-    public long perft(int depth, boolean print, BoardState boardState) {
+    public static long perft(int depth, boolean print, BoardState boardState) {
         long total = 0;
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
 
         for (final short move : moves) {
             long result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
@@ -29,11 +22,11 @@ public class PerftRunner {
         return total;
     }
 
-    private int perftProcess(int depth, BoardState boardState) {
+    private static int perftProcess(int depth, BoardState boardState) {
         if (depth <= 0) return 1;
 
         int numPositions = 0;
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
 
         for (short move : moves) {
             int result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
@@ -52,7 +45,7 @@ public class PerftRunner {
      * @param print whether to print to standard out, useful for debugging
      * @return long array where index 0 is for number of moves found & index 1 ms the operation took
      */
-    public long[] getPerftScore(int depth, boolean print, BoardState bState) {
+    public static long[] getPerftScore(int depth, boolean print, BoardState bState) {
         long start = System.currentTimeMillis();
         long perftMoves = perft(depth, print, bState);
         long end = System.currentTimeMillis();

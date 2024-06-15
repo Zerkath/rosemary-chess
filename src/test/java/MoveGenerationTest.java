@@ -11,16 +11,13 @@ import rosemary.types.Moves;
 public class MoveGenerationTest {
     String d_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    MoveGenerator moveGenerator = new MoveGenerator();
-    PerftRunner perftRunner = new PerftRunner(moveGenerator);
-
     @Test
     @Order(1)
     void whiteStartMoves() {
         BoardState boardState = new BoardState(d_fen);
         boardState.printBoard();
 
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(20, moves.size(), moves.toString());
     }
 
@@ -29,7 +26,7 @@ public class MoveGenerationTest {
     void blackStartMoves() {
         BoardState boardState = new BoardState(d_fen);
         Mover.makeMove(boardState, MoveUtil.getMove("d2d4"));
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(20, moves.size(), moves.toString());
     }
 
@@ -39,7 +36,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState(d_fen);
         boardState = Mover.makeMove(boardState, MoveUtil.getMove("d2d4"));
         boardState = Mover.makeMove(boardState, MoveUtil.getMove("e7e5"));
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(29, moves.size());
     }
 
@@ -47,7 +44,7 @@ public class MoveGenerationTest {
     @Order(4)
     void leftSideEnPassant() {
         String position = "rnbqkbnr/2pppppp/8/pP6/8/8/PP1PPPPP/RNBQKBNR w KQkq a6 0 3";
-        Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
+        Moves moves = MoveGenerator.getLegalMoves(new BoardState(position));
         Assertions.assertEquals(23, moves.size());
     }
 
@@ -55,7 +52,7 @@ public class MoveGenerationTest {
     @Order(5)
     void kingUnderAttack() {
         String position = "rnbq1bnr/pppkpppp/3pQ3/8/8/2P5/PP1PPPPP/RNB1KBNR b KQ - 3 3";
-        Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
+        Moves moves = MoveGenerator.getLegalMoves(new BoardState(position));
         Assertions.assertEquals(4, moves.size(), moves.toString());
     }
 
@@ -63,7 +60,7 @@ public class MoveGenerationTest {
     @Order(5)
     void whiteKingUnderAttack() {
         String position = "rnb1kbnr/pp1ppppp/2p5/8/8/3Pq3/PPPKPPPP/RNBQ1BNR w - - 0 1";
-        Moves moves = moveGenerator.getLegalMoves(new BoardState(position));
+        Moves moves = MoveGenerator.getLegalMoves(new BoardState(position));
         Assertions.assertEquals(4, moves.size(), moves.toString());
     }
 
@@ -82,7 +79,7 @@ public class MoveGenerationTest {
     void PawnPromotion() {
         BoardState boardState = new BoardState("5q1q/6P1/8/8/8/8/8/8 w - - 0 1");
         boardState.printBoard();
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(12, moves.size());
         for (short move : moves) {
             System.out.println(MoveUtil.moveToString(move));
@@ -117,7 +114,7 @@ public class MoveGenerationTest {
                 new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            moveGenerator.getLegalMoves(boardState);
+            MoveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -129,7 +126,7 @@ public class MoveGenerationTest {
                         "r3k2r/pbpnnpbp/1p1pp1p1/7Q/7q/1P1PP1P1/PBPNNPBP/R3K2R w KQkq - 6 10");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            moveGenerator.getLegalMoves(boardState);
+            MoveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -139,7 +136,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState("3k4/8/3rR3/8/8/3Rr3/8/3K4 w - - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            moveGenerator.getLegalMoves(boardState);
+            MoveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -149,7 +146,7 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState("K7/8/2B5/2B5/8/4bb2/8/7k w - - 0 1");
         int iterations = 10000;
         for (int i = 0; i < iterations; i++) {
-            moveGenerator.getLegalMoves(boardState);
+            MoveGenerator.getLegalMoves(boardState);
         }
     }
 
@@ -158,7 +155,7 @@ public class MoveGenerationTest {
     void blackKingMoves() {
         BoardState boardState = new BoardState("4k3/8/8/8/8/8/3PPP2/4K3 w - - 0 1");
         boardState = Mover.makeMove(boardState, MoveUtil.getMove("d2d4"));
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(5, moves.size(), moves.toString());
     }
 
@@ -169,7 +166,7 @@ public class MoveGenerationTest {
         long[] depth = new long[4];
         long[] expected = {20, 400, 8902, 197281, 4865609, 119060324};
         for (int i = 0; i < depth.length; i++) {
-            long[] result = perftRunner.getPerftScore(i + 1, true, getTestBoard());
+            long[] result = PerftRunner.getPerftScore(i + 1, true, getTestBoard());
             depth[i] = result[0];
             System.out.println(
                     "Depth: " + (i + 1) + " Nodes: " + depth[i] + " Time: " + result[1] + "ms\n");
@@ -200,7 +197,7 @@ public class MoveGenerationTest {
         long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    perftRunner.getPerftScore(
+                    PerftRunner.getPerftScore(
                             i + 1,
                             true,
                             getTestBoard(
@@ -229,7 +226,7 @@ public class MoveGenerationTest {
         long[] depth = new long[4];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    perftRunner.getPerftScore(
+                    PerftRunner.getPerftScore(
                             i + 1, true, getTestBoard("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"));
             depth[i] = result[0];
             System.out.println(
@@ -256,7 +253,7 @@ public class MoveGenerationTest {
         long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    perftRunner.getPerftScore(
+                    PerftRunner.getPerftScore(
                             i + 1,
                             true,
                             getTestBoard(
@@ -283,7 +280,7 @@ public class MoveGenerationTest {
     @Order(103)
     void movesFromPosition3_1() {
         long[] result =
-                perftRunner.getPerftScore(
+                PerftRunner.getPerftScore(
                         1,
                         true,
                         getTestBoard(
@@ -305,7 +302,7 @@ public class MoveGenerationTest {
         long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    perftRunner.getPerftScore(
+                    PerftRunner.getPerftScore(
                             i + 1,
                             true,
                             getTestBoard(
@@ -334,7 +331,7 @@ public class MoveGenerationTest {
         long[] depth = new long[3];
         for (int i = 0; i < depth.length; i++) {
             long[] result =
-                    perftRunner.getPerftScore(
+                    PerftRunner.getPerftScore(
                             i + 1,
                             true,
                             getTestBoard(
@@ -362,30 +359,29 @@ public class MoveGenerationTest {
         BoardState boardState = new BoardState("4k3/p1ppqp2/4p3/3PN3/1p2P3/5Q2/7P/4K3 w - - 0 1");
         boardState = Mover.makeMove(boardState, MoveUtil.getMove("h2h3"));
         boardState = Mover.makeMove(boardState, MoveUtil.getMove("e7c5"));
-        Moves moves = moveGenerator.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
         Assertions.assertEquals(32, moves.size(), moves.toString());
     }
 
     @Test
     void randomKnight() {
         String position = "5k2/8/8/8/8/8/4Nn1P/R2QK2R w KQ - 1 8";
-        Assertions.assertEquals(35, moveGenerator.getLegalMoves(new BoardState(position)).size());
+        Assertions.assertEquals(35, MoveGenerator.getLegalMoves(new BoardState(position)).size());
     }
 
     @Test
     void kingShouldNotTeleport() {
         String position = "8/2p5/3p4/KP5r/5R1k/8/4P1P1/8 b - - 0 1";
-        Assertions.assertEquals(2, moveGenerator.getLegalMoves(new BoardState(position)).size());
+        Assertions.assertEquals(2, MoveGenerator.getLegalMoves(new BoardState(position)).size());
     }
 
     @Test
     void kingRestrictedByOtherKing() {
         String fenString = "8/8/8/p2N4/n1k1K3/8/5P2/8 b - - 3 52";
         BoardState boardState = new BoardState(fenString);
-        MoveGenerator mv = new MoveGenerator();
         Moves expectedMoves = new Moves("c4c5 c4b5 c4b3 a4b2 a4b6 a4c3 a4c5");
 
-        Moves moves = mv.getLegalMoves(boardState);
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
 
         Assertions.assertEquals(
                 expectedMoves.size(),

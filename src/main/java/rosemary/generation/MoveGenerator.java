@@ -6,7 +6,7 @@ import rosemary.types.*;
 
 public class MoveGenerator {
 
-    private Moves getAllMoves(BoardState boardState) {
+    private static Moves getAllMoves(BoardState boardState) {
 
         Moves moves = new Moves();
         byte[] board = boardState.board;
@@ -27,7 +27,7 @@ public class MoveGenerator {
         return moves;
     }
 
-    public Moves getLegalMoves(BoardState boardState) {
+    public static Moves getLegalMoves(BoardState boardState) {
         Moves pseudoLegal = getAllMoves(boardState);
 
         Iterator<Short> pseudoIterator = pseudoLegal.iterator();
@@ -41,7 +41,7 @@ public class MoveGenerator {
         return pseudoLegal;
     }
 
-    public void getAllMoves(short coordinate, BoardState boardState, Moves moves) {
+    public static void getAllMoves(short coordinate, BoardState boardState, Moves moves) {
         int piece = boardState.board[coordinate];
         if (piece == 0) return;
         switch (Pieces.getType(piece)) {

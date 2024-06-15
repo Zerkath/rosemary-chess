@@ -1,28 +1,19 @@
 package rosemary;
 
-import java.io.BufferedOutputStream;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import rosemary.board.*;
 import rosemary.eval.*;
-import rosemary.generation.MoveGenerator;
 
-public class UciController extends OutputUtils {
+public class UciController {
 
     public BoardState boardState;
     public boolean uci_mode = true;
     public int depth = 6;
     public boolean debug = true;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
-
-    private MoveGenerator moveGenerator = new MoveGenerator();
-    private PerftRunner perftRunner = new PerftRunner(moveGenerator);
-
     private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     public UciController() {
-        super(new BufferedOutputStream(System.out));
         boardState = new BoardState(defaultBoard);
     }
 
@@ -30,33 +21,7 @@ public class UciController extends OutputUtils {
         boardState = new BoardState(FenUtils.parseFen(defaultBoard));
     }
 
-    public void handleMessage(String message) {
-        BlockingQueue<String> queue = new LinkedBlockingQueue<>();
-        handleMessage(message, queue);
-    }
-
-    static class waitForReady implements Runnable {
-
-        BlockingQueue<String> queue;
-
-        public waitForReady(BlockingQueue<String> queue) {
-            this.queue = queue;
-        }
-
-        @Override
-        public void run() {
-            while (!queue.isEmpty()) {
-                try {
-                    wait(500);
-                } catch (InterruptedException ignored) {
-                }
-            }
-            System.out.println("readyok");
-        }
-    }
-
-    public void handleMessage(
-            String message, BlockingQueue<String> queue) { // todo rework to tokenize the commands
+    public void handleMessage(String message) { // todo rework to tokenize the commands
         // given
         // by the ui (change to switch case)
         String[] split = message.split(" ");
@@ -83,10 +48,6 @@ public class UciController extends OutputUtils {
                 boardState = Mover.makeMoves(boardState, moves);
                 return;
             }
-        }
-        if (split[0].equals("isready")) {
-            readyResponse(queue);
-            return;
         }
         if (split[0].equals("go")) {
             if (split.length > 1) {
@@ -125,7 +86,7 @@ public class UciController extends OutputUtils {
             return;
         }
         if (split[0].equals("register")) {
-            println("register later");
+            OutputUtils.println("register later");
             return;
         }
         if (split[0].equals("ucinewgame")) {
@@ -133,7 +94,7 @@ public class UciController extends OutputUtils {
             return;
         }
         if (split[0].equals("xboard")) return;
-        println("?");
+        OutputUtils.println("?");
     }
 
     public void setFen(String fen) {
@@ -147,14 +108,10 @@ public class UciController extends OutputUtils {
     public void setToUCI() {
         uci_mode = true;
         // System.out.print("option name Threads type spin default 2 min 1 max 250\n");
-        println("id name Rosemary");
-        println("id author Rosemary_Devs");
-        println("option name depth type spin default 8 min 1 max 8");
-        println("uciok");
-    }
-
-    public void readyResponse(BlockingQueue<String> queue) {
-        new Thread(new waitForReady(queue)).start(); // should wait for queue to empty
+        OutputUtils.println("id name Rosemary");
+        OutputUtils.println("id author Rosemary_Devs");
+        OutputUtils.println("option name depth type spin default 8 min 1 max 8");
+        OutputUtils.println("uciok");
     }
 
     public void startEval() {
@@ -167,11 +124,7 @@ public class UciController extends OutputUtils {
 
     public void startEval(int depth) {
         if (threadGroup.activeCount() < 1)
-            new Thread(
-                            threadGroup,
-                            new EvaluationThread(
-                                    moveGenerator, this.boardState, depth, debug, writer))
-                    .start();
+            new Thread(threadGroup, new EvaluationThread(this.boardState, depth, debug)).start();
     }
 
     public void superPerft(int depth, int iterations) {
@@ -199,16 +152,16 @@ public class UciController extends OutputUtils {
             variance += Math.abs(l - average);
         }
         variance = variance / (double) iterations;
-        println("avg " + average + " var " + variance + " runs " + iterations);
+        OutputUtils.println("avg " + average + " var " + variance + " runs " + iterations);
     }
 
     public void getPerft(int depth) {
         long[] result = runPerft(depth, true);
         String str = "\nDepth " + depth + " nodes: " + result[0];
-        println(str + " " + Long.toUnsignedString(result[1]) + "ms");
+        OutputUtils.println(str + " " + Long.toUnsignedString(result[1]) + "ms");
     }
 
     public long[] runPerft(int depth, boolean print) {
-        return perftRunner.getPerftScore(depth, print, this.boardState);
+        return PerftRunner.getPerftScore(depth, print, this.boardState);
     }
 }
