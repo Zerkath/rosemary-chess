@@ -1,11 +1,11 @@
 package rosemary.types;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
-public class Moves extends LinkedList<Short> {
+public class Moves extends ArrayList<Short> {
 
     public Moves() {
-        super();
+        super(32);
     }
 
     /**
