@@ -8,7 +8,6 @@ Started out as a project for Artificial Intelligence and Robotics course work in
 
 To work with GUI's the jar needed to be turned into a exe, this was done using http://launch4j.sourceforge.net/
 
-
 ## Conventional commits
 
 New commits after 30/05/2022 are going to be done with conventional commits formatting
@@ -36,6 +35,20 @@ The project already has a gradle wrapper installed, only requires that you have 
 
 # Jacoco test results in
 /build/jacocoHtml/index.html
+```
+
+### Benchmarking
+
+Manually running
+
+```
+./gradlew jmhJar
+java -jar -Xmx4G -Xms2G build/libs/rosemary-chess-jmh.jar .Perft
+```
+
+Updating the file [analysis.png](./docs/analysis.jpg) with new chart data, note runs currently checked out branch against main.
+```
+./scripts/updateChart.sh
 ```
 
 ## Other info
