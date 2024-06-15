@@ -4,15 +4,11 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class OutputUtils {
+public final class OutputUtils {
 
-    BufferedOutputStream writer;
+    private static final BufferedOutputStream writer = new BufferedOutputStream(System.out);
 
-    public OutputUtils(BufferedOutputStream writer) {
-        this.writer = writer;
-    }
-
-    public void print(String str) {
+    public static void print(String str) {
         try {
             writer.write(str.getBytes(StandardCharsets.UTF_8));
             writer.flush();
@@ -20,7 +16,7 @@ public class OutputUtils {
         }
     }
 
-    public void println(String str) {
+    public static void println(String str) {
         print(str + "\r\n");
     }
 }
