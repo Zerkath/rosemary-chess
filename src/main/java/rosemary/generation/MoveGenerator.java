@@ -8,7 +8,7 @@ import rosemary.types.*;
 public class MoveGenerator {
 
     private static Cache<Long, Moves> moveCache =
-            new Cache2kBuilder<Long, Moves>() {}.entryCapacity(5_000_000).build();
+            new Cache2kBuilder<Long, Moves>() {}.entryCapacity(3_000_000).build();
 
     private static Moves getAllMoves(BoardState boardState) {
 
@@ -40,15 +40,16 @@ public class MoveGenerator {
                             Moves pseudoLegal = getAllMoves(boardState);
 
                             Iterator<Short> pseudoIterator = pseudoLegal.iterator();
+                            Moves legal = new Moves();
                             short move;
                             while (pseudoIterator.hasNext()) {
                                 move = pseudoIterator.next();
-                                if (King.kingInCheck(Mover.makeMove(boardState, move))) {
-                                    pseudoIterator.remove();
+                                if (!King.kingInCheck(Mover.makeMove(boardState, move))) {
+                                    legal.add(move);
                                 }
                             }
 
-                            return pseudoLegal;
+                            return legal;
                         });
 
         return moves;

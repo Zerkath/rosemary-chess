@@ -5,7 +5,6 @@ import rosemary.types.*;
 
 public class BoardState {
 
-    // public Board board = new Board();
     public boolean isWhiteTurn;
 
     public short turnNumber = 1;
