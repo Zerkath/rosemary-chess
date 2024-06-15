@@ -1,15 +1,14 @@
 package rosemary.generation;
 
 import java.util.Iterator;
-import java.util.UUID;
 import org.cache2k.*;
 import rosemary.board.*;
 import rosemary.types.*;
 
 public class MoveGenerator {
 
-    private static Cache<UUID, Moves> moveCache =
-            new Cache2kBuilder<UUID, Moves>() {}.entryCapacity(5_000_000).build();
+    private static Cache<Long, Moves> moveCache =
+            new Cache2kBuilder<Long, Moves>() {}.entryCapacity(5_000_000).build();
 
     private static Moves getAllMoves(BoardState boardState) {
 
@@ -33,11 +32,11 @@ public class MoveGenerator {
     }
 
     public static Moves getLegalMoves(BoardState boardState) {
-        UUID boardUUID = BoardHasher.hashBoard(boardState);
+        long hash = BoardHasher.hashBoard(boardState);
         Moves moves =
                 moveCache.computeIfAbsent(
-                        boardUUID,
-                        uuid -> {
+                        hash,
+                        x -> {
                             Moves pseudoLegal = getAllMoves(boardState);
 
                             Iterator<Short> pseudoIterator = pseudoLegal.iterator();
