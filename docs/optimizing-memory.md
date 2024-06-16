@@ -65,3 +65,12 @@ dropped overall application memory usage from 554MB to 186MB. Also this gave a s
 After moving moves collection to use primitives the next largest culprit of memory usage was cache2k, as this was still using Long instead of long.
 Once I changed the cache to be a Long2ObjectOpenHashMap<Moves>, the memory usage of the application dropped to 120MB.
 
+### Cache 2: Electric boogaloo
+
+When looking at memory usage of the application with cache, I noticed most moves lists were of size 2-20, this could also be hashed and pooled for later use.
+Move generation now has 2 maps,
+one which has the key of board hash pointing to a move hash
+and movehash pointing to sorted list of moves.
+
+This optimization dropped the memory usage down to 41.9MB for depth 6
+
