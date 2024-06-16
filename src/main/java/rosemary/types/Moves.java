@@ -1,8 +1,8 @@
 package rosemary.types;
 
-import java.util.ArrayList;
+import it.unimi.dsi.fastutil.shorts.*;
 
-public class Moves extends ArrayList<Short> {
+public class Moves extends ShortArrayList {
 
     public Moves() {
         super(32);
