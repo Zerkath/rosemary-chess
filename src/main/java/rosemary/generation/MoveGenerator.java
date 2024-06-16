@@ -7,6 +7,7 @@ import rosemary.types.*;
 
 public class MoveGenerator {
 
+    private static Long2LongOpenHashMap boardCache = new Long2LongOpenHashMap();
     private static Long2ObjectOpenHashMap<Moves> moveCache = new Long2ObjectOpenHashMap<>();
 
     private static Moves getAllMoves(BoardState boardState) {
@@ -31,27 +32,34 @@ public class MoveGenerator {
     }
 
     public static Moves getLegalMoves(BoardState boardState) {
-        long hash = BoardHasher.hashBoard(boardState);
-        Moves moves =
-                moveCache.computeIfAbsent(
-                        hash,
-                        x -> {
-                            Moves pseudoLegal = getAllMoves(boardState);
-
-                            Iterator<Short> pseudoIterator = pseudoLegal.iterator();
-                            Moves legal = new Moves();
-                            short move;
-                            while (pseudoIterator.hasNext()) {
-                                move = pseudoIterator.next();
-                                if (!King.kingInCheck(Mover.makeMove(boardState, move))) {
-                                    legal.add(move);
-                                }
-                            }
-
-                            return legal;
-                        });
-
+        long hash = ValueHasher.hashBoard(boardState);
+        Moves moves;
+        if (boardCache.containsKey(hash)) {
+            long moveHash = boardCache.get(hash);
+            moves = moveCache.get(moveHash);
+        } else {
+            moves = nonCacheGetLegalMoves(boardState);
+            long newMoveHash = ValueHasher.hashMoves(moves);
+            moveCache.putIfAbsent(newMoveHash, moves);
+            boardCache.putIfAbsent(hash, newMoveHash);
+        }
         return moves;
+    }
+
+    private static Moves nonCacheGetLegalMoves(BoardState boardState) {
+        Moves pseudoLegal = getAllMoves(boardState);
+
+        Iterator<Short> pseudoIterator = pseudoLegal.iterator();
+        Moves legal = new Moves();
+        short move;
+        while (pseudoIterator.hasNext()) {
+            move = pseudoIterator.next();
+            if (!King.kingInCheck(Mover.makeMove(boardState, move))) {
+                legal.add(move);
+            }
+        }
+
+        return legal;
     }
 
     public static void getAllMoves(short coordinate, BoardState boardState, Moves moves) {
