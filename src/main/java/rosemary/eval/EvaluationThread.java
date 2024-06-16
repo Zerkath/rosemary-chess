@@ -1,5 +1,6 @@
 package rosemary.eval;
 
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
 import rosemary.OutputUtils;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
@@ -53,7 +54,9 @@ public class EvaluationThread implements Runnable {
 
         short bestMove = -1;
 
-        for (short move : moves) {
+        ShortIterator iter = moves.iterator();
+        while (iter.hasNext()) {
+            short move = iter.nextShort();
             int eval =
                     alphaBeta(Mover.makeMove(boardState, move), alpha, beta, depth - 1, !isMaxing);
 
@@ -114,8 +117,9 @@ public class EvaluationThread implements Runnable {
         boolean isWhite = state.isWhiteTurn;
         state.isWhiteTurn = !state.isWhiteTurn; // flip turn temporarily for checking a check
         Moves opponent = MoveGenerator.getLegalMoves(state);
-        for (short move : opponent) {
-            int piece = state.board[MoveUtil.getDestination(move)];
+        ShortIterator iter = opponent.iterator();
+        while (iter.hasNext()) {
+            int piece = state.board[MoveUtil.getDestination(iter.nextShort())];
             if (piece == 0) continue;
             if ((isWhite && piece == (Pieces.KING | Pieces.WHITE))
                     || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {

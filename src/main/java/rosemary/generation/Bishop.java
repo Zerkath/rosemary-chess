@@ -1,5 +1,6 @@
 package rosemary.generation;
 
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
 import rosemary.board.BoardState;
 import rosemary.types.*;
 
@@ -61,7 +62,9 @@ public class Bishop extends SlidingPiece {
         Moves[] allMoves = bishopMoves[origin].allMoves;
 
         for (Moves direction : allMoves) {
-            for (short move : direction) {
+            ShortIterator iter = direction.iterator();
+            while (iter.hasNext()) {
+                short move = iter.nextShort();
                 TargetSquare state = getSquareState(move, boardState.board, isWhite);
                 addMove(state, move, moves);
                 if (state != TargetSquare.EMPTY) break;
