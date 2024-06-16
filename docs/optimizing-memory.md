@@ -46,6 +46,8 @@ Examples:
 - 0b111_111_111_111 = 63, 63
 - 0b1111_111_111_111_111 = 63, 63 white queen promotion
 
+### Moves Collection
+
 Hold on but earlier in the ArrayList the single move value was 16 BYTES, what gives?
 Java, collections like ArrayList and LinkedList are very convenient for storing data, 
 but are incapable of storing primitives so a short 2 bytes is converted to a Short object which is 16 bytes.
@@ -56,4 +58,10 @@ After finding this benchmark [Speiger/Primitive-Collections-Benchmarks](https://
 I decided to give fastutils a try.
 
 Simply changing the collection of Moves to use ShortArrayList from ArrayList<Short>,
-dropped overall application memory usage from 554MB to 186MB.
+dropped overall application memory usage from 554MB to 186MB. Also this gave a small speed boost to the move generation.
+
+### Cache
+
+After moving moves collection to use primitives the next largest culprit of memory usage was cache2k, as this was still using Long instead of long.
+Once I changed the cache to be a Long2ObjectOpenHashMap<Moves>, the memory usage of the application dropped to 120MB.
+
