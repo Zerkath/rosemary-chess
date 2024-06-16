@@ -1,5 +1,6 @@
 package rosemary.generation;
 
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
 import rosemary.board.BoardState;
 import rosemary.types.*;
 
@@ -30,9 +31,9 @@ public class Knight {
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
-        Moves n_moves = knightMoves[origin];
-
-        for (short move : n_moves) {
+        ShortIterator iter = knightMoves[origin].iterator();
+        while (iter.hasNext()) {
+            short move = iter.nextShort();
             if (BoardUtils.isValidMove(move, boardState.board)) moves.add(move);
         }
     }
