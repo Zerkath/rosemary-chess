@@ -1,7 +1,7 @@
 package rosemary.generation;
 
 import it.unimi.dsi.fastutil.longs.*;
-import java.util.Iterator;
+import it.unimi.dsi.fastutil.shorts.*;
 import rosemary.board.*;
 import rosemary.types.*;
 
@@ -49,11 +49,10 @@ public class MoveGenerator {
     private static Moves nonCacheGetLegalMoves(BoardState boardState) {
         Moves pseudoLegal = getAllMoves(boardState);
 
-        Iterator<Short> pseudoIterator = pseudoLegal.iterator();
+        ShortIterator pseudoIterator = pseudoLegal.iterator();
         Moves legal = new Moves();
-        short move;
         while (pseudoIterator.hasNext()) {
-            move = pseudoIterator.next();
+            short move = pseudoIterator.nextShort();
             if (!King.kingInCheck(Mover.makeMove(boardState, move))) {
                 legal.add(move);
             }

@@ -11,9 +11,9 @@ normal,1580.405184,98.100091,394f3e1 - Cache
 pawns,1147.247863,69.926842,394f3e1 - Cache
 queens,1616.917992,132.753794,394f3e1 - Cache
 rooks,464.408059,44.216229,394f3e1 - Cache
-bishops,1017.170534,10.700927,8615fd6 - Cache + Primitive
-knights,1477.050315,53.884838,8615fd6 - Cache + Primitive
-normal,1394.038612,36.368287,8615fd6 - Cache + Primitive
-pawns,1033.724036,85.909602,8615fd6 - Cache + Primitive
-queens,1441.201308,97.278669,8615fd6 - Cache + Primitive
-rooks,386.132433,6.159319,8615fd6 - Cache + Primitive
+bishops,1056.47916,40.225001,8615fd6 - Cache + Primitive
+knights,1512.68959,82.612312,8615fd6 - Cache + Primitive
+normal,1423.400587,184.125345,8615fd6 - Cache + Primitive
+pawns,1074.277719,51.28839,8615fd6 - Cache + Primitive
+queens,1504.45746,30.845227,8615fd6 - Cache + Primitive
+rooks,413.40697,13.674042,8615fd6 - Cache + Primitive
