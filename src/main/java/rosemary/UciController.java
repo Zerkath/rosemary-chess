@@ -110,7 +110,7 @@ public class UciController {
         // System.out.print("option name Threads type spin default 2 min 1 max 250\n");
         OutputUtils.println("id name Rosemary");
         OutputUtils.println("id author Rosemary_Devs");
-        OutputUtils.println("option name depth type spin default 8 min 1 max 8");
+        OutputUtils.println("option name depth type spin default 6 min 1 max 8");
         OutputUtils.println("uciok");
     }
 

@@ -33,14 +33,10 @@ test {
 	finalizedBy(tasks.jacocoTestReport)
 }
 
-def cache2kVersion = '2.6.1.Final'
-
 dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
 	implementation "org.openjdk.jmh:jmh-core:1.33"
 	implementation "org.openjdk.jmh:jmh-generator-annprocess:1.33"
-implementation "org.cache2k:cache2k-api:${cache2kVersion}"
-implementation "org.cache2k:cache2k-core:${cache2kVersion}"
 implementation 'it.unimi.dsi:fastutil:8.5.13'
 }
 
