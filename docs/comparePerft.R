@@ -25,7 +25,7 @@ ggplot(merged_df, aes(x = Benchmark, y = Score_Diff, fill = Score_Diff)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave("analysis.jpg",
+ggsave("analysis.png",
   width = 2560,
   height = 1440,
   units = c("px"),
