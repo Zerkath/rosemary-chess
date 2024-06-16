@@ -1,14 +1,13 @@
 package rosemary.generation;
 
+import it.unimi.dsi.fastutil.longs.*;
 import java.util.Iterator;
-import org.cache2k.*;
 import rosemary.board.*;
 import rosemary.types.*;
 
 public class MoveGenerator {
 
-    private static Cache<Long, Moves> moveCache =
-            new Cache2kBuilder<Long, Moves>() {}.entryCapacity(3_000_000).build();
+    private static Long2ObjectOpenHashMap<Moves> moveCache = new Long2ObjectOpenHashMap<>();
 
     private static Moves getAllMoves(BoardState boardState) {
 
