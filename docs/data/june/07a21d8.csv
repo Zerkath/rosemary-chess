@@ -1,0 +1,7 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit"
+"rosemary.PerftBenchmark.position_bishops","avgt",1,5,10535.782667,952.994094,"ms/op"
+"rosemary.PerftBenchmark.position_knights","avgt",1,5,15237.603522,411.322672,"ms/op"
+"rosemary.PerftBenchmark.position_normal","avgt",1,5,8746.101092,291.632955,"ms/op"
+"rosemary.PerftBenchmark.position_pawns","avgt",1,5,10627.180412,820.714327,"ms/op"
+"rosemary.PerftBenchmark.position_queens","avgt",1,5,17707.345088,134.876279,"ms/op"
+"rosemary.PerftBenchmark.position_rooks","avgt",1,5,4825.997532,13.063378,"ms/op"

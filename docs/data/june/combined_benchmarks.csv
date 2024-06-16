@@ -1,0 +1,19 @@
+Benchmark,Score,stdev,Commit
+bishops,10535.782667,952.994094,07a21d8 - No cache
+knights,15237.603522,411.322672,07a21d8 - No cache
+normal,8746.101092,291.632955,07a21d8 - No cache
+pawns,10627.180412,820.714327,07a21d8 - No cache
+queens,17707.345088,134.876279,07a21d8 - No cache
+rooks,4825.997532,13.063378,07a21d8 - No cache
+bishops,1198.878536,90.310809,394f3e1 - Cache
+knights,1779.758695,173.323504,394f3e1 - Cache
+normal,1580.405184,98.100091,394f3e1 - Cache
+pawns,1147.247863,69.926842,394f3e1 - Cache
+queens,1616.917992,132.753794,394f3e1 - Cache
+rooks,464.408059,44.216229,394f3e1 - Cache
+bishops,1056.47916,40.225001,8615fd6 - Cache + Primitive
+knights,1512.68959,82.612312,8615fd6 - Cache + Primitive
+normal,1423.400587,184.125345,8615fd6 - Cache + Primitive
+pawns,1074.277719,51.28839,8615fd6 - Cache + Primitive
+queens,1504.45746,30.845227,8615fd6 - Cache + Primitive
+rooks,413.40697,13.674042,8615fd6 - Cache + Primitive
