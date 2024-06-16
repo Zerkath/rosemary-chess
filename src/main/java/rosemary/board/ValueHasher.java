@@ -1,12 +1,14 @@
 package rosemary.board;
 
-import java.util.Random;
+import java.util.*;
+import rosemary.types.Moves;
 import rosemary.types.Pieces;
 
-public class BoardHasher {
+public class ValueHasher {
     private static long[][] pieceKeys;
     private static long enPassantKey;
     private static long whiteTurnKey;
+    private static final long polynomialHashKey = 31;
 
     // Initialize Zobrist keys
     static {
@@ -47,6 +49,18 @@ public class BoardHasher {
 
         hash ^= enPassantKey * boardState.enPassant;
 
+        return hash;
+    }
+
+    public static long hashMoves(Moves moves) {
+        // TODO: should short the collection to normalize hash
+        long hash = 0;
+        moves.sort(null);
+
+        Iterator<Short> iter = moves.iterator();
+        while (iter.hasNext()) {
+            hash = hash * polynomialHashKey + iter.next();
+        }
         return hash;
     }
 }
