@@ -1,6 +1,6 @@
 package rosemary.generation;
 
-import java.util.*;
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
 import rosemary.board.*;
 import rosemary.types.*;
 import rosemary.types.MoveUtil;
@@ -37,8 +37,10 @@ public class King {
         int row = MoveUtil.getRow(origin);
         int col = MoveUtil.getColumn(origin);
 
+        ShortIterator pseudoIterator = unfilteredMoves[origin].iterator();
         // generating moves around king //todo update
-        for (short move : unfilteredMoves[origin]) {
+        while (pseudoIterator.hasNext()) {
+            short move = pseudoIterator.nextShort();
             if (BoardUtils.isOpposingColourOrEmpty(
                     MoveUtil.getDestination(move), originalPiece, board)) moves.add(move);
         }
@@ -309,7 +311,9 @@ public class King {
 
         Moves knightMoves = new Moves();
         Knight.getMoves(origin, boardState, knightMoves);
-        for (short move : knightMoves) {
+        ShortIterator knightIter = knightMoves.iterator();
+        while (knightIter.hasNext()) {
+            short move = knightIter.nextShort();
 
             int piece = board[MoveUtil.getDestination(move)];
             if (piece == 0) continue;
@@ -319,7 +323,9 @@ public class King {
         }
         Moves pawnMoves = new Moves();
         Pawn.getMoves(origin, boardState, pawnMoves);
-        for (short move : pawnMoves) {
+        ShortIterator pawnIter = pawnMoves.iterator();
+        while (pawnIter.hasNext()) {
+            short move = pawnIter.nextShort();
             if (boardState.board[MoveUtil.getDestination(move)] == opponentPawn) return true;
         }
         return false; // no checks return false
@@ -341,7 +347,9 @@ public class King {
             case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, moves);
             case Pieces.ROOK -> Rook.getMoves(origin, boardState, moves);
         }
-        for (short move : moves) {
+        ShortIterator iter = moves.iterator();
+        while (iter.hasNext()) {
+            short move = iter.nextShort();
 
             int piece = boardState.board[MoveUtil.getDestination(move)];
 

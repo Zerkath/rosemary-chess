@@ -1,5 +1,6 @@
 package rosemary.board;
 
+import it.unimi.dsi.fastutil.shorts.*;
 import java.util.*;
 import rosemary.types.Moves;
 import rosemary.types.Pieces;
@@ -53,13 +54,12 @@ public class ValueHasher {
     }
 
     public static long hashMoves(Moves moves) {
-        // TODO: should short the collection to normalize hash
         long hash = 0;
         moves.sort(null);
 
-        Iterator<Short> iter = moves.iterator();
+        ShortIterator iter = moves.iterator();
         while (iter.hasNext()) {
-            hash = hash * polynomialHashKey + iter.next();
+            hash = hash * polynomialHashKey + iter.nextShort();
         }
         return hash;
     }

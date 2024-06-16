@@ -1,5 +1,6 @@
 package rosemary.generation;
 
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
 import rosemary.board.BoardState;
 import rosemary.types.*;
 
@@ -53,7 +54,9 @@ public class Rook extends SlidingPiece {
         Moves[] allMoves = rookMoves[origin].allMoves;
 
         for (Moves direction : allMoves) {
-            for (short move : direction) {
+            ShortIterator iter = direction.iterator();
+            while (iter.hasNext()) {
+                short move = iter.nextShort();
                 TargetSquare state = getSquareState(move, board, isWhite);
                 addMove(state, move, moves);
                 if (state != TargetSquare.EMPTY) break;
