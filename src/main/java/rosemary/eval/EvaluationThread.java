@@ -81,7 +81,7 @@ public class EvaluationThread implements Runnable {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == -1) bestMove = moves.get(0);
+            if (bestMove == -1) bestMove = moves.getShort(0);
             OutputUtils.println("bestmove " + MoveUtil.moveToString(bestMove));
         }
 
