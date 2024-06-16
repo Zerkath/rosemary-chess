@@ -22,8 +22,13 @@ public class Moves extends ShortArrayList {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (short move : this)
-            stringBuilder.append(MoveUtil.moveToString(move)).append(": 1").append('\n');
+        ShortIterator iter = this.iterator();
+        while (iter.hasNext()) {
+            stringBuilder
+                    .append(MoveUtil.moveToString(iter.nextShort()))
+                    .append(": 1")
+                    .append('\n');
+        }
         return stringBuilder.toString();
     }
 
