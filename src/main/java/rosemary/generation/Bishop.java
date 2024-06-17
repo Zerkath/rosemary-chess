@@ -57,7 +57,7 @@ public class Bishop extends SlidingPiece {
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
-        boolean isWhite = Pieces.isWhite(boardState.board[origin]);
+        boolean isWhite = Pieces.isWhite(boardState.getBoard()[origin]);
 
         Moves[] allMoves = bishopMoves[origin].allMoves;
 
@@ -65,7 +65,7 @@ public class Bishop extends SlidingPiece {
             ShortIterator iter = direction.iterator();
             while (iter.hasNext()) {
                 short move = iter.nextShort();
-                TargetSquare state = getSquareState(move, boardState.board, isWhite);
+                byte state = getSquareState(move, boardState.getBoard(), isWhite);
                 addMove(state, move, moves);
                 if (state != TargetSquare.EMPTY) break;
             }

@@ -38,7 +38,7 @@ public class Pawn {
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
-        byte[] board = boardState.board;
+        byte[] board = boardState.getBoard();
         int original_piece = board[origin];
         boolean isWhite = Pieces.isWhite(original_piece);
         boolean promotion = false;
@@ -79,9 +79,9 @@ public class Pawn {
 
         pawnCaptures(nextRow, promotion, origin, moves, board);
 
-        if (boardState.enPassant != -1 && row == enPassantRow) {
+        if (boardState.getEnPassant() != -1 && row == enPassantRow) {
 
-            short destination = boardState.enPassant;
+            short destination = boardState.getEnPassant();
             int distance = MoveUtil.getColumn(origin) - MoveUtil.getColumn(destination);
             if (distance == 1 || distance == -1) {
                 moves.add(MoveUtil.getMove(origin, destination));

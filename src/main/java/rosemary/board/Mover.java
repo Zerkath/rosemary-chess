@@ -25,12 +25,12 @@ public class Mover {
         BoardState bs = new BoardState(boardState);
 
         short move = MoveUtil.clearPromotion(moveWithPromotionData);
-        short temp_destination = MoveUtil.getDestination(move);
-        short temp_origin = MoveUtil.getOrigin(move);
+        byte temp_destination = MoveUtil.getDestination(move);
+        byte temp_origin = MoveUtil.getOrigin(move);
         int dRow = MoveUtil.getRow(temp_destination);
         int dCol = MoveUtil.getColumn(temp_destination);
 
-        byte selected = bs.board[temp_origin];
+        byte selected = bs.getCoordinate(temp_origin);
 
         boolean isBeingPromoted = MoveUtil.getPromotion(moveWithPromotionData) != 0;
         boolean isWhite = Pieces.isWhite(selected);
@@ -38,23 +38,23 @@ public class Mover {
         checkForCastlingRights(bs, moveWithPromotionData);
 
         if (Pieces.getType(selected) == Pieces.PAWN
-                || bs.board[MoveUtil.getDestination(move)] != 0) {
-            bs.halfMove = 0;
+                || bs.getCoordinate(MoveUtil.getDestination(move)) != 0) {
+            bs.setHalfMove((byte) 0);
         } else {
-            bs.halfMove++;
+            bs.setHalfMove((byte) (bs.getHalfMove() + 1));
         }
 
         if (Pieces.getType(selected) == Pieces.PAWN
-                && bs.enPassant != -1
-                && MoveUtil.getRow(bs.enPassant) == MoveUtil.getRow(temp_destination)
-                && MoveUtil.getColumn(bs.enPassant) == MoveUtil.getColumn(temp_destination)) {
+                && bs.getEnPassant() != -1
+                && MoveUtil.getRow(bs.getEnPassant()) == MoveUtil.getRow(temp_destination)
+                && MoveUtil.getColumn(bs.getEnPassant()) == MoveUtil.getColumn(temp_destination)) {
             int offSet = isWhite ? 1 : -1;
-            short row = (short) (MoveUtil.getRow(bs.enPassant) + offSet);
-            short col = MoveUtil.getColumn(bs.enPassant);
-            bs.board[Utils.getCoordinate(row, col)] = 0;
+            short row = (short) (MoveUtil.getRow(bs.getEnPassant()) + offSet);
+            short col = MoveUtil.getColumn(bs.getEnPassant());
+            bs.setCoordinate(Utils.getCoordinate(row, col), (byte) 0);
         }
 
-        bs.enPassant = -1;
+        bs.setEnPassant((byte) -1);
         // add En passant
         if (Pieces.getType(selected) == Pieces.PAWN
                 && ((MoveUtil.getRow(temp_origin) == 6 && MoveUtil.getRow(temp_destination) == 4)
@@ -63,11 +63,11 @@ public class Mover {
 
             int right = 0;
             int left = 0;
-            if (dCol == 0) right = bs.board[Utils.getCoordinate(dRow, dCol + 1)];
-            if (dCol == 7) left = bs.board[Utils.getCoordinate(dRow, dCol - 1)];
+            if (dCol == 0) right = bs.getCoordinate(Utils.getCoordinate(dRow, dCol + 1));
+            if (dCol == 7) left = bs.getCoordinate(Utils.getCoordinate(dRow, dCol - 1));
             if (dCol > 0 && dCol < 7) {
-                right = bs.board[Utils.getCoordinate(dRow, dCol + 1)];
-                left = bs.board[Utils.getCoordinate(dRow, dCol - 1)];
+                right = bs.getCoordinate(Utils.getCoordinate(dRow, dCol + 1));
+                left = bs.getCoordinate(Utils.getCoordinate(dRow, dCol - 1));
             }
 
             if (Pieces.getType(right) == Pieces.PAWN) {
@@ -89,8 +89,8 @@ public class Mover {
             bs.setCastling(CastlingRights.NONE, isWhite);
 
             byte rook;
-            short destination;
-            short origin;
+            byte destination;
+            byte origin;
             if (dCol == 2) {
                 destination = Utils.getCoordinate(dRow, 3);
                 origin = Utils.getCoordinate(dRow, 0);
@@ -98,16 +98,16 @@ public class Mover {
                 destination = Utils.getCoordinate(dRow, 5);
                 origin = Utils.getCoordinate(dRow, 7);
             }
-            rook = bs.board[origin];
+            rook = bs.getCoordinate(origin);
             bs.replaceCoordinate(destination, rook);
-            bs.board[origin] = 0;
+            bs.setCoordinate(origin, (byte) 0);
         }
 
         if (Pieces.getType(selected) == Pieces.KING) {
             bs.setCastling(CastlingRights.NONE, isWhite);
         }
 
-        bs.board[temp_origin] = 0;
+        bs.setCoordinate(temp_origin, (byte) 0);
 
         byte piece = selected;
         if (isBeingPromoted) {
@@ -116,9 +116,9 @@ public class Mover {
 
         bs.replaceCoordinate(temp_destination, piece);
 
-        if (!bs.isWhiteTurn) bs.turnNumber++;
+        if (!bs.isWhiteTurn()) bs.setTurnNumber((byte) (bs.getTurnNumber() + 1));
 
-        bs.isWhiteTurn = !bs.isWhiteTurn;
+        bs.setWhiteTurn(!bs.isWhiteTurn());
         return bs;
     }
 
@@ -131,32 +131,32 @@ public class Mover {
         short dRow = MoveUtil.getRow(destination);
         short dCol = MoveUtil.getColumn(destination);
 
-        CastlingRights blackCastling = bs.getBlackCastling();
-        CastlingRights whiteCastling = bs.getWhiteCastling();
+        byte blackCastling = bs.getBlackCastling();
+        byte whiteCastling = bs.getWhiteCastling();
 
         if (oRow == 0 && oCol == 0 || dRow == 0 && dCol == 0) { // black queen side rook
             if (blackCastling == CastlingRights.BOTH) {
-                bs.setBlackCastlingRights(CastlingRights.KING);
+                bs.setBlackCastling(CastlingRights.KING);
             } else if (blackCastling == CastlingRights.QUEEN) {
-                bs.setBlackCastlingRights(CastlingRights.NONE);
+                bs.setBlackCastling(CastlingRights.NONE);
             }
         } else if (oRow == 0 && oCol == 7 || dRow == 0 && dCol == 7) { // black king side rook
             if (blackCastling == CastlingRights.BOTH) {
-                bs.setBlackCastlingRights(CastlingRights.QUEEN);
+                bs.setBlackCastling(CastlingRights.QUEEN);
             } else if (blackCastling == CastlingRights.KING) {
-                bs.setBlackCastlingRights(CastlingRights.NONE);
+                bs.setBlackCastling(CastlingRights.NONE);
             }
         } else if (oRow == 7 && oCol == 0 || dRow == 7 && dCol == 0) { // white queen side rook
             if (whiteCastling == CastlingRights.BOTH) {
-                bs.setWhiteCastlingRights(CastlingRights.KING);
+                bs.setWhiteCastling(CastlingRights.KING);
             } else if (whiteCastling == CastlingRights.QUEEN) {
-                bs.setWhiteCastlingRights(CastlingRights.NONE);
+                bs.setWhiteCastling(CastlingRights.NONE);
             }
         } else if (oRow == 7 && oCol == 7 || dRow == 7 && dCol == 7) { // white king side rook
             if (whiteCastling == CastlingRights.BOTH) {
-                bs.setWhiteCastlingRights(CastlingRights.QUEEN);
+                bs.setWhiteCastling(CastlingRights.QUEEN);
             } else if (whiteCastling == CastlingRights.KING) {
-                bs.setWhiteCastlingRights(CastlingRights.NONE);
+                bs.setWhiteCastling(CastlingRights.NONE);
             }
         }
     }
@@ -165,10 +165,10 @@ public class Mover {
             BoardState bs, boolean white, int piece, int dCol, int dRow) {
         boolean pieceIsWhite = Pieces.isWhite(piece);
         if (white && !pieceIsWhite) {
-            bs.enPassant = Utils.getCoordinate(dRow + 1, dCol);
+            bs.setEnPassant(Utils.getCoordinate(dRow + 1, dCol));
         }
         if (!white && pieceIsWhite) {
-            bs.enPassant = Utils.getCoordinate(dRow - 1, dCol);
+            bs.setEnPassant(Utils.getCoordinate(dRow - 1, dCol));
         }
     }
 }

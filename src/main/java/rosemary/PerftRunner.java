@@ -1,6 +1,6 @@
 package rosemary;
 
-import it.unimi.dsi.fastutil.shorts.ShortIterator;
+import it.unimi.dsi.fastutil.shorts.*;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
@@ -31,8 +31,7 @@ public class PerftRunner {
 
         ShortIterator iter = moves.iterator();
         while (iter.hasNext()) {
-            int result = perftProcess(depth - 1, Mover.makeMove(boardState, iter.nextShort()));
-            numPositions += result;
+            numPositions += perftProcess(depth - 1, Mover.makeMove(boardState, iter.nextShort()));
         }
         return numPositions;
     }

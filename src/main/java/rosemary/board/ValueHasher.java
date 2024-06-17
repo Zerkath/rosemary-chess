@@ -31,14 +31,14 @@ public class ValueHasher {
     public static long hashBoard(BoardState boardState) {
         long hash = 0;
 
-        if (boardState.isWhiteTurn) {
+        if (boardState.isWhiteTurn()) {
             hash = whiteTurnKey;
         } else {
             hash = -whiteTurnKey;
         }
 
         for (short square = 0; square < 64; square++) {
-            int p = boardState.board[square];
+            int p = boardState.getBoard()[square];
             if (p != Pieces.EMPTY) {
                 boolean isWhite = Pieces.isWhite(p);
                 int color = isWhite ? 0 : 1;
@@ -48,8 +48,7 @@ public class ValueHasher {
             }
         }
 
-        hash ^= enPassantKey * boardState.enPassant;
-
+        hash ^= enPassantKey * boardState.getEnPassant();
         return hash;
     }
 

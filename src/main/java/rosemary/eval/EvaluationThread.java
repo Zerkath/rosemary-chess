@@ -21,7 +21,7 @@ public class EvaluationThread implements Runnable {
         this.startingDepth = depth;
         this.depth = depth;
         this.debug = debug;
-        this.playerTurnWhite = boardState.isWhiteTurn;
+        this.playerTurnWhite = boardState.isWhiteTurn();
     }
 
     @Override
@@ -33,7 +33,7 @@ public class EvaluationThread implements Runnable {
                         Integer.MIN_VALUE,
                         Integer.MAX_VALUE,
                         depth,
-                        boardState.isWhiteTurn);
+                        boardState.isWhiteTurn());
     }
 
     int alphaBeta(BoardState boardState, int alpha, int beta, int depth, boolean isMaxing) {
@@ -113,21 +113,21 @@ public class EvaluationThread implements Runnable {
     }
 
     private boolean inCheck(BoardState state) {
-        boolean old = state.isWhiteTurn;
-        boolean isWhite = state.isWhiteTurn;
-        state.isWhiteTurn = !state.isWhiteTurn; // flip turn temporarily for checking a check
+        boolean old = state.isWhiteTurn();
+        boolean isWhite = state.isWhiteTurn();
+        state.setWhiteTurn(!state.isWhiteTurn()); // flip turn temporarily for checking a check
         Moves opponent = MoveGenerator.getLegalMoves(state);
         ShortIterator iter = opponent.iterator();
         while (iter.hasNext()) {
-            int piece = state.board[MoveUtil.getDestination(iter.nextShort())];
+            int piece = state.getBoard()[MoveUtil.getDestination(iter.nextShort())];
             if (piece == 0) continue;
             if ((isWhite && piece == (Pieces.KING | Pieces.WHITE))
                     || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {
-                state.isWhiteTurn = old;
+                state.setWhiteTurn(old);
                 return true;
             }
         }
-        state.isWhiteTurn = old;
+        state.setWhiteTurn(old);
         return false;
     }
 }
