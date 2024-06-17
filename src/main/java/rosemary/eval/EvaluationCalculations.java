@@ -13,7 +13,7 @@ public class EvaluationCalculations {
         int value = 0;
         for (int row = 2; row < 6; row++) {
             for (int column = 2; column < 6; column++) {
-                int piece = state.board[Utils.getCoordinate(row, column)];
+                int piece = state.getBoard()[Utils.getCoordinate(row, column)];
                 if (piece != 0) {
                     value += Pieces.isWhite(piece) ? 25 : -20;
                 }
@@ -39,10 +39,10 @@ public class EvaluationCalculations {
 
     private static int getDevelopmentValue(BoardState state, int knight, int bishop, int row) {
         int value = 0;
-        if (isPieceAtSquare(row, 1, knight, state.board)) value += 35;
-        if (isPieceAtSquare(row, 2, bishop, state.board)) value += 35;
-        if (isPieceAtSquare(row, 5, bishop, state.board)) value += 35;
-        if (isPieceAtSquare(row, 6, knight, state.board)) value += 35;
+        if (isPieceAtSquare(row, 1, knight, state.getBoard())) value += 35;
+        if (isPieceAtSquare(row, 2, bishop, state.getBoard())) value += 35;
+        if (isPieceAtSquare(row, 5, bishop, state.getBoard())) value += 35;
+        if (isPieceAtSquare(row, 6, knight, state.getBoard())) value += 35;
         return value;
     }
 

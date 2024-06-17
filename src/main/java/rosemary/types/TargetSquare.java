@@ -1,7 +1,7 @@
 package rosemary.types;
 
-public enum TargetSquare {
-    EMPTY,
-    FRIENDLY,
-    ENEMY
+public class TargetSquare {
+    public static final byte EMPTY = 0;
+    public static final byte FRIENDLY = 1;
+    public static final byte ENEMY = 2;
 }

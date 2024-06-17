@@ -27,10 +27,10 @@ public class King {
     }
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
-        byte[] board = boardState.board;
-        boolean isWhiteTurn = boardState.isWhiteTurn;
-        CastlingRights whiteCastling = boardState.getWhiteCastling();
-        CastlingRights blackCastling = boardState.getBlackCastling();
+        byte[] board = boardState.getBoard();
+        boolean isWhiteTurn = boardState.isWhiteTurn();
+        byte whiteCastling = boardState.getWhiteCastling();
+        byte blackCastling = boardState.getBlackCastling();
 
         int originalPiece = board[origin];
         boolean isWhite = Pieces.isWhite(originalPiece);
@@ -62,7 +62,7 @@ public class King {
 
                 boolean kSide = kingSidePossible(data);
 
-                CastlingRights current = null;
+                byte current = 0;
 
                 if (isWhite && isWhiteTurn) {
                     current = whiteCastling;
@@ -72,29 +72,33 @@ public class King {
                     current = blackCastling;
                 }
 
-                if (current != null) {
+                if (current != 0) {
                     switch (current) {
-                        case BOTH -> {
+                        case CastlingRights.BOTH -> {
                             if (qSide)
                                 moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
                             if (kSide)
                                 moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
                         }
-                        case KING -> {
+                        case CastlingRights.KING -> {
                             if (kSide)
                                 moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
                         }
-                        case QUEEN -> {
+                        case CastlingRights.QUEEN -> {
                             if (qSide)
                                 moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
                         }
-                        case NONE -> {}
+                        default -> {}
                     }
                 }
             }
         }
     }
 
+    // TODO: Should not construct this
+    // even though this might reduce complexity and improve readabilty
+    // currently its taking about 0.5% of allocations during perft
+    // which is not a lot in comparison, but fairly heavy for little use
     private static class CastlingData {
 
         boolean isWhite;
@@ -294,16 +298,17 @@ public class King {
      */
     public static boolean kingInCheck(BoardState boardState) {
         // its inverse turn
-        boolean white = !boardState.isWhiteTurn;
-        byte[] board = boardState.board;
+        boolean white = !boardState.isWhiteTurn();
+        byte[] board = boardState.getBoard();
 
         // let's try the most likely moves to cause check (bishop and rook)
-        short origin = white ? boardState.whiteKing : boardState.blackKing;
+        short origin = white ? boardState.getWhiteKing() : boardState.getBlackKing();
         if (origin == -1) return false;
         if (pieceHasCheck(boardState, white, Pieces.ROOK, origin)
                 || pieceHasCheck(boardState, white, Pieces.BISHOP, origin)) return true;
 
-        if (distanceWithinBoundary(boardState.whiteKing, boardState.blackKing, 1)) return true;
+        if (distanceWithinBoundary(boardState.getWhiteKing(), boardState.getBlackKing(), 1))
+            return true;
 
         int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
         int opponentKnight = Pieces.KNIGHT | opponentColor;
@@ -326,7 +331,7 @@ public class King {
         ShortIterator pawnIter = pawnMoves.iterator();
         while (pawnIter.hasNext()) {
             short move = pawnIter.nextShort();
-            if (boardState.board[MoveUtil.getDestination(move)] == opponentPawn) return true;
+            if (boardState.getBoard()[MoveUtil.getDestination(move)] == opponentPawn) return true;
         }
         return false; // no checks return false
     }
@@ -342,16 +347,17 @@ public class King {
             BoardState boardState, boolean colour, int type, short origin) {
 
         // generate moves from king position to outside
-        Moves moves = new Moves();
+        Moves pieceHasCheckList = new Moves();
+
         switch (type) {
-            case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, moves);
-            case Pieces.ROOK -> Rook.getMoves(origin, boardState, moves);
+            case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, pieceHasCheckList);
+            case Pieces.ROOK -> Rook.getMoves(origin, boardState, pieceHasCheckList);
         }
-        ShortIterator iter = moves.iterator();
+        ShortIterator iter = pieceHasCheckList.iterator();
         while (iter.hasNext()) {
             short move = iter.nextShort();
 
-            int piece = boardState.board[MoveUtil.getDestination(move)];
+            int piece = boardState.getBoard()[MoveUtil.getDestination(move)];
 
             if (piece == 0) continue;
             if (Pieces.isWhite(piece) != colour) {

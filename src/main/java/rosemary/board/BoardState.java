@@ -5,17 +5,29 @@ import rosemary.types.*;
 
 public class BoardState {
 
-    public boolean isWhiteTurn;
+    // this could be stored in just 4bits
+    // 0b00 no castling rights
+    // 0b01 kingside
+    // 0b10 queenside
+    // 0b11 both
+    //
+    // << 2 to store black or white
+    // remainder space could be used for the flag for whose turn it is
+    // private byte whiteCastlingRights = CastlingRights.NONE;
+    // private byte blackCastlingRights = CastlingRights.NONE;
+    // Offsets and masks
+    private static final byte CASTLING_OFFSET = 2;
+    private static final byte TURN_OFFSET = 4;
+    private static final byte CASTLING_MASK = 0b1111;
+    private byte moveAndCastling = 0;
 
-    public short turnNumber = 1;
-    public short halfMove = 0;
-    public byte[] board = new byte[64];
-    public CastlingRights whiteCastlingRights = CastlingRights.NONE;
-    public CastlingRights blackCastlingRights = CastlingRights.NONE;
-    public short whiteKing = -1;
-    public short blackKing = -1;
+    private byte turnNumber = 1;
+    private byte halfMove = 0;
+    private byte whiteKing = -1;
+    private byte blackKing = -1;
+    private byte enPassant = -1;
 
-    public short enPassant = -1;
+    private byte[] board = new byte[64];
 
     public BoardState() {
         Arrays.fill(board, (byte) 0);
@@ -31,64 +43,12 @@ public class BoardState {
 
     public void setBoardState(BoardState state) {
         this.board = BoardUtils.copy(state.board);
-        this.isWhiteTurn = state.isWhiteTurn;
         this.turnNumber = state.turnNumber;
         this.halfMove = state.halfMove;
         this.enPassant = state.enPassant;
-        this.whiteCastlingRights = state.whiteCastlingRights;
-        this.blackCastlingRights = state.blackCastlingRights;
+        this.moveAndCastling = state.moveAndCastling;
         this.whiteKing = state.whiteKing;
         this.blackKing = state.blackKing;
-    }
-
-    public void setCastling(char[] castling) {
-        if (castling.length == 1 && castling[0] == '-') {
-            setWhiteCastlingRights(CastlingRights.NONE);
-            setBlackCastlingRights(CastlingRights.NONE);
-            return;
-        }
-
-        for (char c : castling) {
-            boolean white = !Character.isLowerCase(c);
-            boolean queen = Character.toLowerCase(c) == 'q';
-            CastlingRights curr = white ? getWhiteCastling() : getBlackCastling();
-            if (curr == CastlingRights.NONE) {
-                curr = queen ? CastlingRights.QUEEN : CastlingRights.KING;
-            } else if (curr == CastlingRights.BOTH) {
-                break;
-            } else {
-                if (curr == CastlingRights.QUEEN) {
-                    if (!queen) curr = CastlingRights.BOTH;
-                } else {
-                    if (queen) curr = CastlingRights.BOTH;
-                }
-            }
-
-            setCastling(curr, white);
-        }
-    }
-
-    /**
-     * used to add rows of FEN data to the board state
-     *
-     * @param rowData a row of FEN
-     * @param row which row to place the fen
-     */
-    public void addRow(String rowData, int row) {
-        int column = 0;
-        for (Character ch : rowData.toCharArray()) {
-            if (Character.isDigit(ch)) {
-                int numOfEmpty = Character.digit(ch, 10);
-                for (int j = 0; j < numOfEmpty; j++) {
-                    board[Utils.getCoordinate(row, column)] = 0; // clearing the coordinate
-                    column++;
-                }
-            } else {
-                byte piece = Pieces.getNum(ch);
-                replaceCoordinate(Utils.getCoordinate(row, column), piece);
-                column++;
-            }
-        }
     }
 
     /**
@@ -137,42 +97,156 @@ public class BoardState {
         printBoard(this);
     }
 
-    public void setBlackKing(short coordinate) {
+    public void setBlackKing(byte coordinate) {
         this.blackKing = coordinate;
     }
 
-    public void setWhiteKing(short coordinate) {
+    public void setWhiteKing(byte coordinate) {
         this.whiteKing = coordinate;
     }
 
-    public CastlingRights getWhiteCastling() {
-        return whiteCastlingRights;
+    public byte getWhiteCastling() {
+        // Mask out the black castling rights and shift right to get white castling rights
+        return (byte) (moveAndCastling & 0b11);
     }
 
-    public CastlingRights getBlackCastling() {
-        return blackCastlingRights;
+    public byte getBlackCastling() {
+        // Mask out the white castling rights and shift right to get black castling rights
+        return (byte) ((moveAndCastling >> CASTLING_OFFSET) & 0b11);
     }
 
-    public void setWhiteCastlingRights(CastlingRights rights) {
-        this.whiteCastlingRights = rights;
+    public void setWhiteCastling(byte rights) {
+        // Clear the current white castling rights
+        moveAndCastling &= 0b11111100;
+        // Set the new white castling rights
+        moveAndCastling |= (rights & 0b11);
     }
 
-    public void setBlackCastlingRights(CastlingRights rights) {
-        this.blackCastlingRights = rights;
+    public void setBlackCastling(byte rights) {
+        // Clear the current black castling rights
+        moveAndCastling &= 0b11110011;
+        // Set the new black castling rights
+        moveAndCastling |= ((rights & 0b11) << CASTLING_OFFSET);
     }
 
-    public void setCastling(CastlingRights rights, boolean white) {
-        if (white) setWhiteCastlingRights(rights);
-        else setBlackCastlingRights(rights);
+    public byte getWhiteKing() {
+        return whiteKing;
     }
 
-    private void replaceKing(short coordinate, int piece) {
+    public byte getBlackKing() {
+        return blackKing;
+    }
+
+    public byte[] getBoard() {
+        return board;
+    }
+
+    public byte getCoordinate(byte coord) {
+        return board[coord];
+    }
+
+    public byte setCoordinate(byte coord, byte piece) {
+        return board[coord] = piece;
+    }
+
+    public void setHalfMove(byte moveC) {
+        this.halfMove = moveC;
+    }
+
+    public boolean isWhiteTurn() {
+        return (this.moveAndCastling >> TURN_OFFSET) == 1;
+    }
+
+    public void setWhiteTurn(boolean isWhiteTurn) {
+        this.moveAndCastling =
+                (byte)
+                        (this.moveAndCastling & CASTLING_MASK
+                                | ((isWhiteTurn ? 1 : 0) << TURN_OFFSET));
+    }
+
+    public void setTurnNumber(byte turnNumber) {
+        this.turnNumber = turnNumber;
+    }
+
+    public void setEnPassant(byte enPassant) {
+        this.enPassant = enPassant;
+    }
+
+    public byte getEnPassant() {
+        return enPassant;
+    }
+
+    public byte getHalfMove() {
+        return halfMove;
+    }
+
+    public byte getTurnNumber() {
+        return turnNumber;
+    }
+
+    public void setCastling(byte rights, boolean white) {
+        if (white) setWhiteCastling(rights);
+        else setBlackCastling(rights);
+    }
+
+    private void replaceKing(byte coordinate, int piece) {
         if (Pieces.isWhite(piece)) setWhiteKing(coordinate);
         else setBlackKing(coordinate);
     }
 
-    public void replaceCoordinate(short coordinate, byte piece) {
+    public void replaceCoordinate(byte coordinate, byte piece) {
         if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
         board[coordinate] = piece;
+    }
+
+    public void setCastling(char[] castling) {
+        if (castling.length == 1 && castling[0] == '-') {
+
+            setWhiteCastling(CastlingRights.NONE);
+            setBlackCastling(CastlingRights.NONE);
+            return;
+        }
+
+        for (char c : castling) {
+            boolean white = !Character.isLowerCase(c);
+            boolean queen = Character.toLowerCase(c) == 'q';
+            byte curr = white ? getWhiteCastling() : getBlackCastling();
+            if (curr == CastlingRights.NONE) {
+                curr = queen ? CastlingRights.QUEEN : CastlingRights.KING;
+            } else if (curr == CastlingRights.BOTH) {
+                break;
+            } else {
+                if (curr == CastlingRights.QUEEN) {
+                    if (!queen) curr = CastlingRights.BOTH;
+                } else {
+                    if (queen) curr = CastlingRights.BOTH;
+                }
+            }
+
+            setCastling(curr, white);
+        }
+    }
+
+    /**
+     * used to add rows of FEN data to the board state
+     *
+     * @param rowData a row of FEN
+     * @param row which row to place the fen
+     */
+    public void addRow(String rowData, int row) {
+        int column = 0;
+        for (Character ch : rowData.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                int numOfEmpty = Character.digit(ch, 10);
+                for (int j = 0; j < numOfEmpty; j++) {
+                    board[Utils.getCoordinate(row, column)] = 0; // clearing the coordinate
+                    column++;
+                }
+            } else {
+                byte piece = Pieces.getNum(ch);
+                replaceCoordinate(Utils.getCoordinate(row, column), piece);
+                column++;
+            }
+        }
     }
 }

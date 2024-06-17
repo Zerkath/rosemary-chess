@@ -24,10 +24,10 @@ tasks.withType(JavaCompile) {
 
 test {
 	jvmArgs = ['-Xms512m', '-Xmx8G']
-
-	beforeTest { descriptor ->
-	logger.lifecycle("Running test: " + descriptor)
-	}
+testLogging {
+	// Show stack traces for all test events
+events 'failed'
+}
 
 	useJUnitPlatform()
 	finalizedBy(tasks.jacocoTestReport)
