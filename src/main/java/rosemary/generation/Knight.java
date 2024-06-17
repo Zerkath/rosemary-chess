@@ -34,7 +34,7 @@ public class Knight {
         ShortIterator iter = knightMoves[origin].iterator();
         while (iter.hasNext()) {
             short move = iter.nextShort();
-            if (BoardUtils.isValidMove(move, boardState.board)) moves.add(move);
+            if (BoardUtils.isValidMove(move, boardState.getBoard())) moves.add(move);
         }
     }
 }
