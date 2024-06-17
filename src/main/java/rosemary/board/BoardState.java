@@ -105,9 +105,6 @@ public class BoardState {
         this.whiteKing = coordinate;
     }
 
-    // return (byte) ((byte)(moveAndCastling & castlingMask) >> castlingOffset);
-    // return (byte) ((byte)(moveAndCastling & castlingMask) & 0b11);
-
     public byte getWhiteCastling() {
         // Mask out the black castling rights and shift right to get white castling rights
         return (byte) (moveAndCastling & 0b11);
