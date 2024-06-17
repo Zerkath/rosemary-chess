@@ -78,9 +78,9 @@ public class FenParseTest {
     void enPassant() {
         String fenString = "7k/2pppppp/p7/Pp6/8/8/1PPPPPPP/7K w - b6 0 3";
         BoardState state = new BoardState(fenString);
-        Assertions.assertNotNull(state.enPassant);
-        Assertions.assertEquals(2, MoveUtil.getRow(state.enPassant)); // row
-        Assertions.assertEquals(1, MoveUtil.getColumn(state.enPassant)); // col
+        Assertions.assertNotNull(state.getEnPassant());
+        Assertions.assertEquals(2, MoveUtil.getRow(state.getEnPassant())); // row
+        Assertions.assertEquals(1, MoveUtil.getColumn(state.getEnPassant())); // col
         Assertions.assertEquals(fenString, state.toFenString());
     }
 
@@ -88,9 +88,9 @@ public class FenParseTest {
     void enPassantTwo() {
         String fenString = "7k/p1pppppp/8/P7/1pP5/8/1P1PPPPP/7K b - c3 0 3";
         BoardState boardState = new BoardState(fenString);
-        Assertions.assertNotNull(boardState.enPassant);
-        Assertions.assertEquals(5, MoveUtil.getRow(boardState.enPassant)); // row
-        Assertions.assertEquals(2, MoveUtil.getColumn(boardState.enPassant)); // col
+        Assertions.assertNotNull(boardState.getEnPassant());
+        Assertions.assertEquals(5, MoveUtil.getRow(boardState.getEnPassant())); // row
+        Assertions.assertEquals(2, MoveUtil.getColumn(boardState.getEnPassant())); // col
         Assertions.assertEquals(fenString, boardState.toFenString());
     }
 

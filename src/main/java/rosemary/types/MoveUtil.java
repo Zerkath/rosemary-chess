@@ -59,12 +59,12 @@ public class MoveUtil {
         return (short) (move & moveMask);
     }
 
-    public static short getOrigin(short move) {
-        return (short) ((move & moveMask) >> 6);
+    public static byte getOrigin(short move) {
+        return (byte) ((move & moveMask) >> 6);
     }
 
-    public static short getDestination(short move) {
-        return (short) (move & coordinateMask);
+    public static byte getDestination(short move) {
+        return (byte) (move & coordinateMask);
     }
 
     public static String moveToString(short move) {
