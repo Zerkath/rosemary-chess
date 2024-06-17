@@ -32,7 +32,6 @@ public class PerftRunner {
         ShortIterator iter = moves.iterator();
         while (iter.hasNext()) {
             numPositions += perftProcess(depth - 1, Mover.makeMove(boardState, iter.nextShort()));
-            ;
         }
         return numPositions;
     }
