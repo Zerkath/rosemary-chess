@@ -9,8 +9,8 @@ public class Utils {
         return coord < 0 || coord > 64;
     }
 
-    public static short getCoordinate(int row, int column) {
-        return (short) ((row << 3) | column);
+    public static byte getCoordinate(int row, int column) {
+        return (byte) ((row << 3) | column);
     }
 
     public static void addToCollection(
@@ -21,7 +21,7 @@ public class Utils {
                         getCoordinate(origin_row, origin_col), getCoordinate(row, column)));
     }
 
-    public static short getCoordinate(String coordinateString) {
+    public static byte getCoordinate(String coordinateString) {
         return getCoordinate(
                 toRowInt(coordinateString.charAt(1)), toColumnInt(coordinateString.charAt(0)));
     }

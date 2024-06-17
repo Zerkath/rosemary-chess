@@ -12,7 +12,7 @@ abstract class SlidingPiece {
                         MoveUtil.getColumn(origin) + colOffset));
     }
 
-    static TargetSquare getSquareState(short move, byte[] board, boolean isWhite) {
+    static byte getSquareState(short move, byte[] board, boolean isWhite) {
 
         int target = board[MoveUtil.getDestination(move)];
         if (target == 0) return TargetSquare.EMPTY;
@@ -20,11 +20,11 @@ abstract class SlidingPiece {
         return isWhite == Pieces.isWhite(target) ? TargetSquare.FRIENDLY : TargetSquare.ENEMY;
     }
 
-    static void addMove(TargetSquare state, short move, Moves moves) {
+    static void addMove(byte state, short move, Moves moves) {
         switch (state) {
-            case EMPTY -> moves.add(move);
-            case ENEMY -> moves.add(move);
-            case FRIENDLY -> {}
+            case TargetSquare.EMPTY -> moves.add(move);
+            case TargetSquare.ENEMY -> moves.add(move);
+            case TargetSquare.FRIENDLY -> {}
         }
     }
 }
