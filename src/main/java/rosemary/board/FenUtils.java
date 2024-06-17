@@ -1,5 +1,6 @@
 package rosemary.board;
 
+import rosemary.types.CastlingRights;
 import rosemary.types.Pieces;
 import rosemary.types.Utils;
 
@@ -29,12 +30,12 @@ public class FenUtils {
         String[] rows = split[0].split("/");
         if (rows.length != 8) return new BoardState(parseFen(default_fen));
 
-        boardState.isWhiteTurn = split[1].equals("w");
+        boardState.setWhiteTurn(split[1].equals("w"));
 
         boardState.setCastling(split[2].toCharArray()); // set castling rights
-        boardState.turnNumber = (short) Integer.parseInt(split[5]);
+        boardState.setTurnNumber((byte) Integer.parseInt(split[5]));
 
-        boardState.enPassant = split[3].length() == 2 ? Utils.getCoordinate(split[3]) : -1;
+        boardState.setEnPassant(split[3].length() == 2 ? Utils.getCoordinate(split[3]) : (byte) -1);
 
         for (int row = 0; row < rows.length; row++) {
             boardState.addRow(rows[row], row);
@@ -47,7 +48,7 @@ public class FenUtils {
 
     public static String getFenString(BoardState boardState) {
         strBuilder.setLength(0);
-        byte[] board = boardState.board;
+        byte[] board = boardState.getBoard();
 
         for (int row = 0; row < 8; row++) {
             int empty = 0;
@@ -65,22 +66,22 @@ public class FenUtils {
             if (row != 7) strBuilder.append("/");
         }
 
-        strBuilder.append(boardState.isWhiteTurn ? " w" : " b");
+        strBuilder.append(boardState.isWhiteTurn() ? " w" : " b");
 
         String WhiteCastlingString =
                 switch (boardState.getWhiteCastling()) {
-                    case KING -> "K";
-                    case QUEEN -> "Q";
-                    case BOTH -> "KQ";
-                    case NONE -> "";
+                    case CastlingRights.KING -> "K";
+                    case CastlingRights.QUEEN -> "Q";
+                    case CastlingRights.BOTH -> "KQ";
+                    default -> "";
                 };
 
         String BlackCastlingString =
                 switch (boardState.getBlackCastling()) {
-                    case KING -> "k";
-                    case QUEEN -> "q";
-                    case BOTH -> "kq";
-                    case NONE -> "";
+                    case CastlingRights.KING -> "k";
+                    case CastlingRights.QUEEN -> "q";
+                    case CastlingRights.BOTH -> "kq";
+                    default -> "";
                 };
 
         if (WhiteCastlingString.length() < 1 && BlackCastlingString.length() < 1) {
@@ -94,13 +95,15 @@ public class FenUtils {
         }
 
         strBuilder.append(
-                boardState.enPassant != -1 ? Utils.coordinateToString(boardState.enPassant) : "-");
+                boardState.getEnPassant() != -1
+                        ? Utils.coordinateToString(boardState.getEnPassant())
+                        : "-");
 
         strBuilder
                 .append(" ")
-                .append(boardState.halfMove)
+                .append(boardState.getHalfMove())
                 .append(" ")
-                .append(boardState.turnNumber);
+                .append(boardState.getTurnNumber());
 
         return strBuilder.toString();
     }

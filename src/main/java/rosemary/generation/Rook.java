@@ -47,7 +47,7 @@ public class Rook extends SlidingPiece {
 
     public static void getMoves(short origin, BoardState boardState, Moves moves) {
 
-        byte[] board = boardState.board;
+        byte[] board = boardState.getBoard();
 
         boolean isWhite = Pieces.isWhite(board[origin]);
 
@@ -57,7 +57,7 @@ public class Rook extends SlidingPiece {
             ShortIterator iter = direction.iterator();
             while (iter.hasNext()) {
                 short move = iter.nextShort();
-                TargetSquare state = getSquareState(move, board, isWhite);
+                byte state = getSquareState(move, board, isWhite);
                 addMove(state, move, moves);
                 if (state != TargetSquare.EMPTY) break;
             }

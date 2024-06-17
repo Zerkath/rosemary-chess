@@ -13,8 +13,8 @@ public class MoveGenerator {
     private static Moves getAllMoves(BoardState boardState) {
 
         Moves moves = new Moves();
-        byte[] board = boardState.board;
-        boolean isWhiteTurn = boardState.isWhiteTurn;
+        byte[] board = boardState.getBoard();
+        boolean isWhiteTurn = boardState.isWhiteTurn();
 
         // Iterates over board to play moves, dest denotes the piece currently being looked at
         for (int row = 0; row < 8; row++) {
@@ -40,8 +40,8 @@ public class MoveGenerator {
         } else {
             moves = nonCacheGetLegalMoves(boardState);
             long newMoveHash = ValueHasher.hashMoves(moves);
-            moveCache.putIfAbsent(newMoveHash, moves);
-            boardCache.putIfAbsent(hash, newMoveHash);
+            moveCache.put(newMoveHash, moves);
+            boardCache.put(hash, newMoveHash);
         }
         return moves;
     }
@@ -62,7 +62,7 @@ public class MoveGenerator {
     }
 
     public static void getAllMoves(short coordinate, BoardState boardState, Moves moves) {
-        int piece = boardState.board[coordinate];
+        int piece = boardState.getBoard()[coordinate];
         if (piece == 0) return;
         switch (Pieces.getType(piece)) {
             case Pieces.PAWN -> Pawn.getMoves(coordinate, boardState, moves);
