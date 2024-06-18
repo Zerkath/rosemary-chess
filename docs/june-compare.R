@@ -30,13 +30,7 @@ print(combined_df)
 # Optionally, write the combined data frame to a new CSV file
 write_csv(combined_df, "data/june/combined_benchmarks.csv")
 
-# Subset the data for without caching and with caching
-without_caching <- combined_df %>% filter(Commit == "No cache")
-with_caching <- combined_df %>% filter(Commit != "No cache")
-
-
-# Plot for with caching and pooling changes
-plot <- ggplot(with_caching, aes(x = Score, y = Benchmark, color = Commit, shape = Commit)) +
+plot <- ggplot(combined_df, aes(x = Score, y = Benchmark, color = Commit, shape = Commit)) +
   geom_point(size = 3) +
   geom_errorbarh(aes(xmin = Score - stdev, xmax = Score + stdev), height = 0.2) +
   labs(title = "Performance (lower is better)",

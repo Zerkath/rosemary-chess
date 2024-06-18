@@ -1,5 +1,6 @@
+package rosemary;
+
 import org.junit.jupiter.api.*;
-import rosemary.UciController;
 import rosemary.board.BoardState;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

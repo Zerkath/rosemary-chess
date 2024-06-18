@@ -1,5 +1,6 @@
 package rosemary.generation;
 
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.shorts.*;
 import rosemary.board.*;
@@ -7,8 +8,8 @@ import rosemary.types.*;
 
 public class MoveGenerator {
 
-    private static Long2LongOpenHashMap boardCache = new Long2LongOpenHashMap();
-    private static Long2ObjectOpenHashMap<Moves> moveCache = new Long2ObjectOpenHashMap<>();
+    private static Long2IntOpenHashMap boardCache = new Long2IntOpenHashMap();
+    private static Int2ObjectOpenHashMap<Moves> moveCache = new Int2ObjectOpenHashMap<>();
 
     private static Moves getAllMoves(BoardState boardState) {
 
@@ -35,11 +36,11 @@ public class MoveGenerator {
         long hash = ValueHasher.hashBoard(boardState);
         Moves moves;
         if (boardCache.containsKey(hash)) {
-            long moveHash = boardCache.get(hash);
+            int moveHash = boardCache.get(hash);
             moves = moveCache.get(moveHash);
         } else {
             moves = nonCacheGetLegalMoves(boardState);
-            long newMoveHash = ValueHasher.hashMoves(moves);
+            int newMoveHash = ValueHasher.hashMoves(moves);
             moveCache.put(newMoveHash, moves);
             boardCache.put(hash, newMoveHash);
         }
