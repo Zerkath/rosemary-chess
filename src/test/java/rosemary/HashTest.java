@@ -1,3 +1,5 @@
+package rosemary;
+
 import org.junit.jupiter.api.*;
 import rosemary.board.*;
 import rosemary.types.*;

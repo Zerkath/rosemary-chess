@@ -1,0 +1,15 @@
+input,expected
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1,20
+rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1,20
+rnbqkbnr/pppp1ppp/8/4p3/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2,29
+rnbqkbnr/2pppppp/8/pP6/8/8/PP1PPPPP/RNBQKBNR w KQkq a6 0 3,23
+rnbq1bnr/pppkpppp/3pQ3/8/8/2P5/PP1PPPPP/RNB1KBNR b KQ - 3 3,4
+rnb1kbnr/pp1ppppp/2p5/8/8/3Pq3/PPPKPPPP/RNBQ1BNR w - - 0 1,4
+5q1q/6P1/8/8/8/8/8/8 w - - 0 1,12
+r3k2r/p1pp1pb1/bn2pnp1/2qPN3/1p2P3/2N2Q1p/PPPBBPPP/R3K1R1 w Qkq - 2 2,47
+r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q2/PPPBBPKP/R6R b kq - 0 2,44
+4k3/8/8/8/3P4/8/4PP2/4K3 b - - 0 1,5
+4k3/p1pp1p2/4p3/2qPN3/1p2P3/5Q1P/8/4K3 w - - 1 2,32
+5k2/8/8/8/8/8/4Nn1P/R2QK2R w KQ - 1 8,35
+8/2p5/3p4/KP5r/5R1k/8/4P1P1/8 b - - 0 1,2
+8/8/8/p2N4/n1k1K3/8/5P2/8 b - - 3 52,7
