@@ -2,33 +2,37 @@ pdf(NULL)
 library(readr)
 library(dplyr)
 library(ggplot2)
-new <- read_csv("data/new.csv")
-old <- read_csv("data/old.csv")
+new <- read_csv("data/new.csv") %>% mutate(Description = "New changes")
+old <- read_csv("data/old.csv") %>% mutate(Description = "Main branch")
 
-merged_df <- merge(new, old, by = "Benchmark", suffixes = c("_new", "_old"))
+combined_df <- bind_rows(new, old)
 
-# Calculate the difference in scores
-merged_df <- merged_df %>%
-  mutate(Score_Diff = Score_new - Score_old) %>%
-  select(Benchmark, Score_Diff)
+combined_df$Benchmark <- sub(
+  "^rosemary.PerftBenchmark.position_",
+  "",
+  combined_df$Benchmark
+)
+print(combined_df)
 
-merged_df$Benchmark <- sub("^rosemary.PerftBenchmark.position_", "", merged_df$Benchmark)
-merged_df <- merged_df[order(-merged_df$Score_Diff), ]
-merged_df$Benchmark <- factor(merged_df$Benchmark, levels = merged_df$Benchmark)
-print(merged_df)
+combined_df <- combined_df %>% rename(stdev = "Score Error (99.9%)")
 
-# Plot the differences using ggplot2
-ggplot(merged_df, aes(x = Benchmark, y = Score_Diff, fill = Score_Diff)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Performance Difference between New and Old Benchmarks",
-       x = "Benchmark", y = "Score Difference (ms/op)") +
+plot <- ggplot(combined_df, aes(x = Score, y = Benchmark, color = Description, shape = Description)) +
+  geom_point(size = 3) +
+  geom_errorbarh(aes(xmin = Score - stdev, xmax = Score + stdev), height = 0.2) +
+  labs(title = "Performance (lower is better)",
+       x = "Score (ms/op)",
+       y = "Benchmark",
+       color = "Description",
+       shape = "Description") +
+  scale_x_log10(n.breaks = 12) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(legend.position = "bottom")
 
 ggsave("analysis.png",
-  width = 2560,
-  height = 1440,
+  plot = plot,
+  width = 3840,
+  height = 2160,
   units = c("px"),
-  dpi = 200,
+  dpi = 450,
   bg = "white"
 )
