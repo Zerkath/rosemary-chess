@@ -9,7 +9,7 @@ public class ValueHasher {
     private static long[][] pieceKeys;
     private static long enPassantKey;
     private static long whiteTurnKey;
-    private static final long polynomialHashKey = 31;
+    private static final int polynomialHashKey = 31;
 
     // Initialize Zobrist keys
     static {
@@ -52,8 +52,8 @@ public class ValueHasher {
         return hash;
     }
 
-    public static long hashMoves(Moves moves) {
-        long hash = 0;
+    public static int hashMoves(Moves moves) {
+        int hash = 0;
         moves.sort(null);
 
         ShortIterator iter = moves.iterator();
