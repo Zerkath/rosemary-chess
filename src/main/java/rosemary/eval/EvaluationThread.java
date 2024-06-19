@@ -27,13 +27,7 @@ public class EvaluationThread implements Runnable {
     @Override
     public void run() {
         int eval;
-        eval =
-                alphaBeta(
-                        boardState,
-                        Integer.MIN_VALUE,
-                        Integer.MAX_VALUE,
-                        depth,
-                        boardState.isWhiteTurn());
+        eval = alphaBeta(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth, boardState.isWhiteTurn());
     }
 
     int alphaBeta(BoardState boardState, int alpha, int beta, int depth, boolean isMaxing) {
@@ -57,8 +51,7 @@ public class EvaluationThread implements Runnable {
         ShortIterator iter = moves.iterator();
         while (iter.hasNext()) {
             short move = iter.nextShort();
-            int eval =
-                    alphaBeta(Mover.makeMove(boardState, move), alpha, beta, depth - 1, !isMaxing);
+            int eval = alphaBeta(Mover.makeMove(boardState, move), alpha, beta, depth - 1, !isMaxing);
 
             if (depth == startingDepth) {
                 printInfoUCI(depth, eval, move, isMaxing);
@@ -101,10 +94,9 @@ public class EvaluationThread implements Runnable {
         int whiteTurn = isWhite ? 1 : -1;
 
         if (isMate) {
-            int offset =
-                    whiteHasMate
-                            ? whiteTurn + EvaluationValues.mate - eval
-                            : whiteTurn - EvaluationValues.mate - eval - (isWhite ? 1 : 0);
+            int offset = whiteHasMate
+                    ? whiteTurn + EvaluationValues.mate - eval
+                    : whiteTurn - EvaluationValues.mate - eval - (isWhite ? 1 : 0);
             outString += " score mate " + offset;
         } else {
             outString += " score cp " + eval;
