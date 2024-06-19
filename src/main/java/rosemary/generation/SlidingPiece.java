@@ -7,9 +7,7 @@ abstract class SlidingPiece {
     static short getMove(int rowOffset, int colOffset, short origin) {
         return MoveUtil.getMove(
                 origin,
-                Utils.getCoordinate(
-                        MoveUtil.getRow(origin) + rowOffset,
-                        MoveUtil.getColumn(origin) + colOffset));
+                Utils.getCoordinate(MoveUtil.getRow(origin) + rowOffset, MoveUtil.getColumn(origin) + colOffset));
     }
 
     static byte getSquareState(short move, byte[] board, boolean isWhite) {

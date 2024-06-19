@@ -12,8 +12,7 @@ public class Pawn {
         moves.add(MoveUtil.getMove(move, Pieces.BISHOP, isWhite));
     }
 
-    private static void pawnCaptures(
-            int nextRow, boolean promotion, short origin, Moves moves, byte[] board) {
+    private static void pawnCaptures(int nextRow, boolean promotion, short origin, Moves moves, byte[] board) {
         int original_piece = board[origin];
         short col = MoveUtil.getColumn(origin);
         boolean isWhite = Pieces.isWhite(original_piece);

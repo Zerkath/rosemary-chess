@@ -18,11 +18,8 @@ public class UtilsTest {
 
     @Test
     void promotionCommand() {
-        short expected =
-                MoveUtil.getMove(
-                        MoveUtil.getMove(Utils.getCoordinate(1, 7), Utils.getCoordinate(0, 7)),
-                        Pieces.KNIGHT,
-                        true);
+        short expected = MoveUtil.getMove(
+                MoveUtil.getMove(Utils.getCoordinate(1, 7), Utils.getCoordinate(0, 7)), Pieces.KNIGHT, true);
         Assertions.assertEquals(expected, MoveUtil.getMove("h7h8N"));
     }
 }
