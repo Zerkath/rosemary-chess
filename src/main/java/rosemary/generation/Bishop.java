@@ -25,30 +25,22 @@ public class Bishop extends SlidingPiece {
             BishopMoves moves = new BishopMoves();
 
             // Bishop moves down and right
-            for (int i = 1;
-                    MoveUtil.getRow(origin) + i <= 7 && MoveUtil.getColumn(origin) + i <= 7;
-                    i++) {
+            for (int i = 1; MoveUtil.getRow(origin) + i <= 7 && MoveUtil.getColumn(origin) + i <= 7; i++) {
                 moves.downRight.add(getMove(i, i, origin));
             }
 
             // Bishop moves down and left
-            for (int i = 1;
-                    MoveUtil.getRow(origin) + i <= 7 && MoveUtil.getColumn(origin) - i >= 0;
-                    i++) {
+            for (int i = 1; MoveUtil.getRow(origin) + i <= 7 && MoveUtil.getColumn(origin) - i >= 0; i++) {
                 moves.downLeft.add(getMove(i, -i, origin));
             }
 
             // Bishop moves up and right
-            for (int i = 1;
-                    MoveUtil.getRow(origin) - i >= 0 && MoveUtil.getColumn(origin) + i <= 7;
-                    i++) {
+            for (int i = 1; MoveUtil.getRow(origin) - i >= 0 && MoveUtil.getColumn(origin) + i <= 7; i++) {
                 moves.upRight.add(getMove(-i, i, origin));
             }
 
             // Bishop moves up and left
-            for (int i = 1;
-                    MoveUtil.getRow(origin) - i >= 0 && MoveUtil.getColumn(origin) - i >= 0;
-                    i++) {
+            for (int i = 1; MoveUtil.getRow(origin) - i >= 0 && MoveUtil.getColumn(origin) - i >= 0; i++) {
                 moves.upLeft.add(getMove(-i, -i, origin));
             }
             bishopMoves[origin] = moves;

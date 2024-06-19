@@ -41,21 +41,19 @@ public class King {
         // generating moves around king //todo update
         while (pseudoIterator.hasNext()) {
             short move = pseudoIterator.nextShort();
-            if (BoardUtils.isOpposingColourOrEmpty(
-                    MoveUtil.getDestination(move), originalPiece, board)) moves.add(move);
+            if (BoardUtils.isOpposingColourOrEmpty(MoveUtil.getDestination(move), originalPiece, board))
+                moves.add(move);
         }
 
         // castling
-        if ((isWhite && whiteCastling != CastlingRights.NONE)
-                || (!isWhite && blackCastling != CastlingRights.NONE)) {
+        if ((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) {
             CastlingData data = new CastlingData(isWhite, row, board);
             if (col == 4
                     && ((isWhite && row == 7) || (!isWhite && row == 0))
                     && !castlingStoppedByKnightOrPawn(data)
                     && !inCheckVertically(data)
                     && !inCheckDiagonally(data)
-                    && !backRankThreat(
-                            data)) { // only check if the king is in the original position and
+                    && !backRankThreat(data)) { // only check if the king is in the original position and
                 // hasn't moved
 
                 boolean qSide = queenSidePossible(data);
@@ -75,18 +73,14 @@ public class King {
                 if (current != 0) {
                     switch (current) {
                         case CastlingRights.BOTH -> {
-                            if (qSide)
-                                moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
-                            if (kSide)
-                                moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
+                            if (qSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
+                            if (kSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
                         }
                         case CastlingRights.KING -> {
-                            if (kSide)
-                                moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
+                            if (kSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
                         }
                         case CastlingRights.QUEEN -> {
-                            if (qSide)
-                                moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
+                            if (qSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
                         }
                         default -> {}
                     }
@@ -307,8 +301,7 @@ public class King {
         if (pieceHasCheck(boardState, white, Pieces.ROOK, origin)
                 || pieceHasCheck(boardState, white, Pieces.BISHOP, origin)) return true;
 
-        if (distanceWithinBoundary(boardState.getWhiteKing(), boardState.getBlackKing(), 1))
-            return true;
+        if (distanceWithinBoundary(boardState.getWhiteKing(), boardState.getBlackKing(), 1)) return true;
 
         int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
         int opponentKnight = Pieces.KNIGHT | opponentColor;
@@ -343,8 +336,7 @@ public class King {
         return absCol <= boundary && absRow <= boundary;
     }
 
-    private static boolean pieceHasCheck(
-            BoardState boardState, boolean colour, int type, short origin) {
+    private static boolean pieceHasCheck(BoardState boardState, boolean colour, int type, short origin) {
 
         // generate moves from king position to outside
         Moves pieceHasCheckList = new Moves();
