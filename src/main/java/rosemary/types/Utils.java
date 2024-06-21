@@ -13,17 +13,13 @@ public class Utils {
         return (byte) ((row << 3) | column);
     }
 
-    public static void addToCollection(
-            int row, int column, int origin_row, int origin_col, Moves moves) {
+    public static void addToCollection(int row, int column, int origin_row, int origin_col, Moves moves) {
         if (row < 0 || row > 7 || column < 0 || column > 7) return;
-        moves.add(
-                MoveUtil.getMove(
-                        getCoordinate(origin_row, origin_col), getCoordinate(row, column)));
+        moves.add(MoveUtil.getMove(getCoordinate(origin_row, origin_col), getCoordinate(row, column)));
     }
 
     public static byte getCoordinate(String coordinateString) {
-        return getCoordinate(
-                toRowInt(coordinateString.charAt(1)), toColumnInt(coordinateString.charAt(0)));
+        return getCoordinate(toRowInt(coordinateString.charAt(1)), toColumnInt(coordinateString.charAt(0)));
     }
 
     public static String moveToString(short move) {

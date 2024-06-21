@@ -37,8 +37,7 @@ public class Mover {
 
         checkForCastlingRights(bs, moveWithPromotionData);
 
-        if (Pieces.getType(selected) == Pieces.PAWN
-                || bs.getCoordinate(MoveUtil.getDestination(move)) != 0) {
+        if (Pieces.getType(selected) == Pieces.PAWN || bs.getCoordinate(MoveUtil.getDestination(move)) != 0) {
             bs.setHalfMove((byte) 0);
         } else {
             bs.setHalfMove((byte) (bs.getHalfMove() + 1));
@@ -58,8 +57,7 @@ public class Mover {
         // add En passant
         if (Pieces.getType(selected) == Pieces.PAWN
                 && ((MoveUtil.getRow(temp_origin) == 6 && MoveUtil.getRow(temp_destination) == 4)
-                        || (MoveUtil.getRow(temp_origin) == 1
-                                && MoveUtil.getRow(temp_destination) == 3))) {
+                        || (MoveUtil.getRow(temp_origin) == 1 && MoveUtil.getRow(temp_destination) == 3))) {
 
             int right = 0;
             int left = 0;
@@ -82,8 +80,7 @@ public class Mover {
         // Castling
         if (Pieces.getType(selected) == Pieces.KING
                 && MoveUtil.getColumn(temp_origin) == 4
-                && ((MoveUtil.getRow(temp_origin) == 0 && dRow == 0)
-                        || MoveUtil.getRow(temp_origin) == 7 && dRow == 7)
+                && ((MoveUtil.getRow(temp_origin) == 0 && dRow == 0) || MoveUtil.getRow(temp_origin) == 7 && dRow == 7)
                 && (dCol == 2 || dCol == 6)) {
 
             bs.setCastling(CastlingRights.NONE, isWhite);
@@ -161,8 +158,7 @@ public class Mover {
         }
     }
 
-    private static void addEnPassantMove(
-            BoardState bs, boolean white, int piece, int dCol, int dRow) {
+    private static void addEnPassantMove(BoardState bs, boolean white, int piece, int dCol, int dRow) {
         boolean pieceIsWhite = Pieces.isWhite(piece);
         if (white && !pieceIsWhite) {
             bs.setEnPassant(Utils.getCoordinate(dRow + 1, dCol));

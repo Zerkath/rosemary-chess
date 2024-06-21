@@ -158,10 +158,7 @@ public class BoardState {
     }
 
     public void setWhiteTurn(boolean isWhiteTurn) {
-        this.moveAndCastling =
-                (byte)
-                        (this.moveAndCastling & CASTLING_MASK
-                                | ((isWhiteTurn ? 1 : 0) << TURN_OFFSET));
+        this.moveAndCastling = (byte) (this.moveAndCastling & CASTLING_MASK | ((isWhiteTurn ? 1 : 0) << TURN_OFFSET));
     }
 
     public void setTurnNumber(byte turnNumber) {

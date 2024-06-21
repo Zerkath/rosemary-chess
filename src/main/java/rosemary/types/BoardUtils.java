@@ -10,8 +10,7 @@ public class BoardUtils {
         return copy;
     }
 
-    public static boolean isOpposingColourOrEmpty(
-            short destination, int originalPiece, byte[] board) {
+    public static boolean isOpposingColourOrEmpty(short destination, int originalPiece, byte[] board) {
         if (Utils.isOutOfBounds(destination)) return false;
 
         boolean isWhite = Pieces.isWhite(originalPiece);
@@ -30,8 +29,7 @@ public class BoardUtils {
     }
 
     public static boolean pawnCapturePossible(short coordinate, int origin, byte[] board) {
-        return board[coordinate] != Pieces.EMPTY
-                && isOpposingColourOrEmpty(coordinate, origin, board);
+        return board[coordinate] != Pieces.EMPTY && isOpposingColourOrEmpty(coordinate, origin, board);
     }
 
     public static String getString(byte[] board) {

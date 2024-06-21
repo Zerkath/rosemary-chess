@@ -6,8 +6,7 @@ import rosemary.types.Utils;
 
 public class FenUtils {
 
-    public static final String default_fen =
-            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    public static final String default_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     public static BoardState parseFen(String fen) {
 
@@ -94,16 +93,9 @@ public class FenUtils {
                     .append(" ");
         }
 
-        strBuilder.append(
-                boardState.getEnPassant() != -1
-                        ? Utils.coordinateToString(boardState.getEnPassant())
-                        : "-");
+        strBuilder.append(boardState.getEnPassant() != -1 ? Utils.coordinateToString(boardState.getEnPassant()) : "-");
 
-        strBuilder
-                .append(" ")
-                .append(boardState.getHalfMove())
-                .append(" ")
-                .append(boardState.getTurnNumber());
+        strBuilder.append(" ").append(boardState.getHalfMove()).append(" ").append(boardState.getTurnNumber());
 
         return strBuilder.toString();
     }
