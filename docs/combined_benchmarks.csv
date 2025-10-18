@@ -17,3 +17,16 @@ normal,1394.038612,36.368287,8615fd6,Pooling + Primitive collections
 pawns,1033.724036,85.909602,8615fd6,Pooling + Primitive collections
 queens,1441.201308,97.278669,8615fd6,Pooling + Primitive collections
 rooks,386.132433,6.159319,8615fd6,Pooling + Primitive collections
+bishops,1073.966029,104.555474,cde881e,Perft non-recursion + java 21
+knights,1614.450932,194.741767,cde881e,Perft non-recursion + java 21
+normal,1389.392135,50.082872,cde881e,Perft non-recursion + java 21
+pawns,1043.293412,84.120632,cde881e,Perft non-recursion + java 21
+queens,1507.954529,80.198472,cde881e,Perft non-recursion + java 21
+rooks,421.417772,36.502603,cde881e,Perft non-recursion + java 21
+bishops,1132.625930,125.200854,TBD,Perft recursion
+knights,1545.862418,121.536799,TBD,Perft recursion
+normal,1396.306958,101.510722,TBD,Perft recursion
+pawns,1113.391799,20.711113,TBD,Perft recursion
+queens,1464.720539,104.670411,TBD,Perft recursion
+rooks,404.805941,8.363381,TBD,Perft recursion
+

@@ -1,9 +1,5 @@
 #!/bin/sh
 
-TARGET_BRANCH=main
-STARTING_BRANCH=$(git branch --show-current)
-
-git pull
 ./gradlew build jmhJar
 
 java -jar -Xmx4G -Xms2G build/libs/rosemary-chess-jmh.jar .Perft -rf csv -rff new.csv
@@ -16,4 +12,4 @@ java -jar -Xmx4G -Xms2G build/libs/rosemary-chess-jmh.jar .Perft -rf csv -rff ol
 mv old.csv docs/data/old.csv
 git checkout "$STARTING_BRANCH"
 cd docs
-Rscript ./comparePerft.R
+uv run ./comparePerft.py
