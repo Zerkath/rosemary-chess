@@ -5,11 +5,12 @@ src/main/java/build/*.class
 src/main/java/build/*.log
 src/main/java/build/*.exe
 
-
 .gradle
 .idea
 .settings
 .classpath
 .project
+.bloop
+.metals
 bin/
 build/

@@ -86,7 +86,7 @@ public class UciController {
             return;
         }
         if (split[0].equals("register")) {
-            OutputUtils.println("register later");
+            System.out.println("register later");
             return;
         }
         if (split[0].equals("ucinewgame")) {
@@ -94,7 +94,7 @@ public class UciController {
             return;
         }
         if (split[0].equals("xboard")) return;
-        OutputUtils.println("?");
+        System.out.println("?");
     }
 
     public void setFen(String fen) {
@@ -108,10 +108,10 @@ public class UciController {
     public void setToUCI() {
         uci_mode = true;
         // System.out.print("option name Threads type spin default 2 min 1 max 250\n");
-        OutputUtils.println("id name Rosemary");
-        OutputUtils.println("id author Rosemary_Devs");
-        OutputUtils.println("option name depth type spin default 6 min 1 max 8");
-        OutputUtils.println("uciok");
+        System.out.println("id name Rosemary");
+        System.out.println("id author Rosemary_Devs");
+        System.out.println("option name depth type spin default 6 min 1 max 8");
+        System.out.println("uciok");
     }
 
     public void startEval() {
@@ -152,16 +152,18 @@ public class UciController {
             variance += Math.abs(l - average);
         }
         variance = variance / (double) iterations;
-        OutputUtils.println("avg " + average + " var " + variance + " runs " + iterations);
+        System.out.println("avg " + average + " var " + variance + " runs " + iterations);
     }
 
     public void getPerft(int depth) {
         long[] result = runPerft(depth, true);
         String str = "\nDepth " + depth + " nodes: " + result[0];
-        OutputUtils.println(str + " " + Long.toUnsignedString(result[1]) + "ms");
+        System.out.println(str + " " + Long.toUnsignedString(result[1]) + "ms");
     }
 
     public long[] runPerft(int depth, boolean print) {
-        return PerftRunner.getPerftScore(depth, print, this.boardState);
+
+        long[] scores = PerftRunner.getPerftScore(depth, print, this.boardState);
+        return scores;
     }
 }

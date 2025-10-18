@@ -15,6 +15,7 @@ java {
     languageVersion.set(JavaLanguageVersion.of(17))
   }
 }
+
 graalvmNative {
     binaries {
         main {
@@ -36,9 +37,8 @@ graalvmNative {
 
 tasks.withType(JavaCompile) {
 options.encoding = 'UTF-8'
-  options.compilerArgs.add('-Xlint:deprecation')
-  options.compilerArgs.add('-Xlint:unchecked')
-  options.compilerArgs.add('-Xlint:cast')
+  options.compilerArgs.add('-Xlint')
+  // options.compilerArgs.add('-g:none')
 }
 
 test {

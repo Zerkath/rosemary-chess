@@ -5,10 +5,10 @@ import rosemary.board.BoardState;
 import rosemary.types.*;
 
 class BishopMoves {
-    Moves downRight = new Moves();
-    Moves downLeft = new Moves();
-    Moves upRight = new Moves();
-    Moves upLeft = new Moves();
+    Moves downRight = new Moves(8);
+    Moves downLeft = new Moves(8);
+    Moves upRight = new Moves(8);
+    Moves upLeft = new Moves(8);
 
     Moves[] allMoves = new Moves[] {downRight, downLeft, upRight, upLeft};
 

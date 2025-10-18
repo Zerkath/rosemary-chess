@@ -14,7 +14,7 @@ public class King {
             int row = MoveUtil.getRow(origin);
             int col = MoveUtil.getColumn(origin);
             // generating moves around king //todo update
-            Moves moves = new Moves();
+            Moves moves = new Moves(8);
             for (int row_i = row - 1; row_i <= row + 1; row_i++) {
                 for (int column_i = col - 1; column_i <= col + 1; column_i++) {
                     if (row_i != row || column_i != col) {
