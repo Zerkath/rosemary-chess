@@ -1,7 +1,6 @@
 package rosemary.eval;
 
 import it.unimi.dsi.fastutil.shorts.ShortIterator;
-import rosemary.OutputUtils;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
@@ -26,8 +25,7 @@ public class EvaluationThread implements Runnable {
 
     @Override
     public void run() {
-        int eval;
-        eval = alphaBeta(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth, boardState.isWhiteTurn());
+        alphaBeta(boardState, Integer.MIN_VALUE, Integer.MAX_VALUE, depth, boardState.isWhiteTurn());
     }
 
     int alphaBeta(BoardState boardState, int alpha, int beta, int depth, boolean isMaxing) {
@@ -78,7 +76,7 @@ public class EvaluationThread implements Runnable {
 
         if (depth == startingDepth) {
             if (bestMove == -1) bestMove = moves.getShort(0);
-            OutputUtils.println("bestmove " + MoveUtil.moveToString(bestMove));
+            System.out.println("bestmove " + MoveUtil.moveToString(bestMove));
         }
 
         return isMaxing ? alpha : beta;
@@ -101,7 +99,7 @@ public class EvaluationThread implements Runnable {
         } else {
             outString += " score cp " + eval;
         }
-        OutputUtils.println(outString + currMove);
+        System.out.println(outString + currMove);
     }
 
     private boolean inCheck(BoardState state) {

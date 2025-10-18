@@ -4,6 +4,13 @@ import it.unimi.dsi.fastutil.shorts.*;
 
 public class Moves extends ShortArrayList {
 
+    /**
+     * in some instances when we pre-generate move's the maximum size is already known
+     */
+    public Moves(int size) {
+        super(size);
+    }
+
     public Moves() {
         super(32);
     }

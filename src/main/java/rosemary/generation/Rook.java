@@ -5,10 +5,10 @@ import rosemary.board.BoardState;
 import rosemary.types.*;
 
 class RookMoves {
-    Moves up = new Moves();
-    Moves down = new Moves();
-    Moves left = new Moves();
-    Moves right = new Moves();
+    Moves up = new Moves(8);
+    Moves down = new Moves(8);
+    Moves left = new Moves(8);
+    Moves right = new Moves(8);
 
     Moves[] allMoves = new Moves[] {up, down, left, right};
 

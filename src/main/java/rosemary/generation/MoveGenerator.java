@@ -2,7 +2,6 @@ package rosemary.generation;
 
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.*;
-import it.unimi.dsi.fastutil.shorts.*;
 import rosemary.board.*;
 import rosemary.types.*;
 
@@ -48,18 +47,13 @@ public class MoveGenerator {
     }
 
     private static Moves nonCacheGetLegalMoves(BoardState boardState) {
-        Moves pseudoLegal = getAllMoves(boardState);
+        Moves moves = new Moves();
+        getAllMoves(boardState)
+                .intStream()
+                .filter(move -> !King.kingInCheck(Mover.makeMove(boardState, (short) move)))
+                .forEach(move -> moves.add((short) move));
 
-        ShortIterator pseudoIterator = pseudoLegal.iterator();
-        Moves legal = new Moves();
-        while (pseudoIterator.hasNext()) {
-            short move = pseudoIterator.nextShort();
-            if (!King.kingInCheck(Mover.makeMove(boardState, move))) {
-                legal.add(move);
-            }
-        }
-
-        return legal;
+        return moves;
     }
 
     public static void getAllMoves(short coordinate, BoardState boardState, Moves moves) {

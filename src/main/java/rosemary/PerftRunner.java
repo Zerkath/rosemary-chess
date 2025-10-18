@@ -1,39 +1,30 @@
 package rosemary;
 
-import it.unimi.dsi.fastutil.shorts.*;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
-import rosemary.types.Moves;
 
 public class PerftRunner {
 
     public static long perft(int depth, boolean print, BoardState boardState) {
-        long total = 0;
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
-
-        for (final short move : moves) {
-            long result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
-            total += result;
-            if (print) {
-                System.out.println(MoveUtil.moveToString(move) + " " + result);
-            }
-        }
-
-        return total;
+        return MoveGenerator.getLegalMoves(boardState)
+                .intStream()
+                .map(move -> {
+                    int result = perftProcess(depth - 1, Mover.makeMove(boardState, (short) move));
+                    if (print) {
+                        System.out.println(MoveUtil.moveToString((short) move) + " " + result);
+                    }
+                    return result;
+                })
+                .sum();
     }
 
     private static int perftProcess(int depth, BoardState boardState) {
         if (depth <= 0) return 1;
-
-        int numPositions = 0;
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
-
-        ShortIterator iter = moves.iterator();
-        while (iter.hasNext()) {
-            numPositions += perftProcess(depth - 1, Mover.makeMove(boardState, iter.nextShort()));
-        }
-        return numPositions;
+        return MoveGenerator.getLegalMoves(boardState)
+                .intStream()
+                .map(move -> perftProcess(depth - 1, Mover.makeMove(boardState, (short) move)))
+                .sum();
     }
 
     /**
