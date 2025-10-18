@@ -1,10 +1,4 @@
 Benchmark,Score,stdev,Commit,Description
-bishops,10535.782667,952.994094,07a21d8,Without caching
-knights,15237.603522,411.322672,07a21d8,Without caching
-normal,8746.101092,291.632955,07a21d8,Without caching
-pawns,10627.180412,820.714327,07a21d8,Without caching
-queens,17707.345088,134.876279,07a21d8,Without caching
-rooks,4825.997532,13.063378,07a21d8,Without caching
 bishops,1198.878536,90.310809,394f3e1,Initial caching
 knights,1779.758695,173.323504,394f3e1,Initial caching
 normal,1580.405184,98.100091,394f3e1,Initial caching
