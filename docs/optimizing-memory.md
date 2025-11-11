@@ -74,5 +74,13 @@ and movehash pointing to sorted list of moves.
 
 This optimization dropped the memory usage down to 41.9MB for depth 6
 
-![changes-from-june-2024](./june-changes-2024.png)
+# Results
+
+## Before caching
+
+![No Caching + Others](./no-cache.png)
+
+## Incremental improvements
+
+![Caching + Incremental changes](./only-cached.png)
 

@@ -151,7 +151,7 @@ public class UciController {
         for (long l : allRuns) {
             variance += Math.abs(l - average);
         }
-        variance = variance / (double) iterations;
+        variance /= (double) iterations;
         System.out.println("avg " + average + " var " + variance + " runs " + iterations);
     }
 
