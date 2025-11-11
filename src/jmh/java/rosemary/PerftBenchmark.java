@@ -3,7 +3,6 @@ package rosemary;
 import org.openjdk.jmh.annotations.*;
 import rosemary.board.*;
 
-@Fork(1)
 @OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @Warmup(iterations = 3, time = 250, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)

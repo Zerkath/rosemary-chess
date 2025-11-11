@@ -5,15 +5,21 @@ normal,1580.405184,98.100091,394f3e1,Initial caching
 pawns,1147.247863,69.926842,394f3e1,Initial caching
 queens,1616.917992,132.753794,394f3e1,Initial caching
 rooks,464.408059,44.216229,394f3e1,Initial caching
-bishops,1017.170534,10.700927,8615fd6,Pooling + Primitive collections
-knights,1477.050315,53.884838,8615fd6,Pooling + Primitive collections
-normal,1394.038612,36.368287,8615fd6,Pooling + Primitive collections
-pawns,1033.724036,85.909602,8615fd6,Pooling + Primitive collections
-queens,1441.201308,97.278669,8615fd6,Pooling + Primitive collections
-rooks,386.132433,6.159319,8615fd6,Pooling + Primitive collections
-bishops,1132.625930,125.200854,b871007,Increase lambda use + Java 21
-knights,1545.862418,121.536799,b871007,Increase lambda use + Java 21
-normal,1396.306958,101.510722,b871007,Increase lambda use + Java 21
-pawns,1113.391799,20.711113,b871007,Increase lambda use + Java 21
-queens,1464.720539,104.670411,b871007,Increase lambda use + Java 21
-rooks,404.805941,8.363381,b871007,Increase lambda use + Java 21
+bishops,1017.170534,10.700927,8615fd6,Cache+Primitives
+knights,1477.050315,53.884838,8615fd6,Cache+Primitives
+normal,1394.038612,36.368287,8615fd6,Cache+Primitives
+pawns,1033.724036,85.909602,8615fd6,Cache+Primitives
+queens,1441.201308,97.278669,8615fd6,Cache+Primitives
+rooks,386.132433,6.159319,8615fd6,Cache+Primitives
+bishops,989.441133,21.812342,TBD,JDK25
+knights,1448.934320,27.273959,TBD,JDK25
+normal,1244.725278,17.087736,TBD,JDK25
+pawns,1024.476291,15.501257,TBD,JDK25
+queens,1294.560976,15.935397,TBD,JDK25
+rooks,373.275393,12.475236,TBD,JDK25
+bishops,992.090031,14.951657,TBD,JDK25+JEP519
+knights,1381.621965,16.116544,TBD,JDK25+JEP519
+normal,1237.315528,17.159651,TBD,JDK25+JEP519
+pawns,1015.031900,13.641792,TBD,JDK25+JEP519
+queens,1262.276544,18.732258,TBD,JDK25+JEP519
+rooks,374.269553,13.529478,TBD,JDK25+JEP519

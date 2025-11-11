@@ -1,38 +1,12 @@
 plugins {
   id 'java'
   id 'jacoco'
-  id 'com.diffplug.spotless' version '6.25.0'
-  id "me.champeau.jmh" version "0.7.2"
-  id 'org.graalvm.buildtools.native' version '0.10.2'
+  id 'com.diffplug.spotless' version '8.0.0'
+  id "me.champeau.jmh" version "0.7.3"
 }
 
 repositories {
   mavenCentral()
-}
-
-java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(21))
-  }
-}
-
-graalvmNative {
-    binaries {
-        main {
-            imageName = "rosemary-chess"
-            mainClass = "rosemary.Program"
-            buildArgs.add("-O4")
-            buildArgs.add("-march=native")
-            buildArgs.add("--gc=G1")
-
-        }
-        test {
-            buildArgs.add("-O0")
-        }
-    }
-    binaries.all {
-        buildArgs.add("--verbose")
-    }
 }
 
 tasks.withType(JavaCompile) {
@@ -57,10 +31,11 @@ test {
 }
 
 dependencies {
-  testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
-  testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
-  implementation "org.openjdk.jmh:jmh-core:1.33"
-  implementation "org.openjdk.jmh:jmh-generator-annprocess:1.33"
+  testImplementation("org.junit.platform:junit-platform-launcher:6.0.1")
+  testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
+  testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.1")
+  implementation "org.openjdk.jmh:jmh-core:1.37"
+  implementation "org.openjdk.jmh:jmh-generator-annprocess:1.37"
   implementation 'it.unimi.dsi:fastutil:8.5.13'
 }
 
@@ -90,14 +65,8 @@ spotless {
     // Use the default importOrder configuration
     importOrder()
     removeUnusedImports()
-
-    // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
-    cleanthat() // has its own section below
-
     // Choose one of these formatters.
     // googleJavaFormat().aosp()
-    palantirJavaFormat()
-    // palantirJavaFormat('2.9.0').style("GOOGLE")clipse()
 
     // prettier()
     // clangFormat()
