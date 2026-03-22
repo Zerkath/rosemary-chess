@@ -3,6 +3,7 @@ package rosemary;
 import java.io.*;
 import java.util.concurrent.*;
 
+
 public class Program {
     public static void main(String[] args) {
         (new Program()).process();

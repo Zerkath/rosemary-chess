@@ -15,7 +15,7 @@ public class PerftTest {
         BoardState boardState = new BoardState(input);
 
         long score = PerftRunner.perft(depth, true, boardState);
-        Assertions.assertEquals(expected, score, score);
+        Assertions.assertEquals(expected, score);
     }
 
     @ParameterizedTest
@@ -26,6 +26,6 @@ public class PerftTest {
         BoardState boardState = new BoardState(input);
 
         long score = PerftRunner.perft(depth, true, boardState);
-        Assertions.assertEquals(expected, score, score);
+        Assertions.assertEquals(expected, score);
     }
 }
