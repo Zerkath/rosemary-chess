@@ -5,8 +5,9 @@ import rosemary.board.*;
 
 @OutputTimeUnit(java.util.concurrent.TimeUnit.MILLISECONDS)
 @BenchmarkMode(Mode.AverageTime)
-@Warmup(iterations = 3, time = 250, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
-@Measurement(iterations = 5, time = 500, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
+@Warmup(iterations = 3, time = 1000, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
+@Measurement(iterations = 3, time = 5000, timeUnit = java.util.concurrent.TimeUnit.MILLISECONDS)
+@Fork(1)
 @State(Scope.Benchmark)
 public class PerftBenchmark {
 
