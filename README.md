@@ -1,5 +1,7 @@
 # Rosemary Chess Engine
-Started out as a project for Artificial Intelligence and Robotics course work in Karelia University of Applied Sciences. During the course most of the programming was done as pair programming, commits do not reflect the contribution of participants.
+
+Started out as a project for Artificial Intelligence and Robotics course work in Karelia University of Applied Sciences. 
+During the course most of the programming was done as pair programming, commits do not reflect the contribution of participants.
 
 To work with GUI's the jar needed to be turned into a exe, this was done using http://launch4j.sourceforge.net/
 
@@ -17,13 +19,14 @@ Tested with JDK 25. Using gradle wrapper e.g. `./gradlew build`
 
 Manually running
 
-```
+```bash
 ./gradlew jmhJar
 java -jar -Xmx4G -Xms2G build/libs/rosemary-chess-jmh.jar .Perft
 ```
 
 Updating the file [analysis.png](./docs/analysis.jpg) with new chart data, note runs currently checked out branch against main.
-```
+
+```bash
 ./scripts/updateChart.sh
 ```
 
