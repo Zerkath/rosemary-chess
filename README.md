@@ -1,6 +1,6 @@
 # Rosemary Chess Engine
 
-Started out as a project for Artificial Intelligence and Robotics course work in Karelia University of Applied Sciences. 
+Started out as a project for Artificial Intelligence and Robotics course work in Karelia University of Applied Sciences.
 During the course most of the programming was done as pair programming, commits do not reflect the contribution of participants.
 
 To work with GUI's the jar needed to be turned into a exe, this was done using http://launch4j.sourceforge.net/
