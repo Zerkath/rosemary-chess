@@ -30,6 +30,16 @@ Updating the file [analysis.png](./docs/analysis.jpg) with new chart data, note 
 ./scripts/updateChart.sh
 ```
 
+### Inspecting object layouts
+
+Uses [Java Object Layout](https://github.com/openjdk/jol) via the [scripts/shape.sc](./scripts/shape.sc) Scala CLI script.
+
+```bash
+just shape
+```
+
+Edit `scripts/shape.sc` to add the classes or instances you want to inspect. Requires [Scala CLI](https://scala-cli.virtuslab.org/). The engine is resolved from the local Maven repository, so run `./gradlew publishToMavenLocal` first (`just shape` does this automatically).
+
 ## Other info
 The program communicates with chess GUI's using UCI protocol.
 
