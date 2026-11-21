@@ -24,11 +24,23 @@ Manually running
 java -jar -Xmx4G -Xms2G build/libs/rosemary-chess-jmh.jar .Perft
 ```
 
-Updating the file [analysis.png](./docs/analysis.jpg) with new chart data, note runs currently checked out branch against main.
+Compare two git refs without switching branches. Each ref is built and benchmarked in
+an isolated git worktree, the raw JMH results are written to `/tmp/rosemary-bench`, and
+the chart is rendered to `comparison.png`:
 
 ```bash
-./scripts/updateChart.sh
+just compare main my-branch
 ```
+
+The results can be re-plotted without re-running the benchmarks:
+
+```bash
+uv run scripts/comparePerft.py \
+  --label base=main --label head=my-branch \
+  /tmp/rosemary-bench/base.csv /tmp/rosemary-bench/head.csv
+```
+
+Remove the benchmark CSVs and any leftover worktrees with `just bench-clean`.
 
 ### Inspecting object layouts
 
