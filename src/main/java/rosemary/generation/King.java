@@ -20,8 +20,7 @@ final class King {
 
         int originalPiece = board[origin];
         boolean isWhite = Pieces.isWhite(originalPiece);
-        int row = MoveUtil.getRow(origin);
-        int col = MoveUtil.getColumn(origin);
+        int kingHome = isWhite ? Utils.getCoordinate(7, 4) : Utils.getCoordinate(0, 4);
 
         Moves pseudoMoves = UNFILTERED_MOVES[origin];
         for (int i = 0; i < pseudoMoves.size(); i++) {
@@ -35,15 +34,13 @@ final class King {
         // castling
         if ((isWhite && whiteCastling != CastlingRights.NONE)
                 || (!isWhite && blackCastling != CastlingRights.NONE)) {
-            CastlingData data = new CastlingData(isWhite, row, board);
-            if (col == 4
-                    && ((isWhite && row == 7) || (!isWhite && row == 0))
+            CastlingData data = new CastlingData(isWhite, board);
+            if (origin == kingHome // only check if the king is in the original position and
+                    // hasn't moved
                     && !castlingStoppedByKnightOrPawn(data)
                     && !inCheckVertically(data)
                     && !inCheckDiagonally(data)
-                    && !backRankThreat(
-                            data)) { // only check if the king is in the original position and
-                // hasn't moved
+                    && !backRankThreat(data)) {
 
                 boolean qSide = queenSidePossible(data);
                 boolean kSide = kingSidePossible(data);
@@ -58,8 +55,9 @@ final class King {
                     current = blackCastling;
                 }
 
-                short queenSideMove = MoveUtil.getMove(origin, Utils.getCoordinate(row, 2));
-                short kingSideMove = MoveUtil.getMove(origin, Utils.getCoordinate(row, 6));
+                // the king is on the e-file, so the castling targets are two files away
+                short queenSideMove = MoveUtil.getMove(origin, (short) (origin - 2));
+                short kingSideMove = MoveUtil.getMove(origin, (short) (origin + 2));
 
                 switch (current) {
                     case CastlingRights.BOTH -> {
@@ -108,7 +106,7 @@ final class King {
         int backRow, seventh, sixth;
         byte[] board;
 
-        public CastlingData(boolean isWhite, int row, byte[] board) {
+        public CastlingData(boolean isWhite, byte[] board) {
             this.isWhite = isWhite;
             this.board = board;
             opponentColour = isWhite ? Pieces.BLACK : Pieces.WHITE;
@@ -119,9 +117,9 @@ final class King {
             bishop = Pieces.BISHOP | opponentColour;
             queen = Pieces.QUEEN | opponentColour;
 
-            backRow = row;
-            seventh = row == 7 ? 6 : 1;
-            sixth = row == 7 ? 5 : 2;
+            backRow = isWhite ? 7 : 0;
+            seventh = isWhite ? 6 : 1;
+            sixth = isWhite ? 5 : 2;
         }
     }
 

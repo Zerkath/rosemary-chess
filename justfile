@@ -16,9 +16,35 @@ bencher:
     --project rosemary-chess-b7bd4eb-47ri4zy3q0zn3 \
     --file /tmp/rosemary-bench/result.json "java -jar build/libs/rosemary-chess-jmh.jar -rf json -rff /tmp/rosemary-bench/result.json"
 
+# Usage: just summarize [profile] (defaults to the last `just jmh` profile)
+summarize profile="/tmp/rosemary-profile.pb.gz":
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  echo "==> Hottest methods ({{profile}})"
+  trace_processor --quiet --no-progress query --format csv \
+    {{quote(profile)}} -f scripts/hottestMethods.sql \
+    | bat --plain --language csv
+
 jmh:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  jfr_dir=/tmp/jfr
+  profile=/tmp/rosemary-profile.pb.gz
+
+  # Avoid aggregating profiles left over from earlier runs.
+  find "$jfr_dir" -mindepth 1 -delete 2>/dev/null || true
+
   java -jar build/libs/rosemary-chess-jmh.jar \
-    -rf csv -rff /tmp/rosemary-results.csv -prof "async:output=jfr;dir=/tmp/jfr;event=cpu"
+    -rf csv -rff /tmp/rosemary-results.csv \
+    -prof "async:output=jfr;dir=$jfr_dir;event=cpu"
+
+  # Aggregate every benchmark/fork profile into one pprof trace.
+  jfrconv -o pprof "$jfr_dir"/*/jfr-cpu.jfr "$profile"
+
+  # Report on the profile; re-run without benchmarking via `just summarize [profile]`.
+  just summarize "$profile"
 
 # Run the perft benchmark for a git ref in an isolated worktree, writing $bench_dir/<name>.csv
 bench ref name:

@@ -4,12 +4,6 @@ public class BoardUtils {
 
     private static final StringBuilder strBuilder = new StringBuilder();
 
-    public static byte[] copy(byte[] board) {
-        byte[] copy = new byte[64];
-        System.arraycopy(board, 0, copy, 0, 64);
-        return copy;
-    }
-
     public static boolean isOpposingColourOrEmpty(short destination, int originalPiece, byte[] board) {
         if (Utils.isOutOfBounds(destination)) return false;
 

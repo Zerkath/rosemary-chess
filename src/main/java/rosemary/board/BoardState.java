@@ -26,7 +26,7 @@ public class BoardState {
     private byte blackKing = -1;
     private byte enPassant = -1;
 
-    private byte[] board = new byte[64];
+    public byte[] board = new byte[64];
 
     public BoardState() { }
 
@@ -39,7 +39,7 @@ public class BoardState {
     }
 
     public void setBoardState(BoardState state) {
-        this.board = BoardUtils.copy(state.board);
+        System.arraycopy(state.board, 0, this.board, 0, 64);
         this.turnNumber = state.turnNumber;
         this.halfMove = state.halfMove;
         this.enPassant = state.enPassant;
@@ -119,10 +119,6 @@ public class BoardState {
 
     public byte[] getBoard() {
         return board;
-    }
-
-    public byte getCoordinate(byte coord) {
-        return board[coord];
     }
 
     public byte setCoordinate(byte coord, byte piece) {
