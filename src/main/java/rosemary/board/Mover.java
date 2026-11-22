@@ -37,13 +37,13 @@ public class Mover {
 
         checkForCastlingRights(bs, moveWithPromotionData);
 
-        if (Pieces.getType(selected) == Pieces.PAWN || bs.board[MoveUtil.getDestination(move)] != 0) {
+        if ((selected & Pieces.TYPE_MASK) == Pieces.PAWN || bs.board[MoveUtil.getDestination(move)] != 0) {
             bs.setHalfMove((byte) 0);
         } else {
             bs.setHalfMove((byte) (bs.getHalfMove() + 1));
         }
 
-        if (Pieces.getType(selected) == Pieces.PAWN
+        if ((selected & Pieces.TYPE_MASK) == Pieces.PAWN
                 && bs.getEnPassant() != -1
                 && MoveUtil.getRow(bs.getEnPassant()) == MoveUtil.getRow(temp_destination)
                 && MoveUtil.getColumn(bs.getEnPassant()) == MoveUtil.getColumn(temp_destination)) {
@@ -55,7 +55,7 @@ public class Mover {
 
         bs.setEnPassant((byte) -1);
         // add En passant
-        if (Pieces.getType(selected) == Pieces.PAWN
+        if ((selected & Pieces.TYPE_MASK) == Pieces.PAWN
                 && ((MoveUtil.getRow(temp_origin) == 6 && MoveUtil.getRow(temp_destination) == 4)
                         || (MoveUtil.getRow(temp_origin) == 1 && MoveUtil.getRow(temp_destination) == 3))) {
 
@@ -68,17 +68,17 @@ public class Mover {
                 left = bs.board[Utils.getCoordinate(dRow, dCol - 1)];
             }
 
-            if (Pieces.getType(right) == Pieces.PAWN) {
+            if ((right & Pieces.TYPE_MASK) == Pieces.PAWN) {
                 addEnPassantMove(bs, isWhite, right, dCol, dRow);
             }
 
-            if (Pieces.getType(left) == Pieces.PAWN) {
+            if ((left & Pieces.TYPE_MASK) == Pieces.PAWN) {
                 addEnPassantMove(bs, isWhite, left, dCol, dRow);
             }
         }
 
         // Castling
-        if (Pieces.getType(selected) == Pieces.KING
+        if ((selected & Pieces.TYPE_MASK) == Pieces.KING
                 && MoveUtil.getColumn(temp_origin) == 4
                 && ((MoveUtil.getRow(temp_origin) == 0 && dRow == 0) || MoveUtil.getRow(temp_origin) == 7 && dRow == 7)
                 && (dCol == 2 || dCol == 6)) {
@@ -100,7 +100,7 @@ public class Mover {
             bs.setCoordinate(origin, (byte) 0);
         }
 
-        if (Pieces.getType(selected) == Pieces.KING) {
+        if ((selected & Pieces.TYPE_MASK) == Pieces.KING) {
             bs.setCastling(CastlingRights.NONE, isWhite);
         }
 

@@ -42,7 +42,7 @@ public class ValueHasher {
             if (p != Pieces.EMPTY) {
                 boolean isWhite = Pieces.isWhite(p);
                 int color = isWhite ? 0 : 1;
-                int piece = (p & Pieces.m_type) - 1;
+                int piece = (p & Pieces.TYPE_MASK) - 1;
                 long hasher = pieceKeys[color][(piece * 64 + square)];
                 hash ^= hasher;
             }

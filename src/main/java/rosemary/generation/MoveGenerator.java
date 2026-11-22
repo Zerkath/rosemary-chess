@@ -29,7 +29,7 @@ public class MoveGenerator {
             if (piece == Pieces.EMPTY || isWhiteTurn != Pieces.isWhite(piece)) continue;
 
             short origin = (short) coord;
-            switch (Pieces.getType(piece)) {
+            switch ((piece & Pieces.TYPE_MASK)) {
                 case Pieces.PAWN -> Pawn.getMoves(origin, boardState, moves);
                 case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, moves);
                 case Pieces.KNIGHT -> Knight.getMoves(origin, boardState, moves);

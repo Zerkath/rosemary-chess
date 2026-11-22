@@ -168,7 +168,7 @@ public class BoardState {
     }
 
     public void replaceCoordinate(byte coordinate, byte piece) {
-        if (piece != 0 && Pieces.getType(piece) == Pieces.KING) replaceKing(coordinate, piece);
+        if (piece != 0 && (piece & Pieces.TYPE_MASK) == Pieces.KING) replaceKing(coordinate, piece);
         board[coordinate] = piece;
     }
 

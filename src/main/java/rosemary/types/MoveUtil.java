@@ -35,7 +35,7 @@ public class MoveUtil {
         if (move.length() == 5) {
             piece = Pieces.getNum(move.charAt(4));
         }
-        return getMove(getMove(origin, destination), Pieces.getType(piece), Pieces.isWhite(piece));
+        return getMove(getMove(origin, destination), (piece & Pieces.TYPE_MASK), Pieces.isWhite(piece));
     }
 
     public static short getPromotion(short move) {

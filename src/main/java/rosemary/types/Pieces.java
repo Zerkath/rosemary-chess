@@ -11,10 +11,22 @@ public class Pieces {
     public static final byte WHITE = 0b10000;
     public static final byte BLACK = 0b01000;
 
-    public static final byte m_type = 0b00111;
-    public static final byte m_white = 0b10000;
-    public static final byte m_black = 0b01000;
-    public static final byte m_colour = m_white | m_black;
+    /**
+     * Can be used to get the type of piece
+     *
+     * usage: (piece & Pieces.TYPE_MASK)
+     */
+    public static final byte TYPE_MASK = 0b00111;
+
+    public static final byte MASK_WHITE = 0b10000;
+    public static final byte MASK_BLACK = 0b01000;
+
+    /**
+     * Can be used to get the colour of the piece
+     *
+     * usage: (piece & Pieces.MASK_COLOUR)
+     */
+    public static final byte MASK_COLOUR = MASK_WHITE | MASK_BLACK;
 
     public static char getPromotion(short header) {
         char result =
@@ -43,7 +55,7 @@ public class Pieces {
     public static char getChar(int piece) {
 
         char result =
-                switch (getType(piece)) {
+                switch ((TYPE_MASK & piece)) {
                     case PAWN -> 'p';
                     case KNIGHT -> 'n';
                     case BISHOP -> 'b';
@@ -70,15 +82,7 @@ public class Pieces {
         };
     }
 
-    public static int getType(int piece) {
-        return piece & m_type;
-    }
-
-    public static int getColour(int piece) {
-        return piece & m_colour;
-    }
-
     public static boolean isWhite(int piece) {
-        return getColour(piece) == WHITE;
+        return (piece & MASK_COLOUR) == WHITE;
     }
 }

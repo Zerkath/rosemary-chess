@@ -55,7 +55,7 @@ public class EvaluationCalculations {
     public static int pieceToValue(int piece) {
         if (piece == 0) return 0;
         int result = 0;
-        switch (Pieces.getType(piece)) {
+        switch ((piece & Pieces.TYPE_MASK)) {
             case Pieces.PAWN:
                 result = EvaluationValues.ePawn;
                 break;
