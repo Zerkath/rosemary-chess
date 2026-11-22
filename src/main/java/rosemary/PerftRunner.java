@@ -7,8 +7,9 @@ import rosemary.types.MoveUtil;
 public class PerftRunner {
 
     public static long perft(int depth, boolean print, BoardState boardState) {
-        return MoveGenerator.getLegalMoves(boardState)
-                .intStream()
+        return MoveGenerator
+                .nonCacheGetLegalMoves(boardState)
+                .parallel()
                 .map(move -> {
                     int result = perftProcess(depth - 1, Mover.makeMove(boardState, (short) move));
                     if (print) {
@@ -21,8 +22,8 @@ public class PerftRunner {
 
     private static int perftProcess(int depth, BoardState boardState) {
         if (depth <= 0) return 1;
-        return MoveGenerator.getLegalMoves(boardState)
-                .intStream()
+        return MoveGenerator
+                .nonCacheGetLegalMoves(boardState)
                 .map(move -> perftProcess(depth - 1, Mover.makeMove(boardState, (short) move)))
                 .sum();
     }

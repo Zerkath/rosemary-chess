@@ -1,5 +1,7 @@
 package rosemary.generation;
 
+import java.util.stream.IntStream;
+
 import rosemary.board.*;
 import rosemary.types.*;
 
@@ -27,17 +29,15 @@ public class MoveGenerator {
     }
 
     public static Moves getLegalMoves(BoardState boardState) {
-        return nonCacheGetLegalMoves(boardState);
+        Moves moves = new Moves(0);
+        nonCacheGetLegalMoves(boardState).forEach(move -> moves.add((short)move));
+        return moves;
     }
 
-    private static Moves nonCacheGetLegalMoves(BoardState boardState) {
-        Moves moves = new Moves();
-        getAllMoves(boardState)
-                .intStream()
-                .filter(move -> !King.kingInCheck(Mover.makeMove(boardState, (short) move)))
-                .forEach(move -> moves.add((short) move));
-
-        return moves;
+    public static IntStream nonCacheGetLegalMoves(BoardState boardState) {
+        return getAllMoves(boardState)
+          .intStream()
+          .filter(move -> !King.kingInCheck(Mover.makeMove(boardState, (short) move)));
     }
 
     public static void getAllMoves(short coordinate, BoardState boardState, Moves moves) {

@@ -11,6 +11,9 @@ shape:
     --java-opt -Djdk.attach.allowAttachSelf=true \
     --java-opt -XX:+EnableDynamicAgentLoading
 
+bencher:
+  bencher run --file /tmp/rosemary-bench/result.json "java -jar build/libs/rosemary-chess-jmh.jar -rf json -rff /tmp/rosemary-bench/result.json"
+
 jmh:
   java -jar build/libs/rosemary-chess-jmh.jar \
     -rf csv -rff docs/results.csv -prof "async:output=jfr;dir=/tmp/jfr;event=cpu"
