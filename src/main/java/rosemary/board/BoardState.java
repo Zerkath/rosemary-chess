@@ -1,6 +1,5 @@
 package rosemary.board;
 
-import java.util.Arrays;
 import rosemary.types.*;
 
 public class BoardState {
@@ -29,9 +28,7 @@ public class BoardState {
 
     private byte[] board = new byte[64];
 
-    public BoardState() {
-        Arrays.fill(board, (byte) 0);
-    }
+    public BoardState() { }
 
     public BoardState(BoardState state) {
         setBoardState(state);
@@ -58,27 +55,10 @@ public class BoardState {
      */
     public byte[] getPieceMap() {
         byte[] pieceMap = new byte[23]; // 22 is the max value of king + white
-        Arrays.fill(pieceMap, (byte) 0); // ensure values are initialised
 
-        // unrolled loop for performance
-        for (int i = 0; i < 64; i += 8) {
-            byte piece1 = board[i];
-            byte piece2 = board[i + 1];
-            byte piece3 = board[i + 2];
-            byte piece4 = board[i + 3];
-            byte piece5 = board[i + 4];
-            byte piece6 = board[i + 5];
-            byte piece7 = board[i + 6];
-            byte piece8 = board[i + 7];
-
-            if (piece1 != 0) pieceMap[piece1] = (byte) (1 + pieceMap[piece1]);
-            if (piece2 != 0) pieceMap[piece2] = (byte) (1 + pieceMap[piece2]);
-            if (piece3 != 0) pieceMap[piece3] = (byte) (1 + pieceMap[piece3]);
-            if (piece4 != 0) pieceMap[piece4] = (byte) (1 + pieceMap[piece4]);
-            if (piece5 != 0) pieceMap[piece5] = (byte) (1 + pieceMap[piece5]);
-            if (piece6 != 0) pieceMap[piece6] = (byte) (1 + pieceMap[piece6]);
-            if (piece7 != 0) pieceMap[piece7] = (byte) (1 + pieceMap[piece7]);
-            if (piece8 != 0) pieceMap[piece8] = (byte) (1 + pieceMap[piece8]);
+        for (int i = 0; i < 64; i++) {
+            // slot 0 collects empty squares, ignore it
+            pieceMap[board[i]]++;
         }
 
         return pieceMap;

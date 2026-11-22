@@ -12,7 +12,9 @@ shape:
     --java-opt -XX:+EnableDynamicAgentLoading
 
 bencher:
-  bencher run --file /tmp/rosemary-bench/result.json "java -jar build/libs/rosemary-chess-jmh.jar -rf json -rff /tmp/rosemary-bench/result.json"
+  bencher run \
+    --project rosemary-chess-b7bd4eb-47ri4zy3q0zn3 \
+    --file /tmp/rosemary-bench/result.json "java -jar build/libs/rosemary-chess-jmh.jar -rf json -rff /tmp/rosemary-bench/result.json"
 
 jmh:
   java -jar build/libs/rosemary-chess-jmh.jar \

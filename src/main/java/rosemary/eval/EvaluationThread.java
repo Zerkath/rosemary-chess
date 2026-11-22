@@ -1,10 +1,9 @@
 package rosemary.eval;
 
-import it.unimi.dsi.fastutil.shorts.ShortIterator;
+import java.util.PrimitiveIterator;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
-import rosemary.types.Moves;
 import rosemary.types.Pieces;
 
 public class EvaluationThread implements Runnable {
@@ -29,9 +28,9 @@ public class EvaluationThread implements Runnable {
     }
 
     int alphaBeta(BoardState boardState, int alpha, int beta, int depth, boolean isMaxing) {
-        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        int[] moves = MoveGenerator.nonCacheGetLegalMoves(boardState).parallel().toArray();
 
-        if (moves.isEmpty()) { // no moves this turn in checkmate or draw
+        if (moves.length == 0) { // no moves this turn in checkmate or draw
             if (inCheck(boardState)) {
                 return isMaxing
                         ? -EvaluationValues.mate + ((startingDepth - depth) / 2)
@@ -46,10 +45,11 @@ public class EvaluationThread implements Runnable {
 
         short bestMove = -1;
 
-        ShortIterator iter = moves.iterator();
-        while (iter.hasNext()) {
-            short move = iter.nextShort();
+        int idx = 0;
+        while (moves.length > idx) {
+            short move = (short)moves[idx];
             int eval = alphaBeta(Mover.makeMove(boardState, move), alpha, beta, depth - 1, !isMaxing);
+            idx++;
 
             if (depth == startingDepth) {
                 printInfoUCI(depth, eval, move, isMaxing);
@@ -75,7 +75,7 @@ public class EvaluationThread implements Runnable {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == -1) bestMove = moves.getShort(0);
+            if (bestMove == -1) bestMove = (short)moves[0];
             System.out.println("bestmove " + MoveUtil.moveToString(bestMove));
         }
 
@@ -106,10 +106,9 @@ public class EvaluationThread implements Runnable {
         boolean old = state.isWhiteTurn();
         boolean isWhite = state.isWhiteTurn();
         state.setWhiteTurn(!state.isWhiteTurn()); // flip turn temporarily for checking a check
-        Moves opponent = MoveGenerator.getLegalMoves(state);
-        ShortIterator iter = opponent.iterator();
+        PrimitiveIterator.OfInt iter = MoveGenerator.nonCacheGetLegalMoves(state).iterator();
         while (iter.hasNext()) {
-            int piece = state.getBoard()[MoveUtil.getDestination(iter.nextShort())];
+            int piece = state.getBoard()[MoveUtil.getDestination((short)iter.nextInt())];
             if (piece == 0) continue;
             if ((isWhite && piece == (Pieces.KING | Pieces.WHITE))
                     || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {

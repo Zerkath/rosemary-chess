@@ -4,6 +4,7 @@ src/main/java/build/*.jar
 src/main/java/build/*.class
 src/main/java/build/*.log
 src/main/java/build/*.exe
+.env
 
 
 scripts/.scala-build

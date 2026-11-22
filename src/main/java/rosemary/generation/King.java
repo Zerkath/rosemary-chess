@@ -1,32 +1,22 @@
 package rosemary.generation;
 
-import it.unimi.dsi.fastutil.shorts.ShortIterator;
-import rosemary.board.*;
-import rosemary.types.*;
+import java.util.stream.IntStream;
+import rosemary.board.BoardState;
+import rosemary.types.BoardUtils;
+import rosemary.types.CastlingRights;
 import rosemary.types.MoveUtil;
+import rosemary.types.Moves;
+import rosemary.types.Pieces;
+import rosemary.types.Utils;
 
-public class King {
+final class King implements Piece {
 
-    static Moves[] unfilteredMoves = new Moves[64];
+    static final King INSTANCE = new King();
 
-    static {
-        for (short origin = 0; origin < 64; origin++) {
-            int row = MoveUtil.getRow(origin);
-            int col = MoveUtil.getColumn(origin);
-            // generating moves around king //todo update
-            Moves moves = new Moves(8);
-            for (int row_i = row - 1; row_i <= row + 1; row_i++) {
-                for (int column_i = col - 1; column_i <= col + 1; column_i++) {
-                    if (row_i != row || column_i != col) {
-                        Utils.addToCollection(row_i, column_i, row, col, moves);
-                    }
-                }
-            }
-            unfilteredMoves[origin] = moves;
-        }
-    }
+    private static final Moves[] UNFILTERED_MOVES = new Moves[64];
 
-    public static void getMoves(short origin, BoardState boardState, Moves moves) {
+    @Override
+    public IntStream moves(short origin, BoardState boardState) {
         byte[] board = boardState.getBoard();
         boolean isWhiteTurn = boardState.isWhiteTurn();
         byte whiteCastling = boardState.getWhiteCastling();
@@ -37,23 +27,28 @@ public class King {
         int row = MoveUtil.getRow(origin);
         int col = MoveUtil.getColumn(origin);
 
-        ShortIterator pseudoIterator = unfilteredMoves[origin].iterator();
-        // generating moves around king //todo update
-        while (pseudoIterator.hasNext()) {
-            short move = pseudoIterator.nextShort();
-            if (BoardUtils.isOpposingColourOrEmpty(MoveUtil.getDestination(move), originalPiece, board))
-                moves.add(move);
-        }
+        IntStream pseudoMoves =
+                UNFILTERED_MOVES[origin]
+                        .intStream()
+                        .filter(
+                                move ->
+                                        BoardUtils.isOpposingColourOrEmpty(
+                                                MoveUtil.getDestination((short) move),
+                                                originalPiece,
+                                                board));
 
         // castling
-        if ((isWhite && whiteCastling != CastlingRights.NONE) || (!isWhite && blackCastling != CastlingRights.NONE)) {
+        IntStream castlingMoves = IntStream.empty();
+        if ((isWhite && whiteCastling != CastlingRights.NONE)
+                || (!isWhite && blackCastling != CastlingRights.NONE)) {
             CastlingData data = new CastlingData(isWhite, row, board);
             if (col == 4
                     && ((isWhite && row == 7) || (!isWhite && row == 0))
                     && !castlingStoppedByKnightOrPawn(data)
                     && !inCheckVertically(data)
                     && !inCheckDiagonally(data)
-                    && !backRankThreat(data)) { // only check if the king is in the original position and
+                    && !backRankThreat(
+                            data)) { // only check if the king is in the original position and
                 // hasn't moved
 
                 boolean qSide = queenSidePossible(data);
@@ -70,22 +65,41 @@ public class King {
                     current = blackCastling;
                 }
 
-                if (current != 0) {
-                    switch (current) {
-                        case CastlingRights.BOTH -> {
-                            if (qSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
-                            if (kSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
-                        }
-                        case CastlingRights.KING -> {
-                            if (kSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 6)));
-                        }
-                        case CastlingRights.QUEEN -> {
-                            if (qSide) moves.add(MoveUtil.getMove(origin, Utils.getCoordinate(row, 2)));
-                        }
-                        default -> {}
+                short queenSideMove = MoveUtil.getMove(origin, Utils.getCoordinate(row, 2));
+                short kingSideMove = MoveUtil.getMove(origin, Utils.getCoordinate(row, 6));
+
+                castlingMoves =
+                        switch (current) {
+                            case CastlingRights.BOTH ->
+                                    IntStream.concat(
+                                            qSide ? IntStream.of(queenSideMove) : IntStream.empty(),
+                                            kSide ? IntStream.of(kingSideMove) : IntStream.empty());
+                            case CastlingRights.KING ->
+                                    kSide ? IntStream.of(kingSideMove) : IntStream.empty();
+                            case CastlingRights.QUEEN ->
+                                    qSide ? IntStream.of(queenSideMove) : IntStream.empty();
+                            default -> IntStream.empty();
+                        };
+            }
+        }
+
+        return IntStream.concat(pseudoMoves, castlingMoves);
+    }
+
+    static {
+        for (short origin = 0; origin < 64; origin++) {
+            int row = MoveUtil.getRow(origin);
+            int col = MoveUtil.getColumn(origin);
+            // generating moves around king //todo update
+            Moves moves = new Moves(8);
+            for (int row_i = row - 1; row_i <= row + 1; row_i++) {
+                for (int column_i = col - 1; column_i <= col + 1; column_i++) {
+                    if (row_i != row || column_i != col) {
+                        Utils.addToCollection(row_i, column_i, row, col, moves);
                     }
                 }
             }
+            UNFILTERED_MOVES[origin] = moves;
         }
     }
 
@@ -285,80 +299,5 @@ public class King {
         return false;
     }
 
-    /**
-     * returns true if the king isn't in check
-     *
-     * @return true if the state is legal
-     */
-    public static boolean kingInCheck(BoardState boardState) {
-        // its inverse turn
-        boolean white = !boardState.isWhiteTurn();
-        byte[] board = boardState.getBoard();
-
-        // let's try the most likely moves to cause check (bishop and rook)
-        short origin = white ? boardState.getWhiteKing() : boardState.getBlackKing();
-        if (origin == -1) return false;
-        if (pieceHasCheck(boardState, white, Pieces.ROOK, origin)
-                || pieceHasCheck(boardState, white, Pieces.BISHOP, origin)) return true;
-
-        if (distanceWithinBoundary(boardState.getWhiteKing(), boardState.getBlackKing(), 1)) return true;
-
-        int opponentColor = white ? Pieces.BLACK : Pieces.WHITE;
-        int opponentKnight = Pieces.KNIGHT | opponentColor;
-        int opponentPawn = Pieces.PAWN | opponentColor;
-
-        Moves knightMoves = new Moves();
-        Knight.getMoves(origin, boardState, knightMoves);
-        ShortIterator knightIter = knightMoves.iterator();
-        while (knightIter.hasNext()) {
-            short move = knightIter.nextShort();
-
-            int piece = board[MoveUtil.getDestination(move)];
-            if (piece == 0) continue;
-            if (opponentKnight == piece) {
-                return true;
-            }
-        }
-        Moves pawnMoves = new Moves();
-        Pawn.getMoves(origin, boardState, pawnMoves);
-        ShortIterator pawnIter = pawnMoves.iterator();
-        while (pawnIter.hasNext()) {
-            short move = pawnIter.nextShort();
-            if (boardState.getBoard()[MoveUtil.getDestination(move)] == opponentPawn) return true;
-        }
-        return false; // no checks return false
-    }
-
-    private static boolean distanceWithinBoundary(short a, short b, int boundary) {
-        int absCol = Math.abs(MoveUtil.getColumn(a) - MoveUtil.getColumn(b));
-        int absRow = Math.abs(MoveUtil.getRow(a) - MoveUtil.getRow(b));
-
-        return absCol <= boundary && absRow <= boundary;
-    }
-
-    private static boolean pieceHasCheck(BoardState boardState, boolean colour, int type, short origin) {
-
-        // generate moves from king position to outside
-        Moves pieceHasCheckList = new Moves();
-
-        switch (type) {
-            case Pieces.BISHOP -> Bishop.getMoves(origin, boardState, pieceHasCheckList);
-            case Pieces.ROOK -> Rook.getMoves(origin, boardState, pieceHasCheckList);
-        }
-        ShortIterator iter = pieceHasCheckList.iterator();
-        while (iter.hasNext()) {
-            short move = iter.nextShort();
-
-            int piece = boardState.getBoard()[MoveUtil.getDestination(move)];
-
-            if (piece == 0) continue;
-            if (Pieces.isWhite(piece) != colour) {
-                int destType = Pieces.getType(piece);
-                if (destType == type || destType == Pieces.QUEEN) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    private King() {}
 }

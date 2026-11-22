@@ -1,66 +1,55 @@
 package rosemary.generation;
 
-import it.unimi.dsi.fastutil.shorts.ShortIterator;
+import java.util.stream.IntStream;
 import rosemary.board.BoardState;
-import rosemary.types.*;
+import rosemary.types.MoveUtil;
+import rosemary.types.Moves;
 
-class RookMoves {
-    Moves up = new Moves(8);
-    Moves down = new Moves(8);
-    Moves left = new Moves(8);
-    Moves right = new Moves(8);
+final class Rook implements Piece {
 
-    Moves[] allMoves = new Moves[] {up, down, left, right};
+    static final Rook INSTANCE = new Rook();
 
-    RookMoves() {}
-}
+    private static final class MoveTable {
+        final Moves up = new Moves(8);
+        final Moves down = new Moves(8);
+        final Moves left = new Moves(8);
+        final Moves right = new Moves(8);
 
-public class Rook extends SlidingPiece {
+        final Moves[] allMoves = new Moves[] {up, down, left, right};
+    }
 
     // Moves should be generated from origin, outwards and be ordered
-    static RookMoves[] rookMoves = new RookMoves[64];
+    private static final MoveTable[] TABLE = new MoveTable[64];
 
     static {
         for (short origin = 0; origin < 64; origin++) {
-            RookMoves moves = new RookMoves();
+            MoveTable moves = new MoveTable();
 
             // Runs as long as destination is within board limits
             for (int i = 1; MoveUtil.getColumn(origin) - i >= 0; i++) {
-                moves.left.add(getMove(0, -i, origin));
+                moves.left.add(SlidingMoves.getMove(0, -i, origin));
             }
 
             for (int i = 1; MoveUtil.getRow(origin) - i >= 0; i++) {
-                moves.up.add(getMove(-i, 0, origin));
+                moves.up.add(SlidingMoves.getMove(-i, 0, origin));
             }
 
             for (int i = 1; MoveUtil.getColumn(origin) + i <= 7; i++) {
-                moves.right.add(getMove(0, i, origin));
+                moves.right.add(SlidingMoves.getMove(0, i, origin));
             }
 
             for (int i = 1; MoveUtil.getRow(origin) + i <= 7; i++) {
-                moves.down.add(getMove(i, 0, origin));
+                moves.down.add(SlidingMoves.getMove(i, 0, origin));
             }
 
-            rookMoves[origin] = moves;
+            TABLE[origin] = moves;
         }
     }
 
-    public static void getMoves(short origin, BoardState boardState, Moves moves) {
+    private Rook() {}
 
-        byte[] board = boardState.getBoard();
-
-        boolean isWhite = Pieces.isWhite(board[origin]);
-
-        Moves[] allMoves = rookMoves[origin].allMoves;
-
-        for (Moves direction : allMoves) {
-            ShortIterator iter = direction.iterator();
-            while (iter.hasNext()) {
-                short move = iter.nextShort();
-                byte state = getSquareState(move, board, isWhite);
-                addMove(state, move, moves);
-                if (state != TargetSquare.EMPTY) break;
-            }
-        }
+    @Override
+    public IntStream moves(short origin, BoardState boardState) {
+        return SlidingMoves.moves(TABLE[origin].allMoves, origin, boardState);
     }
 }

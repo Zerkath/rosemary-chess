@@ -1,12 +1,17 @@
 package rosemary.generation;
 
+import java.util.stream.IntStream;
 import rosemary.board.BoardState;
-import rosemary.types.Moves;
 
-public class Queen {
+final class Queen implements Piece {
 
-    public static void getMoves(short origin, BoardState boardState, Moves moves) {
-        Rook.getMoves(origin, boardState, moves);
-        Bishop.getMoves(origin, boardState, moves);
+    static final Queen INSTANCE = new Queen();
+
+    private Queen() {}
+
+    @Override
+    public IntStream moves(short origin, BoardState boardState) {
+        return IntStream.concat(
+                Rook.INSTANCE.moves(origin, boardState), Bishop.INSTANCE.moves(origin, boardState));
     }
 }
