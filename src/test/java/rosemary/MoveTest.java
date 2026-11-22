@@ -14,7 +14,7 @@ public class MoveTest {
     void testMoveGeneration(String input, int expected) {
         BoardState boardState = new BoardState(input);
 
-        int[] moves = MoveGenerator.nonCacheGetLegalMoves(boardState).toArray();
+        short[] moves = MoveGenerator.getLegalMoves(boardState).toShortArray();
         Assertions.assertEquals(expected, moves.length, moves.toString());
     }
 }

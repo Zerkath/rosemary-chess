@@ -1,31 +1,38 @@
 package rosemary;
 
+import java.util.stream.IntStream;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
+import rosemary.types.Moves;
 
 public class PerftRunner {
 
     public static long perft(int depth, boolean print, BoardState boardState) {
-        return MoveGenerator
-                .nonCacheGetLegalMoves(boardState)
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        return IntStream.range(0, moves.size())
                 .parallel()
-                .map(move -> {
-                    int result = perftProcess(depth - 1, Mover.makeMove(boardState, (short) move));
-                    if (print) {
-                        System.out.println(MoveUtil.moveToString((short) move) + " " + result);
-                    }
-                    return result;
-                })
+                .mapToLong(
+                        i -> {
+                            short move = moves.getShort(i);
+                            long result = perftProcess(depth - 1, Mover.makeMove(boardState, move));
+                            if (print) {
+                                System.out.println(MoveUtil.moveToString(move) + " " + result);
+                            }
+                            return result;
+                        })
                 .sum();
     }
 
-    private static int perftProcess(int depth, BoardState boardState) {
+    private static long perftProcess(int depth, BoardState boardState) {
         if (depth <= 0) return 1;
-        return MoveGenerator
-                .nonCacheGetLegalMoves(boardState)
-                .map(move -> perftProcess(depth - 1, Mover.makeMove(boardState, (short) move)))
-                .sum();
+
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
+        long nodes = 0;
+        for (int i = 0; i < moves.size(); i++) {
+            nodes += perftProcess(depth - 1, Mover.makeMove(boardState, moves.getShort(i)));
+        }
+        return nodes;
     }
 
     /**

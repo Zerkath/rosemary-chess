@@ -1,9 +1,9 @@
 package rosemary.eval;
 
-import java.util.PrimitiveIterator;
 import rosemary.board.*;
 import rosemary.generation.MoveGenerator;
 import rosemary.types.MoveUtil;
+import rosemary.types.Moves;
 import rosemary.types.Pieces;
 
 public class EvaluationThread implements Runnable {
@@ -28,9 +28,9 @@ public class EvaluationThread implements Runnable {
     }
 
     int alphaBeta(BoardState boardState, int alpha, int beta, int depth, boolean isMaxing) {
-        int[] moves = MoveGenerator.nonCacheGetLegalMoves(boardState).parallel().toArray();
+        Moves moves = MoveGenerator.getLegalMoves(boardState);
 
-        if (moves.length == 0) { // no moves this turn in checkmate or draw
+        if (moves.size() == 0) { // no moves this turn in checkmate or draw
             if (inCheck(boardState)) {
                 return isMaxing
                         ? -EvaluationValues.mate + ((startingDepth - depth) / 2)
@@ -46,8 +46,8 @@ public class EvaluationThread implements Runnable {
         short bestMove = -1;
 
         int idx = 0;
-        while (moves.length > idx) {
-            short move = (short)moves[idx];
+        while (moves.size() > idx) {
+            short move = moves.getShort(idx);
             int eval = alphaBeta(Mover.makeMove(boardState, move), alpha, beta, depth - 1, !isMaxing);
             idx++;
 
@@ -75,7 +75,7 @@ public class EvaluationThread implements Runnable {
         }
 
         if (depth == startingDepth) {
-            if (bestMove == -1) bestMove = (short)moves[0];
+            if (bestMove == -1) bestMove = moves.getShort(0);
             System.out.println("bestmove " + MoveUtil.moveToString(bestMove));
         }
 
@@ -106,9 +106,9 @@ public class EvaluationThread implements Runnable {
         boolean old = state.isWhiteTurn();
         boolean isWhite = state.isWhiteTurn();
         state.setWhiteTurn(!state.isWhiteTurn()); // flip turn temporarily for checking a check
-        PrimitiveIterator.OfInt iter = MoveGenerator.nonCacheGetLegalMoves(state).iterator();
-        while (iter.hasNext()) {
-            int piece = state.getBoard()[MoveUtil.getDestination((short)iter.nextInt())];
+        Moves moves = MoveGenerator.getLegalMoves(state);
+        for (int i = 0; i < moves.size(); i++) {
+            int piece = state.getBoard()[MoveUtil.getDestination(moves.getShort(i))];
             if (piece == 0) continue;
             if ((isWhite && piece == (Pieces.KING | Pieces.WHITE))
                     || (!isWhite && piece == (Pieces.KING | Pieces.BLACK))) {

@@ -18,7 +18,7 @@ bencher:
 
 jmh:
   java -jar build/libs/rosemary-chess-jmh.jar \
-    -rf csv -rff docs/results.csv -prof "async:output=jfr;dir=/tmp/jfr;event=cpu"
+    -rf csv -rff /tmp/rosemary-results.csv -prof "async:output=jfr;dir=/tmp/jfr;event=cpu"
 
 # Run the perft benchmark for a git ref in an isolated worktree, writing $bench_dir/<name>.csv
 bench ref name:

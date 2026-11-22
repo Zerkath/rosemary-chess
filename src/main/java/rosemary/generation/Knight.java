@@ -1,15 +1,12 @@
 package rosemary.generation;
 
-import java.util.stream.IntStream;
 import rosemary.board.BoardState;
 import rosemary.types.BoardUtils;
 import rosemary.types.MoveUtil;
 import rosemary.types.Moves;
 import rosemary.types.Utils;
 
-final class Knight implements Piece {
-
-    static final Knight INSTANCE = new Knight();
+final class Knight {
 
     private static final Moves[] TABLE = new Moves[64];
 
@@ -36,11 +33,13 @@ final class Knight implements Piece {
 
     private Knight() {}
 
-    @Override
-    public IntStream moves(short origin, BoardState boardState) {
+    static void getMoves(short origin, BoardState boardState, Moves moves) {
+        Moves table = TABLE[origin];
         byte[] board = boardState.getBoard();
-        return TABLE[origin]
-                .intStream()
-                .filter(move -> BoardUtils.isValidMove((short) move, board));
+
+        for (int i = 0; i < table.size(); i++) {
+            short move = table.getShort(i);
+            if (BoardUtils.isValidMove(move, board)) moves.add(move);
+        }
     }
 }

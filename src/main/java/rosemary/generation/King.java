@@ -1,6 +1,5 @@
 package rosemary.generation;
 
-import java.util.stream.IntStream;
 import rosemary.board.BoardState;
 import rosemary.types.BoardUtils;
 import rosemary.types.CastlingRights;
@@ -9,14 +8,11 @@ import rosemary.types.Moves;
 import rosemary.types.Pieces;
 import rosemary.types.Utils;
 
-final class King implements Piece {
-
-    static final King INSTANCE = new King();
+final class King {
 
     private static final Moves[] UNFILTERED_MOVES = new Moves[64];
 
-    @Override
-    public IntStream moves(short origin, BoardState boardState) {
+    static void getMoves(short origin, BoardState boardState, Moves moves) {
         byte[] board = boardState.getBoard();
         boolean isWhiteTurn = boardState.isWhiteTurn();
         byte whiteCastling = boardState.getWhiteCastling();
@@ -27,18 +23,16 @@ final class King implements Piece {
         int row = MoveUtil.getRow(origin);
         int col = MoveUtil.getColumn(origin);
 
-        IntStream pseudoMoves =
-                UNFILTERED_MOVES[origin]
-                        .intStream()
-                        .filter(
-                                move ->
-                                        BoardUtils.isOpposingColourOrEmpty(
-                                                MoveUtil.getDestination((short) move),
-                                                originalPiece,
-                                                board));
+        Moves pseudoMoves = UNFILTERED_MOVES[origin];
+        for (int i = 0; i < pseudoMoves.size(); i++) {
+            short move = pseudoMoves.getShort(i);
+            if (BoardUtils.isOpposingColourOrEmpty(
+                    MoveUtil.getDestination(move), originalPiece, board)) {
+                moves.add(move);
+            }
+        }
 
         // castling
-        IntStream castlingMoves = IntStream.empty();
         if ((isWhite && whiteCastling != CastlingRights.NONE)
                 || (!isWhite && blackCastling != CastlingRights.NONE)) {
             CastlingData data = new CastlingData(isWhite, row, board);
@@ -52,7 +46,6 @@ final class King implements Piece {
                 // hasn't moved
 
                 boolean qSide = queenSidePossible(data);
-
                 boolean kSide = kingSidePossible(data);
 
                 byte current = 0;
@@ -68,22 +61,21 @@ final class King implements Piece {
                 short queenSideMove = MoveUtil.getMove(origin, Utils.getCoordinate(row, 2));
                 short kingSideMove = MoveUtil.getMove(origin, Utils.getCoordinate(row, 6));
 
-                castlingMoves =
-                        switch (current) {
-                            case CastlingRights.BOTH ->
-                                    IntStream.concat(
-                                            qSide ? IntStream.of(queenSideMove) : IntStream.empty(),
-                                            kSide ? IntStream.of(kingSideMove) : IntStream.empty());
-                            case CastlingRights.KING ->
-                                    kSide ? IntStream.of(kingSideMove) : IntStream.empty();
-                            case CastlingRights.QUEEN ->
-                                    qSide ? IntStream.of(queenSideMove) : IntStream.empty();
-                            default -> IntStream.empty();
-                        };
+                switch (current) {
+                    case CastlingRights.BOTH -> {
+                        if (qSide) moves.add(queenSideMove);
+                        if (kSide) moves.add(kingSideMove);
+                    }
+                    case CastlingRights.KING -> {
+                        if (kSide) moves.add(kingSideMove);
+                    }
+                    case CastlingRights.QUEEN -> {
+                        if (qSide) moves.add(queenSideMove);
+                    }
+                    default -> {}
+                }
             }
         }
-
-        return IntStream.concat(pseudoMoves, castlingMoves);
     }
 
     static {

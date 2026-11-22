@@ -1,12 +1,5 @@
 package rosemary.generation;
 
-import it.unimi.dsi.fastutil.shorts.ShortIterator;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import rosemary.board.BoardState;
 import rosemary.types.MoveUtil;
 import rosemary.types.Moves;
@@ -33,42 +26,20 @@ final class SlidingMoves {
         return isWhite == Pieces.isWhite(target) ? TargetSquare.FRIENDLY : TargetSquare.ENEMY;
     }
 
-    static IntStream moves(Moves[] directions, short origin, BoardState boardState) {
+    static void moves(Moves[] directions, short origin, BoardState boardState, Moves out) {
         byte[] board = boardState.getBoard();
         boolean isWhite = Pieces.isWhite(board[origin]);
 
-        return Stream.of(directions)
-                .flatMapToInt(direction -> movesUntilBlocked(direction, board, isWhite));
-    }
+        for (Moves direction : directions) {
+            for (int i = 0; i < direction.size(); i++) {
+                short move = direction.getShort(i);
+                byte state = getSquareState(move, board, isWhite);
 
-    /**
-     * Streams the moves of one direction until the first blocked square, looking at each square
-     * exactly once. The blocking square is included only when it holds an enemy piece.
-     */
-    private static IntStream movesUntilBlocked(Moves direction, byte[] board, boolean isWhite) {
-        ShortIterator iter = direction.iterator();
+                if (state == TargetSquare.FRIENDLY) break;
 
-        return StreamSupport.intStream(
-                new Spliterators.AbstractIntSpliterator(direction.size(), Spliterator.ORDERED) {
-                    private boolean done;
-
-                    @Override
-                    public boolean tryAdvance(IntConsumer action) {
-                        if (done || !iter.hasNext()) return false;
-
-                        short move = iter.nextShort();
-                        byte state = getSquareState(move, board, isWhite);
-
-                        if (state == TargetSquare.FRIENDLY) {
-                            done = true;
-                            return false;
-                        }
-
-                        action.accept(move);
-                        done = state == TargetSquare.ENEMY;
-                        return true;
-                    }
-                },
-                false);
+                out.add(move);
+                if (state == TargetSquare.ENEMY) break;
+            }
+        }
     }
 }

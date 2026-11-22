@@ -1,13 +1,10 @@
 package rosemary.generation;
 
-import java.util.stream.IntStream;
 import rosemary.board.BoardState;
 import rosemary.types.MoveUtil;
 import rosemary.types.Moves;
 
-final class Bishop implements Piece {
-
-    static final Bishop INSTANCE = new Bishop();
+final class Bishop {
 
     private static final class MoveTable {
         final Moves downRight = new Moves(8);
@@ -59,8 +56,7 @@ final class Bishop implements Piece {
 
     private Bishop() {}
 
-    @Override
-    public IntStream moves(short origin, BoardState boardState) {
-        return SlidingMoves.moves(TABLE[origin].allMoves, origin, boardState);
+    static void getMoves(short origin, BoardState boardState, Moves moves) {
+        SlidingMoves.moves(TABLE[origin].allMoves, origin, boardState, moves);
     }
 }

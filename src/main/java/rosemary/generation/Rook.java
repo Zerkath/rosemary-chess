@@ -1,13 +1,10 @@
 package rosemary.generation;
 
-import java.util.stream.IntStream;
 import rosemary.board.BoardState;
 import rosemary.types.MoveUtil;
 import rosemary.types.Moves;
 
-final class Rook implements Piece {
-
-    static final Rook INSTANCE = new Rook();
+final class Rook {
 
     private static final class MoveTable {
         final Moves up = new Moves(8);
@@ -48,8 +45,7 @@ final class Rook implements Piece {
 
     private Rook() {}
 
-    @Override
-    public IntStream moves(short origin, BoardState boardState) {
-        return SlidingMoves.moves(TABLE[origin].allMoves, origin, boardState);
+    static void getMoves(short origin, BoardState boardState, Moves moves) {
+        SlidingMoves.moves(TABLE[origin].allMoves, origin, boardState, moves);
     }
 }
