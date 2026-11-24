@@ -11,14 +11,14 @@ public class UciController {
     public int depth = 6;
     public boolean debug = true;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
-    private final String defaultBoard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private final BoardState defaultBoard = FenUtils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
     public UciController() {
-        boardState = new BoardState(defaultBoard);
+        boardState = defaultBoard.clone();
     }
 
     public void setToDefault() {
-        boardState = new BoardState(FenUtils.parseFen(defaultBoard));
+        boardState = defaultBoard.clone();
     }
 
     public void handleMessage(String message) { // todo rework to tokenize the commands
@@ -98,11 +98,11 @@ public class UciController {
     }
 
     public void setFen(String fen) {
-        boardState = new BoardState(FenUtils.parseFen(fen));
+        boardState = FenUtils.parseFen(fen);
     }
 
     public String getFen() {
-        return boardState.toFenString();
+        return FenUtils.getFenString(boardState);
     }
 
     public void setToUCI() {

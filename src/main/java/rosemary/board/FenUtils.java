@@ -25,9 +25,10 @@ public class FenUtils {
 
         BoardState boardState = new BoardState();
 
-        if (split.length != 6) return new BoardState(parseFen(default_fen)); // todo give out errors
+        // TODO: should handle exceptional state more gracefully
+        if (split.length != 6) System.exit(1);
         String[] rows = split[0].split("/");
-        if (rows.length != 8) return new BoardState(parseFen(default_fen));
+        if (rows.length != 8) System.exit(1);
 
         boardState.setWhiteTurn(split[1].equals("w"));
 

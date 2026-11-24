@@ -3,6 +3,7 @@ package rosemary;
 import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import rosemary.board.BoardState;
+import rosemary.board.FenUtils;
 
 /**
  * <p>Each invocation is tuned to finish in roughly 50-300ms.
@@ -33,12 +34,12 @@ public class PerftBenchmark {
 
     @Setup(Level.Trial)
     public void setup() {
-        pawns = new BoardState("8/5kpp/4p3/5P2/5p2/4P3/5KPP/8 w - - 0 1"); // 4 pawns each side
-        rooks = new BoardState("1k6/2r5/R7/4r3/8/6R1/1K6/8 w - - 0 1"); // 2 rooks each side
-        bishops = new BoardState("k7/8/5b2/7B/8/4B3/1b6/7K w - - 0 1"); // 2 bishops each side
-        queens = new BoardState("k7/4Q3/5q2/8/2q5/4Q3/8/7K w - - 0 1"); // 2 queens each side
-        knights = new BoardState("6k1/5n2/6N1/1n4n1/3N4/8/2N5/1K6 w - - 0 1"); // 3 knights each side
-        normal = new BoardState("r1bq1rk1/ppp2pp1/2n1pn1p/b2p4/3P1B2/2P1PN2/PP1NBPPP/R2Q1RK1 w - - 2 9");
+        pawns = FenUtils.parseFen("8/5kpp/4p3/5P2/5p2/4P3/5KPP/8 w - - 0 1"); // 4 pawns each side
+        rooks = FenUtils.parseFen("1k6/2r5/R7/4r3/8/6R1/1K6/8 w - - 0 1"); // 2 rooks each side
+        bishops = FenUtils.parseFen("k7/8/5b2/7B/8/4B3/1b6/7K w - - 0 1"); // 2 bishops each side
+        queens = FenUtils.parseFen("k7/4Q3/5q2/8/2q5/4Q3/8/7K w - - 0 1"); // 2 queens each side
+        knights = FenUtils.parseFen("6k1/5n2/6N1/1n4n1/3N4/8/2N5/1K6 w - - 0 1"); // 3 knights each side
+        normal = FenUtils.parseFen("r1bq1rk1/ppp2pp1/2n1pn1p/b2p4/3P1B2/2P1PN2/PP1NBPPP/R2Q1RK1 w - - 2 9");
     }
 
     @Benchmark

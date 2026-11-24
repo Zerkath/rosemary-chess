@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 import rosemary.board.BoardState;
+import rosemary.board.FenUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PerftTest {
@@ -12,7 +13,7 @@ public class PerftTest {
     @CsvFileSource(resources = "/perft.csv", numLinesToSkip = 1)
     void testQuickPerft(String input, int depth, int expected) {
         System.out.println("Depth: " + depth);
-        BoardState boardState = new BoardState(input);
+        BoardState boardState = FenUtils.parseFen(input);
 
         long score = PerftRunner.perft(depth, true, boardState);
         Assertions.assertEquals(expected, score);
@@ -23,7 +24,7 @@ public class PerftTest {
     @CsvFileSource(resources = "/slow_perft.csv", numLinesToSkip = 1)
     void testSlowPerft(String input, int depth, int expected) {
         System.out.println("Depth: " + depth);
-        BoardState boardState = new BoardState(input);
+        BoardState boardState = FenUtils.parseFen(input);
 
         long score = PerftRunner.perft(depth, true, boardState);
         Assertions.assertEquals(expected, score);

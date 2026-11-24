@@ -2,7 +2,7 @@ package rosemary.board;
 
 import rosemary.types.*;
 
-public class BoardState {
+public class BoardState implements Cloneable {
 
     // this could be stored in just 4bits
     // 0b00 no castling rights
@@ -26,26 +26,21 @@ public class BoardState {
     private byte blackKing = -1;
     private byte enPassant = -1;
 
-    public byte[] board = new byte[64];
+    public byte[] board;
 
-    public BoardState() { }
-
-    public BoardState(BoardState state) {
-        setBoardState(state);
+    public BoardState() { 
+      this.board = new byte[64];
     }
 
-    public BoardState(String fen) {
-        setBoardState(FenUtils.parseFen(fen));
-    }
-
-    public void setBoardState(BoardState state) {
-        System.arraycopy(state.board, 0, this.board, 0, 64);
-        this.turnNumber = state.turnNumber;
-        this.halfMove = state.halfMove;
-        this.enPassant = state.enPassant;
-        this.moveAndCastling = state.moveAndCastling;
-        this.whiteKing = state.whiteKing;
-        this.blackKing = state.blackKing;
+    @Override
+    public BoardState clone() {
+      try {
+        BoardState copy = (BoardState) super.clone();
+        copy.board = this.board.clone();
+        return copy;
+      } catch(CloneNotSupportedException e) {
+        throw new AssertionError("Clone failed, it never should. Report bug.");
+      }
     }
 
     /**
@@ -62,10 +57,6 @@ public class BoardState {
         }
 
         return pieceMap;
-    }
-
-    public String toFenString() {
-        return FenUtils.getFenString(this);
     }
 
     public void printBoard(BoardState board) {
@@ -201,6 +192,9 @@ public class BoardState {
     }
 
     /**
+     * TODO:
+     * this method should be inline elsewhere
+     *
      * used to add rows of FEN data to the board state
      *
      * @param rowData a row of FEN

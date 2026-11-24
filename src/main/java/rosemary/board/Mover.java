@@ -22,7 +22,7 @@ public class Mover {
     }
 
     public static BoardState makeMove(BoardState boardState, short moveWithPromotionData) {
-        BoardState bs = new BoardState(boardState);
+        BoardState bs = boardState.clone();
 
         short move = MoveUtil.clearPromotion(moveWithPromotionData);
         byte temp_destination = MoveUtil.getDestination(move);
