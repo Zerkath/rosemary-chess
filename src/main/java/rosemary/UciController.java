@@ -10,7 +10,7 @@ public class UciController {
     public boolean uci_mode = true;
     public int depth = 6;
     public boolean debug = true;
-    public ThreadGroup threadGroup = new ThreadGroup("evaluation");
+    private volatile Thread searchThread;
     private final BoardState defaultBoard = FenUtils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     private static final int FEN_TOKEN_COUNT = 6;
 
@@ -141,12 +141,14 @@ public class UciController {
     }
 
     public void endEval() {
-        if (threadGroup.activeCount() > 0) threadGroup.interrupt();
+        Thread t = searchThread;
+        if (t != null) t.interrupt();
     }
 
     public void startEval(int depth) {
-        if (threadGroup.activeCount() < 1)
-            new Thread(threadGroup, new EvaluationThread(this.boardState, depth, debug)).start();
+        if (searchThread != null && searchThread.isAlive()) return;
+        searchThread = new Thread(new EvaluationThread(this.boardState, depth, debug), "search");
+        searchThread.start();
     }
 
     public void superPerft(int depth, int iterations) {
@@ -154,12 +156,12 @@ public class UciController {
 
         // warm up
         for (int i = 0; i < 3; i++) {
-            runPerft(depth, false);
+            PerftRunner.getPerftScore(depth, false, this.boardState);
         }
 
         // gather results
         for (int i = 0; i < iterations; i++) {
-            long[] result = runPerft(depth, false);
+            long[] result = PerftRunner.getPerftScore(depth, false, this.boardState);
             allRuns[i] = result[1];
         }
 
@@ -178,14 +180,8 @@ public class UciController {
     }
 
     public void getPerft(int depth) {
-        long[] result = runPerft(depth, true);
+        long[] result = PerftRunner.getPerftScore(depth, true, this.boardState);
         String str = "\nDepth " + depth + " nodes: " + result[0];
         System.out.println(str + " " + Long.toUnsignedString(result[1]) + "ms");
-    }
-
-    public long[] runPerft(int depth, boolean print) {
-
-        long[] scores = PerftRunner.getPerftScore(depth, print, this.boardState);
-        return scores;
     }
 }

@@ -96,13 +96,13 @@ public class UciTest {
     @Test
     void testPerft() {
         uci.handleMessage("position startpos moves");
-        Assertions.assertEquals(400, uci.runPerft(2, false)[0]);
+        Assertions.assertEquals(400, PerftRunner.getPerftScore(2, false, uci.boardState)[0]);
     }
 
     @Test
     void testPerftPrint() {
         uci.handleMessage("position startpos moves");
-        Assertions.assertEquals(400, uci.runPerft(2, true)[0]);
+        Assertions.assertEquals(400, PerftRunner.getPerftScore(2, true, uci.boardState)[0]);
     }
 
     @Test
