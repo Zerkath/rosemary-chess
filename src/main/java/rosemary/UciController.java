@@ -12,6 +12,7 @@ public class UciController {
     public boolean debug = true;
     public ThreadGroup threadGroup = new ThreadGroup("evaluation");
     private final BoardState defaultBoard = FenUtils.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    private static final int FEN_TOKEN_COUNT = 6;
 
     public UciController() {
         boardState = defaultBoard.clone();
@@ -21,80 +22,101 @@ public class UciController {
         boardState = defaultBoard.clone();
     }
 
-    public void handleMessage(String message) { // todo rework to tokenize the commands
-        // given
-        // by the ui (change to switch case)
-        String[] split = message.split(" ");
-        if (message.equals("uci")) {
-            setToUCI();
-            return;
-        }
-        if (split[0].equals("position")) {
-            if (split[1].equals("fen")) {
-                int startIndex = message.indexOf('"') + 1;
-                int endIndex = message.indexOf('"', startIndex + 1);
-                setFen(message.substring(startIndex, endIndex));
-                if (endIndex + 2 < message.length()) {
-                    String[] moves = message.substring(endIndex + 2).split(" ");
-                    moves = Arrays.copyOfRange(moves, 1, moves.length);
-                    boardState = Mover.makeMoves(boardState, moves);
-                }
-                return;
+    /** @return false when the engine should shut down */
+    public boolean handleMessage(String message) {
+        String[] split = message.trim().split("\\s+");
+        switch (split[0]) {
+            case "uci" -> setToUCI();
+            case "isready" -> System.out.println("readyok");
+            case "ucinewgame" -> setToDefault();
+            case "position" -> handlePosition(split);
+            case "go" -> handleGo(split);
+            case "stop" -> endEval();
+            case "setoption" -> handleSetOption(split);
+            case "debug" -> debug = split.length > 1 && split[1].equals("on");
+            case "register" -> System.out.println("info string register later");
+            case "quit" -> {
+                return false;
             }
+            case "xboard" -> {}
+            default -> {} // UCI: ignore unknown commands ("?" is XBoard, not UCI)
+        }
+        return true;
+    }
 
-            if (split[1].equals("startpos")) {
-                setToDefault();
-                String[] moves = Arrays.copyOfRange(split, 3, split.length);
-                boardState = Mover.makeMoves(boardState, moves);
-                return;
-            }
-        }
-        if (split[0].equals("go")) {
-            if (split.length > 1) {
-                if (split[1].equals("perft")) {
-                    int depth = Integer.parseInt(split[2]);
+    /**
+     * position [startpos | fen <fenstring>] [moves <move1> ...]
+     *
+     * <p>The fenstring may be quoted or bare; both spellings are accepted.
+     */
+    private void handlePosition(String[] split) {
+        if (split.length < 2) return;
 
-                    if (split.length > 3) {
-                        int iterations = Integer.parseInt(split[3]);
-                        superPerft(depth, iterations);
-                    } else {
-                        getPerft(depth);
-                    }
-                    return;
-                }
-            }
-            startEval();
-            return;
-        }
-        if (split[0].equals("stop")) {
-            endEval();
-            return;
-        }
-        if (split[0].equals("setoption")) {
-            if (split.length >= 4) {
-                if (split[2].equals("depth")) {
-                    this.depth = Integer.parseInt(split[4]);
-                    return;
-                }
-            }
-        }
-        if (split[0].equals("quit")) {
-            System.exit(0);
-        }
-        if (split[0].equals("debug")) {
-            debug = split[1].equals("on");
-            return;
-        }
-        if (split[0].equals("register")) {
-            System.out.println("register later");
-            return;
-        }
-        if (split[0].equals("ucinewgame")) {
+        int next;
+        if (split[1].equals("startpos")) {
             setToDefault();
+            next = 2;
+        } else if (split[1].equals("fen")) {
+            int fenEnd = Math.min(split.length, FEN_TOKEN_COUNT + 2);
+            if (fenEnd <= 2) return;
+            setFen(unquote(String.join(" ", Arrays.copyOfRange(split, 2, fenEnd))));
+            next = fenEnd;
+        } else {
             return;
         }
-        if (split[0].equals("xboard")) return;
-        System.out.println("?");
+
+        if (next < split.length && split[next].equals("moves") && next + 1 < split.length) {
+            boardState = Mover.makeMoves(boardState, Arrays.copyOfRange(split, next + 1, split.length));
+        }
+    }
+
+    /** go perft <depth> [iterations], otherwise start a search at the configured depth */
+    private void handleGo(String[] split) {
+        if (split.length > 1 && split[1].equals("perft")) {
+            int perftDepth = split.length > 2 ? parseInt(split[2], -1) : -1;
+            if (perftDepth < 0) return;
+
+            if (split.length > 3) {
+                int iterations = parseInt(split[3], -1);
+                if (iterations < 1) return;
+                superPerft(perftDepth, iterations);
+            } else {
+                getPerft(perftDepth);
+            }
+            return;
+        }
+        startEval();
+    }
+
+    /** setoption name <name> value <value> */
+    private void handleSetOption(String[] split) {
+        int name = indexOf(split, "name");
+        int value = indexOf(split, "value");
+        if (name < 0 || name + 1 >= split.length || value < 0 || value + 1 >= split.length) {
+            return;
+        }
+        if (split[name + 1].equals("depth")) {
+            this.depth = parseInt(split[value + 1], this.depth);
+        }
+    }
+
+    private static String unquote(String s) {
+        return s.replace("\"", "").trim();
+    }
+
+    private static int indexOf(String[] tokens, String needle) {
+        for (int i = 0; i < tokens.length; i++) {
+            if (tokens[i].equals(needle)) return i;
+        }
+        return -1;
+    }
+
+    private static int parseInt(String token, int fallback) {
+        try {
+            return Integer.parseInt(token);
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
     }
 
     public void setFen(String fen) {

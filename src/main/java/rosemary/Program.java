@@ -1,5 +1,7 @@
 package rosemary;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.*;
 
 public class Program {
@@ -7,10 +9,8 @@ public class Program {
         System.err.println("Rosemary by the Rosemary_devs");
         UciController uci = new UciController();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        in
-          .lines()
-          .takeWhile(s -> !s.trim().equals("quit"))
-          .forEach(uci::handleMessage);
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(System.in, UTF_8))) {
+            in.lines().allMatch(uci::handleMessage); // stops when handleMessage returns false
+        }
     }
 }
