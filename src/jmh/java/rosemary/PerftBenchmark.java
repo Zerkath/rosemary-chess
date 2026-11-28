@@ -24,6 +24,8 @@ public class PerftBenchmark {
     private static final int QUEENS_DEPTH = 4; // ~1.8M nodes
     private static final int KNIGHTS_DEPTH = 5; // ~3.0M nodes
     private static final int NORMAL_DEPTH = 4; // ~1.4M nodes
+    private static final int KIWIPETE_DEPTH = 4; // ~4M nodes
+    private static final int STARTPOS_DEPTH = 7; // ~7M nodes
 
     private BoardState pawns;
     private BoardState rooks;
@@ -31,6 +33,8 @@ public class PerftBenchmark {
     private BoardState queens;
     private BoardState knights;
     private BoardState normal;
+    private BoardState kiwipete;
+    private BoardState startpos;
 
     @Setup(Level.Trial)
     public void setup() {
@@ -40,6 +44,8 @@ public class PerftBenchmark {
         queens = FenUtils.parseFen("k7/4Q3/5q2/8/2q5/4Q3/8/7K w - - 0 1"); // 2 queens each side
         knights = FenUtils.parseFen("6k1/5n2/6N1/1n4n1/3N4/8/2N5/1K6 w - - 0 1"); // 3 knights each side
         normal = FenUtils.parseFen("r1bq1rk1/ppp2pp1/2n1pn1p/b2p4/3P1B2/2P1PN2/PP1NBPPP/R2Q1RK1 w - - 2 9");
+        kiwipete = FenUtils.parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
+        startpos = new BoardState();
     }
 
     @Benchmark
@@ -70,5 +76,15 @@ public class PerftBenchmark {
     @Benchmark
     public long position_normal() {
         return PerftRunner.perft(NORMAL_DEPTH, false, normal);
+    }
+
+    @Benchmark
+    public long position_kiwipete() {
+        return PerftRunner.perft(KIWIPETE_DEPTH, false, kiwipete);
+    }
+
+    @Benchmark
+    public long position_startpos() {
+        return PerftRunner.perft(STARTPOS_DEPTH, false, startpos);
     }
 }

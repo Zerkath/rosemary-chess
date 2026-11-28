@@ -21,7 +21,8 @@ Manually running
 
 ```bash
 ./gradlew jmhJar
-java -jar -Xmx4G -Xms2G build/libs/rosemary-chess-jmh.jar .Perft
+java --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow \
+  -jar -Xmx4G -Xms2G build/libs/rosemary-chess-jmh.jar .Perft
 ```
 
 Compare two git refs without switching branches. Each ref is built and benchmarked in

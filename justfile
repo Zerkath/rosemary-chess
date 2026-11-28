@@ -4,6 +4,10 @@ default:
 # Scratch directory for benchmark CSVs and throwaway worktrees
 bench_dir := "/tmp/rosemary-bench"
 
+# JVM flags that silence JDK 25 warnings from JMH's internals (Unsafe, async-profiler).
+# JMH passes the launcher's JVM args on to its forked benchmark JVMs, so this covers both.
+jmh_java_opts := "--enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow"
+
 # Print JVM and object shapes with JOL (edit scripts/shape.sc to inspect more objects)
 shape:
   ./gradlew -q publishToMavenLocal
@@ -12,9 +16,11 @@ shape:
     --java-opt -XX:+EnableDynamicAgentLoading
 
 bencher:
+  mkdir -p {{quote(bench_dir)}}
   bencher run \
+    --adapter java_jmh \
     --project rosemary-chess-b7bd4eb-47ri4zy3q0zn3 \
-    --file /tmp/rosemary-bench/result.json "java -jar build/libs/rosemary-chess-jmh.jar -rf json -rff /tmp/rosemary-bench/result.json"
+    --file {{quote(bench_dir)}}/result.json "java {{jmh_java_opts}} -jar build/libs/rosemary-chess-jmh.jar -rf json -rff {{quote(bench_dir)}}/result.json"
 
 # Usage: just summarize [profile] (defaults to the last `just jmh` profile)
 summarize profile="/tmp/rosemary-profile.pb.gz":
@@ -36,7 +42,7 @@ jmh:
   # Avoid aggregating profiles left over from earlier runs.
   find "$jfr_dir" -mindepth 1 -delete 2>/dev/null || true
 
-  java -jar build/libs/rosemary-chess-jmh.jar \
+  java {{jmh_java_opts}} -jar build/libs/rosemary-chess-jmh.jar \
     -rf csv -rff /tmp/rosemary-results.csv \
     -prof "async:output=jfr;dir=$jfr_dir;event=cpu"
 
@@ -65,7 +71,7 @@ bench ref name:
     echo "==> Benchmarking $ref in $worktree"
     git worktree add --detach "$worktree" "$ref"
     (cd "$worktree" && ./gradlew --quiet jmhJar)
-    java -jar -Xmx4G -Xms2G "$worktree/build/libs/rosemary-chess-jmh.jar" \
+    java {{jmh_java_opts}} -jar -Xmx4G -Xms2G "$worktree/build/libs/rosemary-chess-jmh.jar" \
         .Perft -rf csv -rff "$csv"
     echo "==> Wrote $csv"
 
